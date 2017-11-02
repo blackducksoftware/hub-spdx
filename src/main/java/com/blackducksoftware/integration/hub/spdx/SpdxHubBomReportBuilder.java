@@ -3,9 +3,7 @@ package com.blackducksoftware.integration.hub.spdx;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
-import java.nio.file.Path;
 import java.util.List;
-import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +24,7 @@ import com.blackducksoftware.integration.hub.dataservice.versionbomcomponent.mod
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
 import com.blackducksoftware.integration.hub.model.enumeration.MatchedFileUsageEnum;
 import com.blackducksoftware.integration.hub.model.view.components.OriginView;
-import com.blackducksoftware.integration.hub.spdx.legacycode.SpdxLogic;
+import com.blackducksoftware.integration.hub.spdx.legacycode.SpdxPkg;
 
 public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
     private static final String TOOL_NAME = "Tool: Black Duck Hub SPDX Report Generator";
@@ -138,11 +136,10 @@ public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
 
     private void addPackage(final SpdxDocument bomDocument, final VersionBomComponentModel bomComp) {
         final RelationshipType relType = getRelationshipType(bomComp);
-        final Optional<Path> pkgRootPath = Optional.empty();
         final AnyLicenseInfo declaredLicense = new SpdxNoAssertionLicense();
         final String bomCompDownloadLocation = "NOASSERTION";
         logger.info(String.format("Creating package for %s:%s", bomComp.getComponentName(), bomComp.getComponentVersionName()));
-        final SpdxPackage pkg = SpdxLogic.createSpdxPackageForPath(pkgRootPath, bomDocument, declaredLicense, bomComp.getComponentName(), bomCompDownloadLocation, false, relType);
+        final SpdxPackage pkg = SpdxPkg.addPackageToDocument(bomDocument, declaredLicense, bomComp.getComponentName(), bomCompDownloadLocation, relType);
         pkg.setVersionInfo(bomComp.getComponentVersionName());
         pkg.setFilesAnalyzed(false);
         pkg.setCopyrightText("NOASSERTION");
