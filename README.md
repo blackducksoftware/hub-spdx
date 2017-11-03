@@ -3,7 +3,7 @@ hub-spdx is a utility that generates an SPDX report representing the Bill Of Mat
 
 ## Usage
 ```
-java -jar build/libs/hub-spdx-<version>.jar \
+java -jar hub-spdx-<version>.jar \
 --hub.url=<Hub URL> \
 --hub.username=<Hub username> \
 --hub.password=<Hub password> \
