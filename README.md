@@ -1,5 +1,5 @@
 # hub-spdx
-hub-spdx is a utility that generates an SPDX report representing the Bill Of Materials (BOM) of a Hub project version.
+hub-spdx is a utility that generates an SPDX report representing the Bill Of Materials (BOM) of a Black Duck Hub project version.
 
 ## Usage
 ```
