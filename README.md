@@ -19,5 +19,10 @@ java -jar hub-spdx-<version>.jar \
 ### Optional arguments:
 --hub.always.trust.cert=true # Trust any Hub server certificate
 
+## Limitations
+
+* The SPDX report produced is has minimal details.
+* There is no support for proxies.
+
 ## Other SPDX Tools
 If you a need a utility to validate and view SPDX files, you can get one here: https://github.com/spdx/tools/releases
