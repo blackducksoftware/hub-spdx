@@ -1,3 +1,14 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+        }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.1.RELEASE")
+        }
+}
+
+apply plugin: 'org.springframework.boot'
 apply plugin: 'eclipse'
 apply plugin: 'java'
 
@@ -7,6 +18,9 @@ description = ''
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
+
+springBoot { mainClass = 'com.blackducksoftware.integration.hub.spdx.ReportUtility' }
+
 
 sourceSets {
 	main {
@@ -21,20 +35,19 @@ repositories {
     mavenCentral()
     mavenLocal()
      maven { url "https://repository.apache.org/content/repositories/releases" }
-     //maven { url "https://dl.bintray.com/yevster/spdx-tools-fork" }
-     //maven { url "https://dl.bintray.com/yevster/maven" }
      maven { url "http://repo.maven.apache.org/maven2" }
 }
 
 dependencies {
-    compile group: 'org.slf4j', name: 'slf4j-api', version:'1.7.12'
-    compile group: 'org.slf4j', name: 'slf4j-simple', version:'1.7.12'
-    compile group: 'org.spdx', name: 'spdx-tools', version:'2.1.7-SNAPSHOT'
+    compile (group: 'org.spdx', name: 'spdx-tools', version:'2.1.7-SNAPSHOT') {
+        exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+    }
     compile group: 'org.antlr', name: 'antlr', version:'3.4'
     compile group: 'org.controlsfx', name: 'controlsfx', version:'8.40.12'
     compile group: 'org.apache.commons', name: 'commons-lang3', version:'3.5'
     compile group: 'com.google.guava', name: 'guava', version:'16.0.1'
     compile group: 'org.apache.jena', name: 'apache-jena-libs', version:'3.1.1'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter'
     
     compile group: 'com.blackducksoftware.integration', name: 'hub-common', version: '18.0.0'
     
