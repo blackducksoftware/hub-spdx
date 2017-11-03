@@ -115,7 +115,8 @@ public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
     }
 
     private Relationship createDocumentDescription(final String projectName, final String projectVersion, final String projectDownloadLocation) {
-        final String hubProjectComment = String.format("Hub Project %s:%s", projectName, projectVersion);
+        final String hubProjectComment = null;
+        final String hubProjectDescription = String.format("Black Duck Hub Project %s:%s", projectName, projectVersion);
         final AnyLicenseInfo licenseConcluded = new SpdxNoAssertionLicense();
         final AnyLicenseInfo[] licenseInfoInFiles = new AnyLicenseInfo[] { new SpdxNoAssertionLicense() };
         final String copyrightText = null;
@@ -123,8 +124,7 @@ public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
         final AnyLicenseInfo licenseDeclared = new SpdxNoAssertionLicense();
         final SpdxPackageVerificationCode packageVerificationCode = null;
         final SpdxPackage documentDescriptionPackage = new SpdxPackage(projectName, hubProjectComment, new Annotation[0], new Relationship[0], licenseConcluded, licenseInfoInFiles, copyrightText, licenseComment, licenseDeclared,
-                new Checksum[0], "test description", projectDownloadLocation, new SpdxFile[0], "http://www.blackducksoftware.com", "originator", "packageFileName", packageVerificationCode, "sourceInfo", "summary", "supplier",
-                projectVersion);
+                new Checksum[0], hubProjectDescription, projectDownloadLocation, new SpdxFile[0], "http://www.blackducksoftware.com", projectDownloadLocation, null, packageVerificationCode, null, null, null, projectVersion);
         documentDescriptionPackage.setCopyrightText("NOASSERTION");
         documentDescriptionPackage.setSupplier("NOASSERTION");
         documentDescriptionPackage.setOriginator("NOASSERTION");

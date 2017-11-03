@@ -13,6 +13,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.api.item.MetaService;
 import com.blackducksoftware.integration.hub.builder.HubServerConfigBuilder;
 import com.blackducksoftware.integration.hub.dataservice.project.ProjectDataService;
 import com.blackducksoftware.integration.hub.dataservice.versionbomcomponent.VersionBomComponentDataService;
@@ -65,10 +66,11 @@ public class SpdxReportUtility {
         final HubServicesFactory hubSvcsFactory = new HubServicesFactory(restConnection);
         final ProjectDataService projectDataService = hubSvcsFactory.createProjectDataService();
         final VersionBomComponentDataService versionBomComponentDataService = hubSvcsFactory.createVersionBomComponentDataservice();
+        final MetaService metaService = hubSvcsFactory.createMetaService();
 
         // Create a HubBomReportGenerator with SpdxHubBomReportBuilder
         final HubBomReportBuilder spdxReportBuilder = new SpdxHubBomReportBuilder();
-        final HubBomReportGenerator spdxReportGenerator = new HubBomReportGenerator(projectDataService, versionBomComponentDataService, spdxReportBuilder);
+        final HubBomReportGenerator spdxReportGenerator = new HubBomReportGenerator(projectDataService, versionBomComponentDataService, metaService, spdxReportBuilder);
 
         // Generate an SPDX report
         final File outputFile = new File(outputFilename);
