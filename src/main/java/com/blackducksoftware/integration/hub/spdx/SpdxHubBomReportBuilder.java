@@ -146,9 +146,9 @@ public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
 
     private void logUsages(final VersionBomComponentModel bomComp) {
         final List<OriginView> origins = bomComp.getOrigins();
-        logger.info(String.format("\t# Origins: %d", origins.size()));
+        logger.debug(String.format("\t# Origins: %d", origins.size()));
         for (final OriginView origin : origins) {
-            logger.info(String.format("\tOrigin: externalNamespace=%s, externalId=%s, name=%s", origin.externalNamespace, origin.externalId, origin.name));
+            logger.debug(String.format("\tOrigin: externalNamespace=%s, externalId=%s, name=%s", origin.externalNamespace, origin.externalId, origin.name));
         }
     }
 }

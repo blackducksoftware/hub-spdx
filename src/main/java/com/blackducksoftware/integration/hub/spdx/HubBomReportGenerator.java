@@ -40,10 +40,11 @@ public class HubBomReportGenerator {
     }
 
     private void consumeHubProjectBom(final String hubUrl, final String projectName, final String projectVersion) throws IntegrationException, HubIntegrationException {
+        logger.info(String.format("Generating report for project %s:%s", projectName, projectVersion));
         final ProjectVersionWrapper projectVersionWrapper = projectDataService.getProjectVersion(projectName, projectVersion);
         final String bomUrl = metaService.getFirstLinkSafely(projectVersionWrapper.getProjectVersionView(), MetaService.COMPONENTS_LINK);
         reportBuilder.setProject(projectName, projectVersion, bomUrl);
-        logger.info("Traversing BOM");
+        logger.debug("Traversing BOM");
         final List<VersionBomComponentModel> bom = versionBomComponentDataService.getComponentsForProjectVersion(projectVersionWrapper.getProjectVersionView());
         for (final VersionBomComponentModel bomComp : bom) {
             reportBuilder.addComponent(bomComp);
