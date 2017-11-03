@@ -24,7 +24,6 @@ import com.blackducksoftware.integration.hub.dataservice.versionbomcomponent.mod
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
 import com.blackducksoftware.integration.hub.model.enumeration.MatchedFileUsageEnum;
 import com.blackducksoftware.integration.hub.model.view.components.OriginView;
-import com.blackducksoftware.integration.hub.spdx.legacycode.SpdxPkg;
 
 public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
     private static final String TOOL_NAME = "Tool: Black Duck Hub SPDX Report Generator";

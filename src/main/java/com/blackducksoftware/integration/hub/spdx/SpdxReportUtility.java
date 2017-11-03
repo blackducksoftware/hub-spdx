@@ -22,7 +22,7 @@ import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.log.Slf4jIntLogger;
 
 @SpringBootApplication
-public class ReportUtility {
+public class SpdxReportUtility {
 
     @Value("${hub.url}")
     private String hubUrl;
@@ -45,10 +45,13 @@ public class ReportUtility {
     @Value("${hub.project.name}")
     private String hubProjectName;
 
-    private static final Logger logger = LoggerFactory.getLogger(ReportUtility.class);
+    @Value("${output.filename}")
+    private String outputFilename;
+
+    private static final Logger logger = LoggerFactory.getLogger(SpdxReportUtility.class);
 
     public static void main(final String[] args) {
-        new SpringApplicationBuilder(ReportUtility.class).logStartupInfo(false).run(args);
+        new SpringApplicationBuilder(SpdxReportUtility.class).logStartupInfo(false).run(args);
     }
 
     @PostConstruct
@@ -68,7 +71,7 @@ public class ReportUtility {
         final HubBomReportGenerator spdxReportGenerator = new HubBomReportGenerator(projectDataService, versionBomComponentDataService, spdxReportBuilder);
 
         // Generate an SPDX report
-        final File outputFile = new File(String.format("/tmp/%s_%s_bom.rdf", hubProjectName, hubProjectVersion));
+        final File outputFile = new File(outputFilename);
         final PrintStream ps = new PrintStream(outputFile);
         spdxReportGenerator.writeReport(ps, hubProjectName, hubProjectVersion, hubUrl);
     }
