@@ -1,5 +1,6 @@
 package com.blackducksoftware.integration.hub.spdx;
 
+import java.io.PrintStream;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -10,6 +11,7 @@ import com.blackducksoftware.integration.hub.dataservice.project.ProjectDataServ
 import com.blackducksoftware.integration.hub.dataservice.project.ProjectVersionWrapper;
 import com.blackducksoftware.integration.hub.dataservice.versionbomcomponent.VersionBomComponentDataService;
 import com.blackducksoftware.integration.hub.dataservice.versionbomcomponent.model.VersionBomComponentModel;
+import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
 
 public class HubBomReportGenerator {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -25,7 +27,16 @@ public class HubBomReportGenerator {
     }
 
     public String createReport(final String projectName, final String projectVersion, final String hubUrl) throws IntegrationException {
+        consumeHubProjectBom(hubUrl, projectName, projectVersion);
+        return reportBuilder.generateReportAsString();
+    }
 
+    public void writeReport(final PrintStream ps, final String projectName, final String projectVersion, final String hubUrl) throws IntegrationException {
+        consumeHubProjectBom(hubUrl, projectName, projectVersion);
+        reportBuilder.writeReport(ps);
+    }
+
+    private void consumeHubProjectBom(final String hubUrl, final String projectName, final String projectVersion) throws IntegrationException, HubIntegrationException {
         final ProjectVersionWrapper projectVersionWrapper = projectDataService.getProjectVersion(projectName, projectVersion);
         final String projectUrl = hubUrl; // TODO
         reportBuilder.setProject(projectName, projectVersion, projectUrl);
@@ -34,7 +45,5 @@ public class HubBomReportGenerator {
         for (final VersionBomComponentModel bomComp : bom) {
             reportBuilder.addComponent(bomComp);
         }
-
-        return reportBuilder.generateReportAsString();
     }
 }
