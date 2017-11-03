@@ -1,6 +1,10 @@
 # hub-spdx
 hub-spdx is a utility that generates an SPDX report representing the Bill Of Materials (BOM) of a Black Duck Hub project version.
 
+## Prerequisites
+
+Java 1.8
+
 ## Usage
 ```
 java -jar hub-spdx-<version>.jar \
