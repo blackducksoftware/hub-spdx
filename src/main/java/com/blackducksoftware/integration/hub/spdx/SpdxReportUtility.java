@@ -13,19 +13,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
-import com.blackducksoftware.integration.hub.api.item.MetaService;
-import com.blackducksoftware.integration.hub.dataservice.project.ProjectDataService;
-import com.blackducksoftware.integration.hub.dataservice.versionbomcomponent.VersionBomComponentDataService;
-import com.blackducksoftware.integration.hub.service.HubServicesFactory;
+import com.blackducksoftware.integration.hub.spdx.hub.Hub;
 import com.blackducksoftware.integration.hub.spdx.hub.HubBomReportBuilder;
 import com.blackducksoftware.integration.hub.spdx.hub.HubBomReportGenerator;
-import com.blackducksoftware.integration.hub.spdx.hub.HubConnection;
+import com.blackducksoftware.integration.hub.spdx.hub.HubProjectVersion;
 
 @SpringBootApplication
 public class SpdxReportUtility {
 
     @Autowired
-    HubConnection hubConnection;
+    Hub hub;
+
+    @Autowired
+    HubProjectVersion hubProjectVersion;
 
     @Value("${output.filename}")
     private String outputFilename;
@@ -41,20 +41,16 @@ public class SpdxReportUtility {
 
         try {
             // Connect to Hub
-            final HubServicesFactory hubSvcsFactory = hubConnection.connectToHub();
-
-            final ProjectDataService projectDataService = hubSvcsFactory.createProjectDataService();
-            final VersionBomComponentDataService versionBomComponentDataService = hubSvcsFactory.createVersionBomComponentDataservice();
-            final MetaService metaService = hubSvcsFactory.createMetaService();
+            hub.connect();
 
             // Create a HubBomReportGenerator with SpdxHubBomReportBuilder
             final HubBomReportBuilder spdxReportBuilder = new SpdxHubBomReportBuilder();
-            final HubBomReportGenerator spdxReportGenerator = new HubBomReportGenerator(projectDataService, versionBomComponentDataService, metaService, spdxReportBuilder);
+            final HubBomReportGenerator spdxReportGenerator = new HubBomReportGenerator(hub, spdxReportBuilder);
 
             // Generate an SPDX report
             final File outputFile = new File(outputFilename);
             final PrintStream ps = new PrintStream(outputFile);
-            spdxReportGenerator.writeReport(ps, hubConnection.getHubProjectName(), hubConnection.getHubProjectVersion(), hubConnection.getHubUrl());
+            spdxReportGenerator.writeReport(ps, hubProjectVersion.getName(), hubProjectVersion.getVersion(), hub.getHubUrl());
             logger.info(String.format("Generated report file %s", outputFilename));
         } catch (final Throwable e) {
             logger.error(e.getMessage());

@@ -22,10 +22,10 @@ public class HubBomReportGenerator {
     final MetaService metaService;
     final HubBomReportBuilder reportBuilder;
 
-    public HubBomReportGenerator(final ProjectDataService projectDataService, final VersionBomComponentDataService versionBomComponentDataService, final MetaService metaService, final HubBomReportBuilder reportBuilder) {
-        this.projectDataService = projectDataService;
-        this.versionBomComponentDataService = versionBomComponentDataService;
-        this.metaService = metaService;
+    public HubBomReportGenerator(final Hub hub, final HubBomReportBuilder reportBuilder) {
+        this.projectDataService = hub.getProjectDataService();
+        this.versionBomComponentDataService = hub.getVersionBomComponentDataService();
+        this.metaService = hub.getMetaService();
         this.reportBuilder = reportBuilder;
     }
 

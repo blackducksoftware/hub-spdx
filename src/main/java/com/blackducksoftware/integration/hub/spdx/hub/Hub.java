@@ -8,14 +8,17 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.EncryptionException;
 import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.api.item.MetaService;
 import com.blackducksoftware.integration.hub.builder.HubServerConfigBuilder;
+import com.blackducksoftware.integration.hub.dataservice.project.ProjectDataService;
+import com.blackducksoftware.integration.hub.dataservice.versionbomcomponent.VersionBomComponentDataService;
 import com.blackducksoftware.integration.hub.global.HubServerConfig;
 import com.blackducksoftware.integration.hub.rest.CredentialsRestConnection;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.log.Slf4jIntLogger;
 
 @Component
-public class HubConnection {
+public class Hub {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
@@ -33,31 +36,30 @@ public class HubConnection {
     @Value("${hub.always.trust.cert}")
     private boolean hubAlwaysTrustCert;
 
-    @Value("${hub.project.version}")
-    private String hubProjectVersion;
+    HubServicesFactory hubSvcsFactory;
 
-    @Value("${hub.project.name}")
-    private String hubProjectName;
-
-    public HubServicesFactory connectToHub() throws EncryptionException, IntegrationException {
+    public void connect() throws EncryptionException, IntegrationException {
         final HubServerConfig hubServerConfig = createBuilder().build();
         final CredentialsRestConnection restConnection;
         restConnection = hubServerConfig.createCredentialsRestConnection(new Slf4jIntLogger(logger));
         restConnection.connect();
-        final HubServicesFactory hubSvcsFactory = new HubServicesFactory(restConnection);
-        return hubSvcsFactory;
+        hubSvcsFactory = new HubServicesFactory(restConnection);
+    }
+
+    public ProjectDataService getProjectDataService() {
+        return hubSvcsFactory.createProjectDataService();
+    }
+
+    public VersionBomComponentDataService getVersionBomComponentDataService() {
+        return hubSvcsFactory.createVersionBomComponentDataservice();
+    }
+
+    public MetaService getMetaService() {
+        return hubSvcsFactory.createMetaService();
     }
 
     public String getHubUrl() {
         return hubUrl;
-    }
-
-    public String getHubProjectVersion() {
-        return hubProjectVersion;
-    }
-
-    public String getHubProjectName() {
-        return hubProjectName;
     }
 
     private HubServerConfigBuilder createBuilder() {
