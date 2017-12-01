@@ -110,16 +110,20 @@ public class SpdxReportUtility {
 
     private String getUsage() {
         final StringBuilder sb = new StringBuilder();
-        sb.append("\nUsage: java -jar hub-spdx-<version>.jar <options>\n");
-        sb.append("Required:\n");
+        sb.append("\nUsage: java -jar hub-spdx-<version>.jar <arguments>\n");
+        sb.append("Required arguments:\n");
         sb.append("\t--hub.url=<Hub URL>\n");
         sb.append("\t--hub.username=<Hub username>\n");
-        sb.append("\t--hub.password=<Hub password>\n");
         sb.append("\t--hub.project.name=<Hub project name>\n");
         sb.append("\t--hub.project.version=<Hub project version>\n");
         sb.append("\t--output.filename=<path to report file>\n");
-        sb.append("Optional:\n");
+        sb.append("\n");
+        sb.append("Optional arguments:\n");
+        sb.append("\t--hub.password=<Hub password>\n");
         sb.append("\t--hub.always.trust.cert=true\n");
+        sb.append("\n");
+        sb.append("Optional environment variable:\n");
+        sb.append("\texport BD_HUB_PASSWORD=<password>\n");
         sb.append("\n");
         sb.append("Documentation: https://github.com/blackducksoftware/hub-spdx/blob/master/README.md\n");
 
