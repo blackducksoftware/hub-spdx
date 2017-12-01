@@ -82,6 +82,7 @@ public class SpdxReportUtility {
             logger.info(String.format("Generated report file %s", outputFilename));
         } catch (final Throwable e) {
             logger.error(e.getMessage());
+            logger.info(getUsage());
         }
     }
 
@@ -105,6 +106,24 @@ public class SpdxReportUtility {
             throw new HubIntegrationException("Property output.filename is required");
         }
 
+    }
+
+    private String getUsage() {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("\nUsage: java -jar hub-spdx-<version>.jar <options>\n");
+        sb.append("Required:\n");
+        sb.append("\t--hub.url=<Hub URL>\n");
+        sb.append("\t--hub.username=<Hub username>\n");
+        sb.append("\t--hub.password=<Hub password>\n");
+        sb.append("\t--hub.project.name=<Hub project name>\n");
+        sb.append("\t--hub.project.version=<Hub project version>\n");
+        sb.append("\t--output.filename=<path to report file>\n");
+        sb.append("Optional:\n");
+        sb.append("\t--hub.always.trust.cert=true\n");
+        sb.append("\n");
+        sb.append("Documentation: https://github.com/blackducksoftware/hub-spdx/blob/master/README.md\n");
+
+        return sb.toString();
     }
 
     private HubServerConfigBuilder createBuilder() {

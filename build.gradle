@@ -13,7 +13,7 @@ apply plugin: 'eclipse'
 apply plugin: 'java'
 
 group = 'com.blackducksoftware.integration'
-version = '0.1.0'
+version = '1.0.0-SNAPSHOT'
 description = ''
 
 sourceCompatibility = 1.8
@@ -29,7 +29,7 @@ sourceSets {
 			includes = ['*.properties']
 		}
 	}
-    }
+}
 
 repositories {
     mavenCentral()
@@ -39,7 +39,7 @@ repositories {
 }
 
 dependencies {
-    compile (group: 'org.spdx', name: 'spdx-tools', version:'2.1.7-SNAPSHOT') {
+    compile (group: 'org.spdx', name: 'spdx-tools', version:'2.1.6') {
         exclude group: 'org.slf4j', module: 'slf4j-log4j12'
     }
     compile group: 'org.antlr', name: 'antlr', version:'3.4'
