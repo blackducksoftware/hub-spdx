@@ -21,6 +21,9 @@ import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
 import com.blackducksoftware.integration.hub.global.HubServerConfig;
 import com.blackducksoftware.integration.hub.rest.CredentialsRestConnection;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
+import com.blackducksoftware.integration.hub.spdx.hub.HubBomReportBuilder;
+import com.blackducksoftware.integration.hub.spdx.hub.HubBomReportGenerator;
+import com.blackducksoftware.integration.hub.spdx.hub.HubPassword;
 import com.blackducksoftware.integration.log.Slf4jIntLogger;
 
 @SpringBootApplication

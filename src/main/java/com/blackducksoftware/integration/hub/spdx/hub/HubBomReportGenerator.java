@@ -1,4 +1,4 @@
-package com.blackducksoftware.integration.hub.spdx;
+package com.blackducksoftware.integration.hub.spdx.hub;
 
 import java.io.PrintStream;
 import java.util.List;

@@ -18,6 +18,7 @@ import com.blackducksoftware.integration.hub.model.enumeration.MatchedFileUsageE
 import com.blackducksoftware.integration.hub.model.view.MatchedFilesView;
 import com.blackducksoftware.integration.hub.model.view.VersionBomComponentView;
 import com.blackducksoftware.integration.hub.model.view.components.OriginView;
+import com.blackducksoftware.integration.hub.spdx.hub.HubBomReportBuilder;
 
 public class SpdxHubBomReportBuilderTest {
 

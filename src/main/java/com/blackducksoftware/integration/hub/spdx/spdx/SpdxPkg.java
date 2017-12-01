@@ -1,4 +1,4 @@
-package com.blackducksoftware.integration.hub.spdx;
+package com.blackducksoftware.integration.hub.spdx.spdx;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
