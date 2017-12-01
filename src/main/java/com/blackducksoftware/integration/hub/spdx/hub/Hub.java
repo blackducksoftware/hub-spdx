@@ -1,5 +1,6 @@
 package com.blackducksoftware.integration.hub.spdx.hub;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,13 +23,22 @@ public class Hub {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    private HubPassword hubPassword;
+    private HubPasswords hubPasswords;
 
     @Value("${hub.url}")
     private String hubUrl;
 
     @Value("${hub.username}")
     private String hubUsername;
+
+    @Value("${hub.proxy.host:}")
+    private String hubProxyHost;
+
+    @Value("${hub.proxy.port:}")
+    private String hubProxyPort;
+
+    @Value("${hub.proxy.username:}")
+    private String hubProxyUsername;
 
     @Value("${hub.timeout}")
     private int hubTimeoutSeconds;
@@ -66,9 +76,19 @@ public class Hub {
         final HubServerConfigBuilder hubServerConfigBuilder = new HubServerConfigBuilder();
         hubServerConfigBuilder.setHubUrl(hubUrl);
         hubServerConfigBuilder.setUsername(hubUsername);
-        hubServerConfigBuilder.setPassword(hubPassword.get());
+        hubServerConfigBuilder.setPassword(hubPasswords.getHubPassword());
+
+        if (!StringUtils.isBlank(hubProxyHost)) {
+            logger.debug("Setting proxy details");
+            hubServerConfigBuilder.setProxyHost(hubProxyHost);
+            hubServerConfigBuilder.setProxyPort(hubProxyPort);
+            hubServerConfigBuilder.setProxyUsername(hubProxyUsername);
+            hubServerConfigBuilder.setProxyPassword(hubPasswords.getHubProxyPassword());
+        }
+
         hubServerConfigBuilder.setTimeout(hubTimeoutSeconds);
         hubServerConfigBuilder.setAlwaysTrustServerCertificate(hubAlwaysTrustCert);
+
         return hubServerConfigBuilder;
     }
 }
