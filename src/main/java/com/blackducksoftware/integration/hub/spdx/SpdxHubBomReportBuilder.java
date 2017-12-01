@@ -24,6 +24,7 @@ import com.blackducksoftware.integration.hub.dataservice.versionbomcomponent.mod
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
 import com.blackducksoftware.integration.hub.model.enumeration.MatchedFileUsageEnum;
 import com.blackducksoftware.integration.hub.model.view.components.OriginView;
+import com.blackducksoftware.integration.hub.model.view.components.VersionBomLicenseView;
 import com.blackducksoftware.integration.hub.spdx.hub.HubBomReportBuilder;
 import com.blackducksoftware.integration.hub.spdx.spdx.SpdxPkg;
 
@@ -137,13 +138,31 @@ public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
 
     private void addPackage(final SpdxDocument bomDocument, final VersionBomComponentModel bomComp) {
         final RelationshipType relType = getRelationshipType(bomComp);
-        final AnyLicenseInfo declaredLicense = new SpdxNoAssertionLicense();
+        final AnyLicenseInfo declaredLicense = generateLicenseInfo(bomComp);
         final String bomCompDownloadLocation = "NOASSERTION";
-        logger.info(String.format("Creating package for %s:%s", bomComp.getComponentName(), bomComp.getComponentVersionName()));
+        logger.debug(String.format("Creating package for %s:%s", bomComp.getComponentName(), bomComp.getComponentVersionName()));
         final SpdxPackage pkg = SpdxPkg.addPackageToDocument(bomDocument, declaredLicense, bomComp.getComponentName(), bomCompDownloadLocation, relType);
         pkg.setVersionInfo(bomComp.getComponentVersionName());
         pkg.setFilesAnalyzed(false);
         pkg.setCopyrightText("NOASSERTION");
+    }
+
+    private AnyLicenseInfo generateLicenseInfo(final VersionBomComponentModel bomComp) {
+        final List<VersionBomLicenseView> licenses = bomComp.getLicenses();
+        if (licenses == null) {
+            return new SpdxNoAssertionLicense();
+        }
+        logger.info(String.format("Component %s:%s", bomComp.getComponentName(), bomComp.getComponentVersionName()));
+        final VersionBomLicenseView license = licenses.get(0);
+        if (license.licenseType == null) {
+            logger.info(String.format("\tlicense (simple): %s", license.licenseDisplay));
+        } else {
+            logger.info(String.format("\tlicense (%s): %s", license.licenseType.toString(), license.licenseDisplay));
+            for (final VersionBomLicenseView licComp : license.licenses) {
+                logger.info(String.format("\t\tlicense component: %s", licComp.licenseDisplay));
+            }
+        }
+        return new SpdxNoAssertionLicense();
     }
 
     private void logUsages(final VersionBomComponentModel bomComp) {
