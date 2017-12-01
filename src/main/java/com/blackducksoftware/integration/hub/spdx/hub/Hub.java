@@ -33,7 +33,7 @@ public class Hub {
     @Value("${hub.proxy.host:}")
     private String hubProxyHost;
 
-    @Value("${hub.proxy.port:}")
+    @Value("${hub.proxy.port:0}")
     private int hubProxyPort;
 
     @Value("${hub.proxy.username:}")
