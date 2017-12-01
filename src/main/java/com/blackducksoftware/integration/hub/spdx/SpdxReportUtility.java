@@ -8,6 +8,7 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -25,14 +26,14 @@ import com.blackducksoftware.integration.log.Slf4jIntLogger;
 @SpringBootApplication
 public class SpdxReportUtility {
 
+    @Autowired
+    private HubPassword hubPassword;
+
     @Value("${hub.url}")
     private String hubUrl;
 
     @Value("${hub.username}")
     private String hubUsername;
-
-    @Value("${hub.password}")
-    private String hubPassword;
 
     @Value("${hub.timeout}")
     private int hubTimeoutSeconds;
@@ -93,7 +94,7 @@ public class SpdxReportUtility {
         if (StringUtils.isBlank(hubUsername)) {
             throw new HubIntegrationException("Property hub.username is required");
         }
-        if (StringUtils.isBlank(hubPassword)) {
+        if (StringUtils.isBlank(hubPassword.get())) {
             throw new HubIntegrationException("Property hub.password is required");
         }
         if (StringUtils.isBlank(hubProjectVersion)) {
@@ -134,7 +135,7 @@ public class SpdxReportUtility {
         final HubServerConfigBuilder hubServerConfigBuilder = new HubServerConfigBuilder();
         hubServerConfigBuilder.setHubUrl(hubUrl);
         hubServerConfigBuilder.setUsername(hubUsername);
-        hubServerConfigBuilder.setPassword(hubPassword);
+        hubServerConfigBuilder.setPassword(hubPassword.get());
         hubServerConfigBuilder.setTimeout(hubTimeoutSeconds);
         hubServerConfigBuilder.setAlwaysTrustServerCertificate(hubAlwaysTrustCert);
         return hubServerConfigBuilder;
