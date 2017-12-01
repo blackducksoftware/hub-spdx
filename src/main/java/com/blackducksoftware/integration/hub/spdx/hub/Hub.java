@@ -1,6 +1,5 @@
 package com.blackducksoftware.integration.hub.spdx.hub;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,7 @@ import com.blackducksoftware.integration.hub.builder.HubServerConfigBuilder;
 import com.blackducksoftware.integration.hub.dataservice.project.ProjectDataService;
 import com.blackducksoftware.integration.hub.dataservice.versionbomcomponent.VersionBomComponentDataService;
 import com.blackducksoftware.integration.hub.global.HubServerConfig;
-import com.blackducksoftware.integration.hub.rest.CredentialsRestConnection;
+import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.log.Slf4jIntLogger;
 
@@ -35,7 +34,7 @@ public class Hub {
     private String hubProxyHost;
 
     @Value("${hub.proxy.port:}")
-    private String hubProxyPort;
+    private int hubProxyPort;
 
     @Value("${hub.proxy.username:}")
     private String hubProxyUsername;
@@ -49,9 +48,11 @@ public class Hub {
     HubServicesFactory hubSvcsFactory;
 
     public void connect() throws EncryptionException, IntegrationException {
-        final HubServerConfig hubServerConfig = createBuilder().build();
-        final CredentialsRestConnection restConnection;
-        restConnection = hubServerConfig.createCredentialsRestConnection(new Slf4jIntLogger(logger));
+        final HubServerConfigBuilder hubServerConfigBuilder = new HubServerConfigBuilder();
+        final HubConfig hubConfig = new HubConfig();
+        final HubServerConfig hubServerConfig = hubConfig
+                .configure(hubServerConfigBuilder, hubUrl, hubUsername, hubPasswords.getHubPassword(), hubProxyHost, hubProxyPort, hubProxyUsername, hubPasswords.getHubProxyPassword(), hubTimeoutSeconds, hubAlwaysTrustCert).build();
+        final RestConnection restConnection = hubServerConfig.createCredentialsRestConnection(new Slf4jIntLogger(logger));
         restConnection.connect();
         hubSvcsFactory = new HubServicesFactory(restConnection);
     }
@@ -72,23 +73,4 @@ public class Hub {
         return hubUrl;
     }
 
-    private HubServerConfigBuilder createBuilder() {
-        final HubServerConfigBuilder hubServerConfigBuilder = new HubServerConfigBuilder();
-        hubServerConfigBuilder.setHubUrl(hubUrl);
-        hubServerConfigBuilder.setUsername(hubUsername);
-        hubServerConfigBuilder.setPassword(hubPasswords.getHubPassword());
-
-        if (!StringUtils.isBlank(hubProxyHost)) {
-            logger.debug("Setting proxy details");
-            hubServerConfigBuilder.setProxyHost(hubProxyHost);
-            hubServerConfigBuilder.setProxyPort(hubProxyPort);
-            hubServerConfigBuilder.setProxyUsername(hubProxyUsername);
-            hubServerConfigBuilder.setProxyPassword(hubPasswords.getHubProxyPassword());
-        }
-
-        hubServerConfigBuilder.setTimeout(hubTimeoutSeconds);
-        hubServerConfigBuilder.setAlwaysTrustServerCertificate(hubAlwaysTrustCert);
-
-        return hubServerConfigBuilder;
-    }
 }
