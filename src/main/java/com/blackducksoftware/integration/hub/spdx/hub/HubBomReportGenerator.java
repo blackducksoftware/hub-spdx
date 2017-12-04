@@ -13,19 +13,19 @@ import com.blackducksoftware.integration.hub.dataservice.project.ProjectVersionW
 import com.blackducksoftware.integration.hub.dataservice.versionbomcomponent.VersionBomComponentDataService;
 import com.blackducksoftware.integration.hub.dataservice.versionbomcomponent.model.VersionBomComponentModel;
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
+import com.blackducksoftware.integration.log.Slf4jIntLogger;
 
 public class HubBomReportGenerator {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     final ProjectDataService projectDataService;
     final VersionBomComponentDataService versionBomComponentDataService;
-    final MetaService metaService;
+    final MetaService metaService = new MetaService(new Slf4jIntLogger(logger));
     final HubBomReportBuilder reportBuilder;
 
     public HubBomReportGenerator(final Hub hub, final HubBomReportBuilder reportBuilder) {
         this.projectDataService = hub.getProjectDataService();
         this.versionBomComponentDataService = hub.getVersionBomComponentDataService();
-        this.metaService = hub.getMetaService();
         this.reportBuilder = reportBuilder;
     }
 

@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.EncryptionException;
 import com.blackducksoftware.integration.exception.IntegrationException;
-import com.blackducksoftware.integration.hub.api.item.MetaService;
 import com.blackducksoftware.integration.hub.builder.HubServerConfigBuilder;
 import com.blackducksoftware.integration.hub.dataservice.project.ProjectDataService;
 import com.blackducksoftware.integration.hub.dataservice.versionbomcomponent.VersionBomComponentDataService;
@@ -62,11 +61,7 @@ public class Hub {
     }
 
     public VersionBomComponentDataService getVersionBomComponentDataService() {
-        return hubSvcsFactory.createVersionBomComponentDataservice();
-    }
-
-    public MetaService getMetaService() {
-        return hubSvcsFactory.createMetaService();
+        return hubSvcsFactory.createVersionBomComponentDataService();
     }
 
     public String getHubUrl() {
