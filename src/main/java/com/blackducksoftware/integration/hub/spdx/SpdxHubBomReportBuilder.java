@@ -160,7 +160,7 @@ public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
         } else {
             logger.info(String.format("\tlicense (%s): %s", license.licenseType.toString(), license.licenseDisplay));
             for (final VersionBomLicenseView licComp : license.licenses) {
-                logger.info(String.format("\t\tlicense url: %s", license.license));
+                logger.info(String.format("\t\tlicense url: %s", license.license)); // always null
                 logger.info(String.format("\t\tlicense component: %s", licComp.licenseDisplay));
             }
         }
