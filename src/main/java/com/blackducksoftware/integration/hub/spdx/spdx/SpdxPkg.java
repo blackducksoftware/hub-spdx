@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.spdx.rdfparser.InvalidSPDXAnalysisException;
 import org.spdx.rdfparser.SpdxPackageVerificationCode;
 import org.spdx.rdfparser.license.AnyLicenseInfo;
+import org.spdx.rdfparser.license.ExtractedLicenseInfo;
 import org.spdx.rdfparser.license.SpdxNoAssertionLicense;
 import org.spdx.rdfparser.model.Relationship;
 import org.spdx.rdfparser.model.Relationship.RelationshipType;
@@ -26,10 +27,28 @@ public class SpdxPkg {
             final SpdxPackage pkg = new SpdxPackage(pkgName, declaredLicense, new AnyLicenseInfo[] {} /* Licenses from files */, null /* Declared licenses */, declaredLicense, downloadLocation, new SpdxFile[] {} /* Files */,
                     new SpdxPackageVerificationCode(null, new String[] {}));
             pkg.setLicenseInfosFromFiles(new AnyLicenseInfo[] { new SpdxNoAssertionLicense() });
+
+            pkg.setLicenseDeclared(declaredLicense);
             pkg.setCopyrightText("NOASSERTION");
             pkg.setFilesAnalyzed(false);
             pkg.setPackageVerificationCode(null);
             addPackageToDocument(containingDocument, pkg, relType);
+            String licenseId = "<none>";
+            if (declaredLicense instanceof ExtractedLicenseInfo) {
+                licenseId = ((ExtractedLicenseInfo) declaredLicense).getLicenseId();
+                containingDocument.addExtractedLicenseInfos((ExtractedLicenseInfo) declaredLicense);
+            }
+            logger.info(String.format("addPackageToDocument(): pkgName: %s, license: %s", pkgName, licenseId));
+            // TODO TEMP
+            logger.info("=== Dumping licenses that now exist in document (after adding package)");
+            try {
+                for (final ExtractedLicenseInfo lic : containingDocument.getExtractedLicenseInfos()) {
+                    logger.info(String.format("=== Found license ID: %s", lic.getLicenseId()));
+                }
+            } catch (final InvalidSPDXAnalysisException e) {
+                logger.error("Error dumping licenses");
+            }
+            logger.info("=== DONE Dumping licenses");
             return pkg;
         } catch (final InvalidSPDXAnalysisException e) {
             throw new RuntimeException(e);
@@ -40,7 +59,7 @@ public class SpdxPkg {
         try {
             document.addRelationship(new Relationship(pkg, relType, null));
         } catch (final InvalidSPDXAnalysisException e) {
-            throw new RuntimeException("Unable to add package to document");
+            throw new RuntimeException("Unable to add package to document", e);
         }
     }
 }

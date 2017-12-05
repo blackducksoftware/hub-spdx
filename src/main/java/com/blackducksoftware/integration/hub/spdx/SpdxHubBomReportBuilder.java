@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +12,9 @@ import org.spdx.rdfparser.InvalidSPDXAnalysisException;
 import org.spdx.rdfparser.SpdxDocumentContainer;
 import org.spdx.rdfparser.SpdxPackageVerificationCode;
 import org.spdx.rdfparser.license.AnyLicenseInfo;
+import org.spdx.rdfparser.license.ExtractedLicenseInfo;
 import org.spdx.rdfparser.license.SpdxNoAssertionLicense;
+import org.spdx.rdfparser.license.SpdxNoneLicense;
 import org.spdx.rdfparser.model.Annotation;
 import org.spdx.rdfparser.model.Checksum;
 import org.spdx.rdfparser.model.Relationship;
@@ -20,6 +23,7 @@ import org.spdx.rdfparser.model.SpdxDocument;
 import org.spdx.rdfparser.model.SpdxFile;
 import org.spdx.rdfparser.model.SpdxPackage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
@@ -31,6 +35,7 @@ import com.blackducksoftware.integration.hub.model.view.components.OriginView;
 import com.blackducksoftware.integration.hub.model.view.components.VersionBomLicenseView;
 import com.blackducksoftware.integration.hub.spdx.hub.HubBomReportBuilder;
 import com.blackducksoftware.integration.hub.spdx.hub.HubLicense;
+import com.blackducksoftware.integration.hub.spdx.spdx.SpdxLicense;
 import com.blackducksoftware.integration.hub.spdx.spdx.SpdxPkg;
 
 @Component
@@ -38,6 +43,9 @@ public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
 
     @Autowired
     private HubLicense hubLicense;
+
+    @Value("${include.licenses:false}")
+    private boolean includeLicenses;
 
     private static final String TOOL_NAME = "Tool: Black Duck Hub SPDX Report Generator";
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -146,16 +154,25 @@ public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
     // TODO do we want to call data services here?
     private void addPackage(final SpdxDocument bomDocument, final VersionBomComponentModel bomComp) throws IntegrationException {
         final RelationshipType relType = getRelationshipType(bomComp);
-        final AnyLicenseInfo declaredLicense = generateLicenseInfo(bomComp);
+        final AnyLicenseInfo spdxLicense = generateLicenseInfo(bomComp);
         final String bomCompDownloadLocation = "NOASSERTION";
-        logger.debug(String.format("Creating package for %s:%s", bomComp.getComponentName(), bomComp.getComponentVersionName()));
-        final SpdxPackage pkg = SpdxPkg.addPackageToDocument(bomDocument, declaredLicense, bomComp.getComponentName(), bomCompDownloadLocation, relType);
+        String licenseId = "<none>";
+        if (spdxLicense instanceof ExtractedLicenseInfo) {
+            licenseId = ((ExtractedLicenseInfo) spdxLicense).getLicenseId();
+        }
+        logger.debug(String.format("jjjjjjjjj Creating package for %s:%s [License: %s]", bomComp.getComponentName(), bomComp.getComponentVersionName(), licenseId));
+        final SpdxPackage pkg = SpdxPkg.addPackageToDocument(bomDocument, spdxLicense, bomComp.getComponentName(), bomCompDownloadLocation, relType);
         pkg.setVersionInfo(bomComp.getComponentVersionName());
         pkg.setFilesAnalyzed(false);
         pkg.setCopyrightText("NOASSERTION");
     }
 
     private AnyLicenseInfo generateLicenseInfo(final VersionBomComponentModel bomComp) throws IntegrationException {
+        if (!includeLicenses) {
+            return new SpdxNoAssertionLicense();
+        }
+        AnyLicenseInfo componentLicense = new SpdxNoneLicense();
+
         final List<VersionBomLicenseView> licenses = bomComp.getLicenses();
         if (licenses == null) {
             return new SpdxNoAssertionLicense();
@@ -170,26 +187,45 @@ public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
             logger.info(String.format("licenseView.name: %s", licenseView.name));
             final String licenseText = hubLicense.getLicenseText(licenseView);
             logger.info(String.format("License text: %s...", truncate(licenseText, 200)));
+            // TODO: once start adding sub licenses: will this fail to find duplicate sub licenses??
+            // TODO: employ java8
+            Optional<? extends ExtractedLicenseInfo> existingSpdxLicense = SpdxLicense.findExtractedLicenseInfoById(bomContainer, licenseView.name);
+            if (existingSpdxLicense.isPresent()) {
+                logger.info(String.format("*** Re-using license %s", licenseView.name));
+                componentLicense = existingSpdxLicense.get();
+            } else {
+                existingSpdxLicense = SpdxLicense.findExtractedLicenseByNameAndText(bomContainer, licenseView.name, licenseText);
+                if (existingSpdxLicense.isPresent()) {
+                    logger.info(String.format("*** Re-using(2) license %s", licenseView.name));
+                    componentLicense = existingSpdxLicense.get();
+                } else {
+                    logger.info(String.format("Unable to find existing license in document: %s; will add to document", licenseView.name));
+                    componentLicense = new ExtractedLicenseInfo(licenseView.name, licenseText);
+                }
+            }
         }
         if (versionBomLicenseView.licenseType == null) {
-            logger.info(String.format("\tlicense (simple): %s", versionBomLicenseView.licenseDisplay));
+            logger.info(String.format("\tlicense (simple) display: %s", versionBomLicenseView.licenseDisplay));
         } else {
-            logger.info(String.format("\tlicense (%s): %s", versionBomLicenseView.licenseType.toString(), versionBomLicenseView.licenseDisplay));
+            logger.info(String.format("\tlicense (%s) display: %s", versionBomLicenseView.licenseType.toString(), versionBomLicenseView.licenseDisplay));
             for (final VersionBomLicenseView subLicenseVersionBomLicenseView : versionBomLicenseView.licenses) {
                 logger.info(String.format("\t\tsub license url: %s", subLicenseVersionBomLicenseView.license));
-                logger.info(String.format("\t\tsub license name: %s", subLicenseVersionBomLicenseView.licenseDisplay));
+                logger.info(String.format("\t\tsub license display: %s", subLicenseVersionBomLicenseView.licenseDisplay));
                 // Get license text for component of license
                 final LicenseView subLicenseView = hubLicense.getLicenseView(subLicenseVersionBomLicenseView);
+
                 if (subLicenseView == null) {
                     logger.info("sub license view: Missing");
                 } else {
+                    logger.info(String.format("subLicenseView.name: %s", subLicenseView.name));
                     final String subLicenseText = hubLicense.getLicenseText(subLicenseView);
-                    logger.info(String.format("sub license text: %s...", truncate(subLicenseText, 40)));
+                    logger.info(String.format("sub license text: %s...", truncate(subLicenseText, 100)));
                 }
 
             }
         }
-        return new SpdxNoAssertionLicense();
+        // componentLicense = new SpdxNoAssertionLicense(); ///// TODO This fixes it
+        return componentLicense;
     }
 
     private String truncate(final String s, int maxLen) {
