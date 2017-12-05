@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.api.item.MetaService;
+import com.blackducksoftware.integration.hub.dataservice.license.LicenseDataService;
 import com.blackducksoftware.integration.hub.dataservice.project.ProjectDataService;
 import com.blackducksoftware.integration.hub.dataservice.project.ProjectVersionWrapper;
 import com.blackducksoftware.integration.hub.dataservice.versionbomcomponent.VersionBomComponentDataService;
@@ -20,12 +21,14 @@ public class HubBomReportGenerator {
 
     final ProjectDataService projectDataService;
     final VersionBomComponentDataService versionBomComponentDataService;
+    final LicenseDataService licenseDataService;
     final MetaService metaService = new MetaService(new Slf4jIntLogger(logger));
     final HubBomReportBuilder reportBuilder;
 
     public HubBomReportGenerator(final Hub hub, final HubBomReportBuilder reportBuilder) {
         this.projectDataService = hub.getProjectDataService();
         this.versionBomComponentDataService = hub.getVersionBomComponentDataService();
+        this.licenseDataService = hub.getLicenseDataService();
         this.reportBuilder = reportBuilder;
     }
 
@@ -47,7 +50,7 @@ public class HubBomReportGenerator {
         logger.debug("Traversing BOM");
         final List<VersionBomComponentModel> bom = versionBomComponentDataService.getComponentsForProjectVersion(projectVersionWrapper.getProjectVersionView());
         for (final VersionBomComponentModel bomComp : bom) {
-            reportBuilder.addComponent(bomComp);
+            reportBuilder.addComponent(bomComp, licenseDataService);
         }
     }
 }

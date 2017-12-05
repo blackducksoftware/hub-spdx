@@ -20,9 +20,12 @@ import org.spdx.rdfparser.model.SpdxDocument;
 import org.spdx.rdfparser.model.SpdxFile;
 import org.spdx.rdfparser.model.SpdxPackage;
 
+import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.dataservice.license.LicenseDataService;
 import com.blackducksoftware.integration.hub.dataservice.versionbomcomponent.model.VersionBomComponentModel;
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
 import com.blackducksoftware.integration.hub.model.enumeration.MatchedFileUsageEnum;
+import com.blackducksoftware.integration.hub.model.view.LicenseView;
 import com.blackducksoftware.integration.hub.model.view.components.OriginView;
 import com.blackducksoftware.integration.hub.model.view.components.VersionBomLicenseView;
 import com.blackducksoftware.integration.hub.spdx.hub.HubBomReportBuilder;
@@ -65,9 +68,9 @@ public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
     }
 
     @Override
-    public void addComponent(final VersionBomComponentModel bomComp) {
+    public void addComponent(final VersionBomComponentModel bomComp, final LicenseDataService licenseDataService) throws IntegrationException {
         logUsages(bomComp);
-        addPackage(bomDocument, bomComp);
+        addPackage(bomDocument, bomComp, licenseDataService);
     }
 
     @Override
@@ -136,9 +139,10 @@ public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
         return describes;
     }
 
-    private void addPackage(final SpdxDocument bomDocument, final VersionBomComponentModel bomComp) {
+    // TODO do we want to call data services here?
+    private void addPackage(final SpdxDocument bomDocument, final VersionBomComponentModel bomComp, final LicenseDataService licenseDataService) throws IntegrationException {
         final RelationshipType relType = getRelationshipType(bomComp);
-        final AnyLicenseInfo declaredLicense = generateLicenseInfo(bomComp);
+        final AnyLicenseInfo declaredLicense = generateLicenseInfo(bomComp, licenseDataService);
         final String bomCompDownloadLocation = "NOASSERTION";
         logger.debug(String.format("Creating package for %s:%s", bomComp.getComponentName(), bomComp.getComponentVersionName()));
         final SpdxPackage pkg = SpdxPkg.addPackageToDocument(bomDocument, declaredLicense, bomComp.getComponentName(), bomCompDownloadLocation, relType);
@@ -147,24 +151,48 @@ public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
         pkg.setCopyrightText("NOASSERTION");
     }
 
-    private AnyLicenseInfo generateLicenseInfo(final VersionBomComponentModel bomComp) {
+    private AnyLicenseInfo generateLicenseInfo(final VersionBomComponentModel bomComp, final LicenseDataService licenseDataService) throws IntegrationException {
         final List<VersionBomLicenseView> licenses = bomComp.getLicenses();
         if (licenses == null) {
             return new SpdxNoAssertionLicense();
         }
         logger.info(String.format("Component %s:%s", bomComp.getComponentName(), bomComp.getComponentVersionName()));
-        final VersionBomLicenseView license = licenses.get(0);
-        logger.info(String.format("\tlicense url: %s", license.license));
-        if (license.licenseType == null) {
-            logger.info(String.format("\tlicense (simple): %s", license.licenseDisplay));
+        final VersionBomLicenseView versionBomLicenseView = licenses.get(0);
+        logger.info(String.format("\tlicense url: %s", versionBomLicenseView.license));
+        final LicenseView licenseView = licenseDataService.getLicenseView(versionBomLicenseView);
+        if (licenseView == null) {
+            logger.info("License URL is missing");
         } else {
-            logger.info(String.format("\tlicense (%s): %s", license.licenseType.toString(), license.licenseDisplay));
-            for (final VersionBomLicenseView licComp : license.licenses) {
-                logger.info(String.format("\t\tlicense url: %s", license.license)); // always null
-                logger.info(String.format("\t\tlicense component: %s", licComp.licenseDisplay));
+            logger.info(String.format("licenseView.name: %s", licenseView.name));
+            final String licenseText = licenseDataService.getLicenseText(licenseView);
+            logger.info(String.format("License text: %s...", truncate(licenseText, 200)));
+        }
+        if (versionBomLicenseView.licenseType == null) {
+            logger.info(String.format("\tlicense (simple): %s", versionBomLicenseView.licenseDisplay));
+        } else {
+            logger.info(String.format("\tlicense (%s): %s", versionBomLicenseView.licenseType.toString(), versionBomLicenseView.licenseDisplay));
+            for (final VersionBomLicenseView subLicenseVersionBomLicenseView : versionBomLicenseView.licenses) {
+                logger.info(String.format("\t\tsub license url: %s", subLicenseVersionBomLicenseView.license));
+                logger.info(String.format("\t\tsub license name: %s", subLicenseVersionBomLicenseView.licenseDisplay));
+                // Get license text for component of license
+                final LicenseView subLicenseView = licenseDataService.getLicenseView(subLicenseVersionBomLicenseView);
+                if (subLicenseView == null) {
+                    logger.info("sub license view: Missing");
+                } else {
+                    final String subLicenseText = licenseDataService.getLicenseText(subLicenseView);
+                    logger.info(String.format("sub license text: %s...", truncate(subLicenseText, 40)));
+                }
+
             }
         }
         return new SpdxNoAssertionLicense();
+    }
+
+    private String truncate(final String s, int maxLen) {
+        if (s.length() <= maxLen) {
+            maxLen = s.length();
+        }
+        return s.substring(0, maxLen);
     }
 
     private void logUsages(final VersionBomComponentModel bomComp) {
