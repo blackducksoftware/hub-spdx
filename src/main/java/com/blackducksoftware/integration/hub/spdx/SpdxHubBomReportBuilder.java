@@ -20,6 +20,7 @@ import org.spdx.rdfparser.model.SpdxDocument;
 import org.spdx.rdfparser.model.SpdxFile;
 import org.spdx.rdfparser.model.SpdxPackage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.dataservice.versionbomcomponent.model.VersionBomComponentModel;
@@ -32,6 +33,7 @@ import com.blackducksoftware.integration.hub.spdx.hub.HubBomReportBuilder;
 import com.blackducksoftware.integration.hub.spdx.hub.HubLicense;
 import com.blackducksoftware.integration.hub.spdx.spdx.SpdxPkg;
 
+@Component
 public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
 
     @Autowired
@@ -42,9 +44,6 @@ public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
     private static final String SPDX_SPEC_VERSION = "SPDX-2.1";
     private SpdxDocumentContainer bomContainer;
     private SpdxDocument bomDocument;
-
-    public SpdxHubBomReportBuilder() {
-    }
 
     @Override
     public void setProject(final String projectName, final String projectVersion, final String projectUrl) throws HubIntegrationException {

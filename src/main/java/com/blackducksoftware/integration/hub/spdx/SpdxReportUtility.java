@@ -27,6 +27,9 @@ public class SpdxReportUtility {
     @Autowired
     HubProjectVersion hubProjectVersion;
 
+    @Autowired
+    HubBomReportBuilder spdxReportBuilder;
+
     @Value("${output.filename}")
     private String outputFilename;
 
@@ -44,7 +47,6 @@ public class SpdxReportUtility {
             hub.connect();
 
             // Create a HubBomReportGenerator with SpdxHubBomReportBuilder
-            final HubBomReportBuilder spdxReportBuilder = new SpdxHubBomReportBuilder();
             final HubBomReportGenerator spdxReportGenerator = new HubBomReportGenerator(hub, spdxReportBuilder);
 
             // Generate an SPDX report
