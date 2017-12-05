@@ -14,7 +14,6 @@ import org.spdx.rdfparser.SpdxPackageVerificationCode;
 import org.spdx.rdfparser.license.AnyLicenseInfo;
 import org.spdx.rdfparser.license.ExtractedLicenseInfo;
 import org.spdx.rdfparser.license.SpdxNoAssertionLicense;
-import org.spdx.rdfparser.license.SpdxNoneLicense;
 import org.spdx.rdfparser.model.Annotation;
 import org.spdx.rdfparser.model.Checksum;
 import org.spdx.rdfparser.model.Relationship;
@@ -168,40 +167,48 @@ public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
     }
 
     private AnyLicenseInfo generateLicenseInfo(final VersionBomComponentModel bomComp) throws IntegrationException {
+        AnyLicenseInfo componentLicense = new SpdxNoAssertionLicense();
         if (!includeLicenses) {
-            return new SpdxNoAssertionLicense();
+            return componentLicense;
         }
-        AnyLicenseInfo componentLicense = new SpdxNoneLicense();
-
         final List<VersionBomLicenseView> licenses = bomComp.getLicenses();
         if (licenses == null) {
-            return new SpdxNoAssertionLicense();
+            logger.warn(String.format("The Hub provided no license information for BOM component %s/%s", bomComp.getComponentName(), bomComp.getComponentVersionName()));
+            return componentLicense;
         }
         logger.info(String.format("Component %s:%s", bomComp.getComponentName(), bomComp.getComponentVersionName()));
         final VersionBomLicenseView versionBomLicenseView = licenses.get(0);
         logger.info(String.format("\tlicense url: %s", versionBomLicenseView.license));
         final LicenseView licenseView = hubLicense.getLicenseView(versionBomLicenseView);
         if (licenseView == null) {
-            logger.info("License URL is missing");
+            logger.warn(String.format("The Hub provided no license URL for BOM component %s/%s", bomComp.getComponentName(), bomComp.getComponentVersionName()));
         } else {
             logger.info(String.format("licenseView.name: %s", licenseView.name));
             final String licenseText = hubLicense.getLicenseText(licenseView);
             logger.info(String.format("License text: %s...", truncate(licenseText, 200)));
             // TODO: once start adding sub licenses: will this fail to find duplicate sub licenses??
             // TODO: employ java8
-            Optional<? extends ExtractedLicenseInfo> existingSpdxLicense = SpdxLicense.findExtractedLicenseInfoById(bomContainer, licenseView.name);
+            final Optional<? extends ExtractedLicenseInfo> existingSpdxLicense = SpdxLicense.findExtractedLicenseInfoById(bomContainer, licenseView.name);
             if (existingSpdxLicense.isPresent()) {
                 logger.info(String.format("*** Re-using license %s", licenseView.name));
                 componentLicense = existingSpdxLicense.get();
             } else {
-                existingSpdxLicense = SpdxLicense.findExtractedLicenseByNameAndText(bomContainer, licenseView.name, licenseText);
-                if (existingSpdxLicense.isPresent()) {
-                    logger.info(String.format("*** Re-using(2) license %s", licenseView.name));
-                    componentLicense = existingSpdxLicense.get();
-                } else {
-                    logger.info(String.format("Unable to find existing license in document: %s; will add to document", licenseView.name));
-                    componentLicense = new ExtractedLicenseInfo(licenseView.name, licenseText);
-                }
+                // SpdxListedLicense standardLicense = null;
+                // TODO This never works since our Hub license names do not match SPDX license IDs
+                // and it's slow
+                // try {
+                // standardLicense = ListedLicenses.getListedLicenses().getListedLicenseById(licenseView.name);
+                // ListedLicenses.getListedLicenses();
+                // } catch (final InvalidSPDXAnalysisException e) {
+                // logger.warn(String.format("Error looking up license '%s' in SPDX license list", licenseView.name));
+                // }
+                // if (standardLicense != null) {
+                // logger.info(String.format("******** FOUND STANDARD SPDX LICENSE: %s", licenseView.name));
+                // componentLicense = standardLicense;
+                // } else {
+                logger.info(String.format("Unable to find existing license in either document or the SPDX license list: %s; will create a custom license and add it to the document", licenseView.name));
+                componentLicense = new ExtractedLicenseInfo(licenseView.name, licenseText);
+                // }
             }
         }
         if (versionBomLicenseView.licenseType == null) {
@@ -224,7 +231,6 @@ public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
 
             }
         }
-        // componentLicense = new SpdxNoAssertionLicense(); ///// TODO This fixes it
         return componentLicense;
     }
 
