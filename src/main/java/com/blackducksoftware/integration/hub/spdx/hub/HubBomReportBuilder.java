@@ -3,7 +3,6 @@ package com.blackducksoftware.integration.hub.spdx.hub;
 import java.io.PrintStream;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
-import com.blackducksoftware.integration.hub.dataservice.license.LicenseDataService;
 import com.blackducksoftware.integration.hub.dataservice.versionbomcomponent.model.VersionBomComponentModel;
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
 
@@ -14,5 +13,5 @@ public interface HubBomReportBuilder {
 
     void writeReport(PrintStream ps);
 
-    void addComponent(VersionBomComponentModel bomComp, LicenseDataService licenseDataService) throws IntegrationException;
+    void addComponent(VersionBomComponentModel bomComp) throws IntegrationException;
 }

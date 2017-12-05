@@ -1,5 +1,7 @@
 package com.blackducksoftware.integration.hub.spdx;
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -10,11 +12,9 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
-import com.blackducksoftware.integration.hub.dataservice.license.LicenseDataService;
 import com.blackducksoftware.integration.hub.dataservice.versionbomcomponent.model.VersionBomComponentModel;
 import com.blackducksoftware.integration.hub.model.enumeration.MatchedFileUsageEnum;
 import com.blackducksoftware.integration.hub.model.view.MatchedFilesView;
@@ -32,8 +32,6 @@ public class SpdxHubBomReportBuilderTest {
     public static void tearDownAfterClass() throws Exception {
     }
 
-    // TODO FIX
-    @Ignore
     @Test
     public void test() throws IOException, IntegrationException {
         // Mock up a hub project
@@ -59,9 +57,8 @@ public class SpdxHubBomReportBuilderTest {
         // Generate report for that mocked Hub project
         final HubBomReportBuilder reportBuilder = new SpdxHubBomReportBuilder();
         reportBuilder.setProject(projectName, projectVersion, hubUrl);
-        final LicenseDataService licenseDataService = null; // TODO FIX
         for (final VersionBomComponentModel bomComp : bom) {
-            reportBuilder.addComponent(bomComp, licenseDataService);
+            reportBuilder.addComponent(bomComp);
         }
         final File actualSpdxFile = new File("test/actualSpdx1.rdf");
         final PrintStream ps = new PrintStream(actualSpdxFile);
@@ -71,8 +68,8 @@ public class SpdxHubBomReportBuilderTest {
         final File expectedSpdxFile = new File("src/test/resources/expectedSpdx1.rdf");
         final List<String> exceptLinesContainingThese = new ArrayList<>();
         exceptLinesContainingThese.add("spdx:created");
-        TestUtils.contentEquals(expectedSpdxFile, actualSpdxFile, exceptLinesContainingThese);
-
+        final boolean match = TestUtils.contentEquals(expectedSpdxFile, actualSpdxFile, exceptLinesContainingThese);
+        assertTrue(match);
         System.out.println(String.format("RDF:\n%s", FileUtils.readFileToString(actualSpdxFile, StandardCharsets.UTF_8)));
     }
 

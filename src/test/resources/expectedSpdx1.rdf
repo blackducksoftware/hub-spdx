@@ -33,17 +33,13 @@
             <spdx:name>testProject</spdx:name>
             <doap:homepage>http://www.blackducksoftware.com</doap:homepage>
             <spdx:versionInfo>testProjectVersion</spdx:versionInfo>
-            <spdx:description>test description</spdx:description>
-            <spdx:sourceInfo>sourceInfo</spdx:sourceInfo>
-            <spdx:summary>summary</spdx:summary>
+            <spdx:description>Black Duck Hub Project testProject:testProjectVersion</spdx:description>
             <spdx:downloadLocation>http://hub.mydomain.com</spdx:downloadLocation>
             <spdx:licenseDeclared rdf:resource="http://spdx.org/rdf/terms#noassertion"/>
-            <rdfs:comment>Hub Project testProject:testProjectVersion</rdfs:comment>
             <spdx:filesAnalyzed>false</spdx:filesAnalyzed>
             <spdx:supplier rdf:resource="http://spdx.org/rdf/terms#noassertion"/>
             <spdx:licenseConcluded rdf:resource="http://spdx.org/rdf/terms#noassertion"/>
             <spdx:originator rdf:resource="http://spdx.org/rdf/terms#noassertion"/>
-            <spdx:packageFileName>packageFileName</spdx:packageFileName>
             <spdx:licenseInfoFromFiles rdf:resource="http://spdx.org/rdf/terms#noassertion"/>
           </spdx:Package>
         </spdx:relatedSpdxElement>
@@ -89,7 +85,7 @@ For these and/or other purposes and motivations, and without any expectation of 
       <spdx:CreationInfo>
         <spdx:creator>Tool: Black Duck Hub SPDX Report Generator</spdx:creator>
         <spdx:licenseListVersion>2.5</spdx:licenseListVersion>
-        <spdx:created>2017-11-02T15:07:23Z</spdx:created>
+        <spdx:created>2017-12-04T19:40:20Z</spdx:created>
       </spdx:CreationInfo>
     </spdx:creationInfo>
   </spdx:SpdxDocument>
