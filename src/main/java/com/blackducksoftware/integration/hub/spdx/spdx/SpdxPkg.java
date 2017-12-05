@@ -40,7 +40,7 @@ public class SpdxPkg {
             }
             logger.info(String.format("addPackageToDocument(): pkgName: %s, license: %s", pkgName, licenseId));
             // TODO TEMP
-            logger.info("=== Dumping licenses that now exist in document (after adding package)");
+            logger.info("=== Dumping extracted licenses that now exist in document (after adding package)");
             try {
                 for (final ExtractedLicenseInfo lic : containingDocument.getExtractedLicenseInfos()) {
                     logger.info(String.format("=== Found license ID: %s", lic.getLicenseId()));
