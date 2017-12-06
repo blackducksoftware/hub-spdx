@@ -20,7 +20,9 @@ import com.blackducksoftware.integration.hub.model.enumeration.MatchedFileUsageE
 import com.blackducksoftware.integration.hub.model.view.MatchedFilesView;
 import com.blackducksoftware.integration.hub.model.view.VersionBomComponentView;
 import com.blackducksoftware.integration.hub.model.view.components.OriginView;
-import com.blackducksoftware.integration.hub.spdx.hub.HubBomReportBuilder;
+import com.blackducksoftware.integration.hub.spdx.hub.HubLicense;
+import com.blackducksoftware.integration.hub.spdx.spdx.SpdxLicense;
+import com.blackducksoftware.integration.hub.spdx.spdx.SpdxPkg;
 
 public class SpdxHubBomReportBuilderTest {
 
@@ -55,7 +57,10 @@ public class SpdxHubBomReportBuilderTest {
         bom.add(bomCompModel);
 
         // Generate report for that mocked Hub project
-        final HubBomReportBuilder reportBuilder = new SpdxHubBomReportBuilder();
+        final SpdxHubBomReportBuilder reportBuilder = new SpdxHubBomReportBuilder();
+        reportBuilder.spdxPkg = new SpdxPkg();
+        reportBuilder.hubLicense = new HubLicense();
+        reportBuilder.spdxPkg.setSpdxLicense(new SpdxLicense());
         reportBuilder.setProject(projectName, projectVersion, hubUrl);
         for (final VersionBomComponentModel bomComp : bom) {
             reportBuilder.addComponent(bomComp);

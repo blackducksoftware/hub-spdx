@@ -48,7 +48,13 @@ import com.blackducksoftware.integration.hub.spdx.spdx.SpdxPkg;
 public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
 
     @Autowired
-    private HubLicense hubLicense;
+    SpdxPkg spdxPkg;
+
+    @Autowired
+    HubLicense hubLicense;
+
+    @Autowired
+    SpdxLicense spdxLicense;
 
     @Value("${include.licenses:false}")
     private boolean includeLicenses;
@@ -166,7 +172,7 @@ public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
             licenseId = ((ExtractedLicenseInfo) spdxLicense).getLicenseId();
         }
         logger.debug(String.format("Creating package for %s:%s [License: %s]", bomComp.getComponentName(), bomComp.getComponentVersionName(), licenseId));
-        final SpdxPackage pkg = SpdxPkg.addPackageToDocument(bomDocument, spdxLicense, bomComp.getComponentName(), bomCompDownloadLocation, relType);
+        final SpdxPackage pkg = spdxPkg.addPackageToDocument(bomDocument, spdxLicense, bomComp.getComponentName(), bomCompDownloadLocation, relType);
         pkg.setVersionInfo(bomComp.getComponentVersionName()); // TODO Move this into SpdxPkg
         pkg.setFilesAnalyzed(false);
         pkg.setCopyrightText("NOASSERTION");
@@ -247,7 +253,7 @@ public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
         final String licenseText = hubLicense.getLicenseText(licenseView);
         final String licenseId = generateHash(licenseView.name, licenseText);
         logger.debug(String.format("License name: %s with license text from Hub hashed to ID: %s", licenseView.name, licenseId));
-        final Optional<? extends ExtractedLicenseInfo> existingSpdxLicense = SpdxLicense.findExtractedLicenseInfoById(bomContainer, licenseId);
+        final Optional<? extends ExtractedLicenseInfo> existingSpdxLicense = spdxLicense.findExtractedLicenseInfoById(bomContainer, licenseId);
         if (existingSpdxLicense.isPresent()) {
             logger.debug(String.format("Re-using license id: %s, name: %s", licenseId, licenseView.name));
             componentLicense = existingSpdxLicense.get();
@@ -255,6 +261,7 @@ public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
             logger.debug(String.format("Unable to find existing license in document: id: %s, %s; will create a custom license and add it to the document", licenseId, licenseView.name));
             logger.debug(String.format("Adding new license: ID: %s, name: %s text: %s", licenseId, licenseView.name, String.format("%s...", truncate(licenseText, 200))));
             componentLicense = new ExtractedLicenseInfo(licenseId, licenseText);
+            spdxLicense.put(licenseId, licenseView.name);
         }
         return componentLicense;
     }
