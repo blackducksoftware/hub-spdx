@@ -250,7 +250,7 @@ public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
         logger.trace("reUseOrCreateSpdxLicense()");
         AnyLicenseInfo componentLicense;
         final String licenseText = hubLicense.getLicenseText(licenseView);
-        final String licenseId = generateHash(licenseView.name, licenseText);
+        final String licenseId = generateLicenseId(licenseView.name, licenseText);
         logger.debug(String.format("License name: %s with license text from Hub hashed to ID: %s", licenseView.name, licenseId));
         final Optional<? extends ExtractedLicenseInfo> existingSpdxLicense = spdxLicense.findExtractedLicenseInfoById(bomContainer, licenseId);
         if (existingSpdxLicense.isPresent()) {
@@ -265,13 +265,17 @@ public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
         return componentLicense;
     }
 
-    private String generateHash(final String licenseName, final String licenseText) {
+    private String generateLicenseId(final String licenseName, final String licenseText) {
         final String licenseNameText = String.format("%s::%s", licenseName, licenseText);
+        return String.format("LicenseRef-%s", generateHash(licenseNameText));
+    }
+
+    private String generateHash(final String sourceString) {
         String hashString = "unknown";
         MessageDigest messageDigest = null;
         try {
             messageDigest = MessageDigest.getInstance("MD5");
-            messageDigest.update(licenseNameText.getBytes());
+            messageDigest.update(sourceString.getBytes());
             final byte[] digest = messageDigest.digest();
             final BigInteger bigInt = new BigInteger(1, digest);
             hashString = bigInt.toString(16);
