@@ -17,16 +17,16 @@ public class HubLicense {
     private Hub hub;
 
     public LicenseView getLicenseView(final VersionBomLicenseView versionBomLicenseView) throws IntegrationException {
-        logger.trace("==== before hub.getLicenseDataService().getLicenseView(versionBomLicenseView)");
+        logger.trace("before hub.getLicenseDataService().getLicenseView(versionBomLicenseView)");
         final LicenseView licenseView = hub.getLicenseDataService().getLicenseView(versionBomLicenseView);
-        logger.trace("==== after hub.getLicenseDataService().getLicenseView(versionBomLicenseView)");
+        logger.trace("after hub.getLicenseDataService().getLicenseView(versionBomLicenseView)");
         return licenseView;
     }
 
     public String getLicenseText(final LicenseView licenseView) throws IntegrationException {
-        logger.trace("==== before hub.getLicenseDataService().getLicenseText(licenseView)");
+        logger.trace("before hub.getLicenseDataService().getLicenseText(licenseView)");
         final String licenseText = hub.getLicenseDataService().getLicenseText(licenseView);
-        logger.trace("==== after hub.getLicenseDataService().getLicenseText(licenseView)");
+        logger.trace("after hub.getLicenseDataService().getLicenseText(licenseView)");
         return licenseText;
     }
 }

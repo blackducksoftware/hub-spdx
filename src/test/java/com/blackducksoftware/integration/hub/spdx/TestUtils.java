@@ -8,7 +8,7 @@ import org.apache.commons.io.FileUtils;
 
 public class TestUtils {
     public static boolean contentEquals(final File file1, final File file2, final List<String> exceptLinesContainingThese) throws IOException {
-        System.out.println("Comparing ${file1.getAbsolutePath()} ${file2.getAbsolutePath()}");
+        System.out.println(String.format("Comparing %s %s", file1.getAbsolutePath(), file2.getAbsolutePath()));
         int ignoredLineCount = 0;
         int matchedLineCount = 0;
         final List<String> lines1 = FileUtils.readLines(file1, "UTF-8");

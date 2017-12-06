@@ -38,17 +38,17 @@ public class SpdxPkg {
                 licenseId = ((ExtractedLicenseInfo) declaredLicense).getLicenseId();
                 containingDocument.addExtractedLicenseInfos((ExtractedLicenseInfo) declaredLicense);
             }
-            logger.info(String.format("addPackageToDocument(): pkgName: %s, license: %s", pkgName, licenseId));
+            logger.info(String.format("Added package: %s, license: %s", pkgName, licenseId));
             // TODO TEMP
-            logger.info("=== Dumping extracted licenses that now exist in document (after adding package)");
+            logger.debug("Dumping extracted licenses that now exist in document (after adding package)");
             try {
                 for (final ExtractedLicenseInfo lic : containingDocument.getExtractedLicenseInfos()) {
-                    logger.info(String.format("=== Found license ID: %s", lic.getLicenseId()));
+                    logger.debug(String.format("Document license ID: %s", lic.getLicenseId()));
                 }
             } catch (final InvalidSPDXAnalysisException e) {
-                logger.error("Error dumping licenses");
+                logger.warn("Error dumping licenses");
             }
-            logger.info("=== DONE Dumping licenses");
+            logger.debug("Done Dumping licenses");
             return pkg;
         } catch (final InvalidSPDXAnalysisException e) {
             throw new RuntimeException(e);
