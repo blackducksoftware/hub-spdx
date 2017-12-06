@@ -21,7 +21,6 @@ java -jar hub-spdx-<version>.jar \
 ```
 --hub.url=<Hub URL>
 --hub.username=<Hub username>
-
 --hub.project.name=<Hub project name>
 --hub.project.version=<Hub project version>
 --output.filename=<path to report file>
