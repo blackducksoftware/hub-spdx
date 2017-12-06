@@ -3,6 +3,9 @@ package com.blackducksoftware.integration.hub.spdx;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -240,32 +243,36 @@ public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
     }
 
     private AnyLicenseInfo reUseOrCreateSpdxLicense(final LicenseView licenseView) throws IntegrationException {
+        logger.debug("reUseOrCreateSpdxLicense()");
         AnyLicenseInfo componentLicense;
-        final Optional<? extends ExtractedLicenseInfo> existingSpdxLicense = SpdxLicense.findExtractedLicenseInfoById(bomContainer, licenseView.name);
+        final String licenseText = hubLicense.getLicenseText(licenseView);
+        final String licenseId = generateHash(licenseView.name, licenseText);
+        final Optional<? extends ExtractedLicenseInfo> existingSpdxLicense = SpdxLicense.findExtractedLicenseInfoById(bomContainer, licenseId);
         if (existingSpdxLicense.isPresent()) {
-            logger.info(String.format("*** Re-using license %s", licenseView.name));
+            logger.info(String.format("Re-using license id: %s, name: %s", licenseId, licenseView.name));
             componentLicense = existingSpdxLicense.get();
         } else {
-            // SpdxListedLicense standardLicense = null;
-            // TODO This never works since our Hub license names do not match SPDX license IDs
-            // and it's slow
-            // try {
-            // standardLicense = ListedLicenses.getListedLicenses().getListedLicenseById(licenseView.name);
-            // ListedLicenses.getListedLicenses();
-            // } catch (final InvalidSPDXAnalysisException e) {
-            // logger.warn(String.format("Error looking up license '%s' in SPDX license list", licenseView.name));
-            // }
-            // if (standardLicense != null) {
-            // logger.info(String.format("******** FOUND STANDARD SPDX LICENSE: %s", licenseView.name));
-            // componentLicense = standardLicense;
-            // } else {
-            logger.info(String.format("Unable to find existing license in either document or the SPDX license list: %s; will create a custom license and add it to the document", licenseView.name));
-            final String licenseText = hubLicense.getLicenseText(licenseView);
-            logger.info(String.format("License text: %s...", truncate(licenseText, 200)));
-            componentLicense = new ExtractedLicenseInfo(licenseView.name, licenseText);
-            // }
+            logger.info(String.format("Unable to find existing license in document: id: %s, %s; will create a custom license and add it to the document", licenseId, licenseView.name));
+            logger.info(String.format("Adding new license: ID: %s, name: %s text: %s", licenseId, licenseView.name, licenseText));
+            componentLicense = new ExtractedLicenseInfo(licenseId, licenseText);
         }
         return componentLicense;
+    }
+
+    private String generateHash(final String licenseName, final String licenseText) {
+        final String licenseNameText = String.format("%s::%s", licenseName, licenseText);
+        String hashString = "unknown";
+        MessageDigest messageDigest = null;
+        try {
+            messageDigest = MessageDigest.getInstance("MD5");
+            messageDigest.update(licenseNameText.getBytes());
+            final byte[] digest = messageDigest.digest();
+            final BigInteger bigInt = new BigInteger(1, digest);
+            hashString = bigInt.toString(16);
+        } catch (final NoSuchAlgorithmException e) {
+            logger.warn(String.format("Error computing license text hash value: %s", e.getMessage()));
+        }
+        return hashString;
     }
 
     private String truncate(final String s, int maxLen) {
