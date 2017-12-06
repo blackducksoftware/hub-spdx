@@ -125,6 +125,9 @@ public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
     private RelationshipType getRelationshipType(final VersionBomComponentModel bomComp) {
         RelationshipType relType = RelationshipType.OTHER;
         final List<MatchedFileUsageEnum> usages = bomComp.getUsages();
+        if (usages.size() > 1) {
+            logger.warn(String.format("# Usages for component %s:%s is > 1: %d; only the first is used", bomComp.getComponentName(), bomComp.getComponentVersionName(), usages.size()));
+        }
         if (usages.size() > 0) {
             if (usages.get(0) == MatchedFileUsageEnum.DYNAMICALLY_LINKED) {
                 relType = RelationshipType.DYNAMIC_LINK;
@@ -139,7 +142,6 @@ public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
             } else if (usages.get(0) == MatchedFileUsageEnum.SEPARATE_WORK) {
                 relType = RelationshipType.OTHER;
             }
-            // TODO What if there are >1 Usages??
         }
         return relType;
     }
@@ -172,10 +174,7 @@ public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
             licenseId = ((ExtractedLicenseInfo) spdxLicense).getLicenseId();
         }
         logger.debug(String.format("Creating package for %s:%s [License: %s]", bomComp.getComponentName(), bomComp.getComponentVersionName(), licenseId));
-        final SpdxPackage pkg = spdxPkg.addPackageToDocument(bomDocument, spdxLicense, bomComp.getComponentName(), bomCompDownloadLocation, relType);
-        pkg.setVersionInfo(bomComp.getComponentVersionName()); // TODO Move this into SpdxPkg
-        pkg.setFilesAnalyzed(false);
-        pkg.setCopyrightText("NOASSERTION");
+        spdxPkg.addPackageToDocument(bomDocument, spdxLicense, bomComp.getComponentName(), bomComp.getComponentVersionName(), bomCompDownloadLocation, relType);
     }
 
     private AnyLicenseInfo generateLicenseInfo(final VersionBomComponentModel bomComp) throws IntegrationException {

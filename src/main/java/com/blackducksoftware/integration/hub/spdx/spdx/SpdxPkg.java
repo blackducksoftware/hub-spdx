@@ -31,7 +31,7 @@ public class SpdxPkg {
     /**
      * Creates a new package with the specified license, name, comment, and root path.
      */
-    public SpdxPackage addPackageToDocument(final SpdxDocument containingDocument, final AnyLicenseInfo declaredLicense, final String pkgName, final String downloadLocation, final RelationshipType relType) {
+    public SpdxPackage addPackageToDocument(final SpdxDocument containingDocument, final AnyLicenseInfo declaredLicense, final String pkgName, final String pkgVersion, final String downloadLocation, final RelationshipType relType) {
         try {
             final SpdxPackage pkg = new SpdxPackage(pkgName, declaredLicense, new AnyLicenseInfo[] {} /* Licenses from files */, null /* Declared licenses */, declaredLicense, downloadLocation, new SpdxFile[] {} /* Files */,
                     new SpdxPackageVerificationCode(null, new String[] {}));
@@ -47,17 +47,10 @@ public class SpdxPkg {
                 licenseId = ((ExtractedLicenseInfo) declaredLicense).getLicenseId();
                 containingDocument.addExtractedLicenseInfos((ExtractedLicenseInfo) declaredLicense);
             }
-            logger.info(String.format("Added package: %s, license: %s", pkgName, spdxLicense.getLicenseNameById(licenseId, licenseId)));
-            // TODO TEMP
-            logger.debug("Dumping extracted licenses that now exist in document (after adding package)");
-            try {
-                for (final ExtractedLicenseInfo lic : containingDocument.getExtractedLicenseInfos()) {
-                    logger.debug(String.format("Document license ID: %s", lic.getLicenseId()));
-                }
-            } catch (final InvalidSPDXAnalysisException e) {
-                logger.warn("Error dumping licenses");
-            }
-            logger.debug("Done Dumping licenses");
+            pkg.setVersionInfo(pkgVersion);
+            pkg.setFilesAnalyzed(false);
+            pkg.setCopyrightText("NOASSERTION");
+            logger.info(String.format("Added package: %s:%s, license: %s", pkgName, pkgVersion, spdxLicense.getLicenseNameById(licenseId, licenseId)));
             return pkg;
         } catch (final InvalidSPDXAnalysisException e) {
             throw new RuntimeException(e);
