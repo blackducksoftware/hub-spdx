@@ -5,7 +5,7 @@ hub-spdx is a utility that generates an SPDX report representing the Bill Of Mat
 
 Java 1.8
 
-## Usage
+## Example usage:
 ```
 java -jar hub-spdx-<version>.jar \
 --hub.url=<Hub URL> \
@@ -13,11 +13,38 @@ java -jar hub-spdx-<version>.jar \
 --hub.password=<Hub password> \
 --hub.project.name=<Hub project name> \
 --hub.project.version=<Hub project version> \
---output.filename=<path to report file>
+--output.filename=<path to report file> \
+--include.licenses=true
 ```
 
+### Required arguments:
+```
+--hub.url=<Hub URL>
+--hub.username=<Hub username>
+
+--hub.project.name=<Hub project name>
+--hub.project.version=<Hub project version>
+--output.filename=<path to report file>
+```
+  
 ### Optional arguments:
+```
+--hub.timeout=<Hub timeout in seconds>
+--hub.password=<Hub password>
+--hub.proxy.host=<proxy host>
+--hub.proxy.port=<proxy port>
+--hub.proxy.username=<proxy username>
+--hub.proxy.password=<proxy password>
+--include.licenses=true # Include license info for each component
 --hub.always.trust.cert=true # Trust any Hub server certificate
+--logging.level.com.blackducksoftware=<logging level> # INFO, DEBUG, TRACE
+```
+
+### Optional environment variables:
+```
+export BD_HUB_PASSWORD=<Hub password>
+export BD_HUB_PROXY_PASSWORD=<proxy password>
+```
 
 ## Limitations
 
