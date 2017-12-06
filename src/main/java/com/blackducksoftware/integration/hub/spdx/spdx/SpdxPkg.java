@@ -31,21 +31,22 @@ public class SpdxPkg {
     /**
      * Creates a new package with the specified license, name, comment, and root path.
      */
-    public SpdxPackage addPackageToDocument(final SpdxDocument containingDocument, final AnyLicenseInfo declaredLicense, final String pkgName, final String pkgVersion, final String downloadLocation, final RelationshipType relType) {
+    public SpdxPackage addPackageToDocument(final SpdxDocument containingDocument, final AnyLicenseInfo licenseDeclared, final String pkgName, final String pkgVersion, final String downloadLocation, final RelationshipType relType) {
         try {
-            final SpdxPackage pkg = new SpdxPackage(pkgName, declaredLicense, new AnyLicenseInfo[] {} /* Licenses from files */, null /* Declared licenses */, declaredLicense, downloadLocation, new SpdxFile[] {} /* Files */,
+            final AnyLicenseInfo licenseConcluded = new SpdxNoAssertionLicense();
+            final SpdxPackage pkg = new SpdxPackage(pkgName, licenseConcluded, new AnyLicenseInfo[] {} /* Licenses from files */, null /* Declared licenses */, licenseDeclared, downloadLocation, new SpdxFile[] {} /* Files */,
                     new SpdxPackageVerificationCode(null, new String[] {}));
             pkg.setLicenseInfosFromFiles(new AnyLicenseInfo[] { new SpdxNoAssertionLicense() });
 
-            pkg.setLicenseDeclared(declaredLicense);
+            pkg.setLicenseDeclared(licenseDeclared);
             pkg.setCopyrightText("NOASSERTION");
             pkg.setFilesAnalyzed(false);
             pkg.setPackageVerificationCode(null);
             addPackageToDocument(containingDocument, pkg, relType);
-            String licenseId = declaredLicense.toString();
-            if (declaredLicense instanceof ExtractedLicenseInfo) {
-                licenseId = ((ExtractedLicenseInfo) declaredLicense).getLicenseId();
-                containingDocument.addExtractedLicenseInfos((ExtractedLicenseInfo) declaredLicense);
+            String licenseId = licenseDeclared.toString();
+            if (licenseDeclared instanceof ExtractedLicenseInfo) {
+                licenseId = ((ExtractedLicenseInfo) licenseDeclared).getLicenseId();
+                containingDocument.addExtractedLicenseInfos((ExtractedLicenseInfo) licenseDeclared);
             }
             pkg.setVersionInfo(pkgVersion);
             pkg.setFilesAnalyzed(false);
