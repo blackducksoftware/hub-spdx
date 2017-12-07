@@ -66,7 +66,7 @@ public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
     private SpdxDocument bomDocument;
 
     @Override
-    public void setProject(final String projectName, final String projectVersion, final String projectUrl) throws HubIntegrationException {
+    public void setProject(final String projectName, final String projectVersion, final String projectDescription, final String projectUrl) throws HubIntegrationException {
         bomContainer = null;
         try {
             bomContainer = new SpdxDocumentContainer("http://blackducksoftware.com", SPDX_SPEC_VERSION);
@@ -83,7 +83,7 @@ public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
         bomDocument.setName(String.format("%s:%s Bill Of Materials", projectName, projectVersion));
 
         // Document level description package
-        final Relationship description = createDocumentDescription(projectName, projectVersion, projectUrl);
+        final Relationship description = createDocumentDescription(projectName, projectVersion, projectDescription, projectUrl);
         try {
             bomDocument.addRelationship(description);
         } catch (final InvalidSPDXAnalysisException e) {
@@ -146,9 +146,8 @@ public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
         return relType;
     }
 
-    private Relationship createDocumentDescription(final String projectName, final String projectVersion, final String projectDownloadLocation) {
+    private Relationship createDocumentDescription(final String projectName, final String projectVersion, final String projectDescription, final String projectDownloadLocation) {
         final String hubProjectComment = null;
-        final String hubProjectDescription = String.format("Black Duck Hub Project %s:%s", projectName, projectVersion);
         final AnyLicenseInfo licenseConcluded = new SpdxNoAssertionLicense();
         final AnyLicenseInfo[] licenseInfoInFiles = new AnyLicenseInfo[] { new SpdxNoAssertionLicense() };
         final String copyrightText = null;
@@ -156,7 +155,7 @@ public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
         final AnyLicenseInfo licenseDeclared = new SpdxNoAssertionLicense();
         final SpdxPackageVerificationCode packageVerificationCode = null;
         final SpdxPackage documentDescriptionPackage = new SpdxPackage(projectName, hubProjectComment, new Annotation[0], new Relationship[0], licenseConcluded, licenseInfoInFiles, copyrightText, licenseComment, licenseDeclared,
-                new Checksum[0], hubProjectDescription, projectDownloadLocation, new SpdxFile[0], "http://www.blackducksoftware.com", projectDownloadLocation, null, packageVerificationCode, null, null, null, projectVersion);
+                new Checksum[0], projectDescription, projectDownloadLocation, new SpdxFile[0], "http://www.blackducksoftware.com", projectDownloadLocation, null, packageVerificationCode, null, null, null, projectVersion);
         documentDescriptionPackage.setCopyrightText("NOASSERTION");
         documentDescriptionPackage.setSupplier("NOASSERTION");
         documentDescriptionPackage.setOriginator("NOASSERTION");

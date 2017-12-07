@@ -7,7 +7,7 @@ import com.blackducksoftware.integration.hub.dataservice.versionbomcomponent.mod
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
 
 public interface HubBomReportBuilder {
-    void setProject(String projectName, String projectVersion, String projectUrl) throws HubIntegrationException;
+    void setProject(String projectName, String projectVersion, String projectDescription, String projectUrl) throws HubIntegrationException;
 
     String generateReportAsString() throws HubIntegrationException;
 

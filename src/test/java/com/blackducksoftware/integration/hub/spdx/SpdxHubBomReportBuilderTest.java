@@ -40,6 +40,7 @@ public class SpdxHubBomReportBuilderTest {
         final String hubUrl = "http://hub.mydomain.com";
         final String projectName = "testProject";
         final String projectVersion = "testProjectVersion";
+        final String projectDescription = "testProjectDescription";
         final List<VersionBomComponentModel> bom = new ArrayList<>();
         final VersionBomComponentView bomCompView = new VersionBomComponentView();
         bomCompView.componentName = "OpenSSL";
@@ -61,7 +62,7 @@ public class SpdxHubBomReportBuilderTest {
         reportBuilder.spdxPkg = new SpdxPkg();
         reportBuilder.hubLicense = new HubLicense();
         reportBuilder.spdxPkg.setSpdxLicense(new SpdxLicense());
-        reportBuilder.setProject(projectName, projectVersion, hubUrl);
+        reportBuilder.setProject(projectName, projectVersion, projectDescription, hubUrl);
         for (final VersionBomComponentModel bomComp : bom) {
             reportBuilder.addComponent(bomComp);
         }

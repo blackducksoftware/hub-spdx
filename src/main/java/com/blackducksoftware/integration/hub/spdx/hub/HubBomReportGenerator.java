@@ -43,7 +43,7 @@ public class HubBomReportGenerator {
         logger.info(String.format("Generating report for project %s:%s", projectName, projectVersion));
         final ProjectVersionWrapper projectVersionWrapper = projectDataService.getProjectVersion(projectName, projectVersion);
         final String bomUrl = metaService.getFirstLinkSafely(projectVersionWrapper.getProjectVersionView(), MetaService.COMPONENTS_LINK);
-        reportBuilder.setProject(projectName, projectVersion, bomUrl);
+        reportBuilder.setProject(projectName, projectVersion, projectVersionWrapper.getProjectView().description, bomUrl);
         logger.debug("Traversing BOM");
         final List<VersionBomComponentModel> bom = versionBomComponentDataService.getComponentsForProjectVersion(projectVersionWrapper.getProjectVersionView());
         for (final VersionBomComponentModel bomComp : bom) {
