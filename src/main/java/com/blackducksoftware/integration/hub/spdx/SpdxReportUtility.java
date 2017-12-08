@@ -14,7 +14,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
 import com.blackducksoftware.integration.hub.spdx.hub.Hub;
-import com.blackducksoftware.integration.hub.spdx.hub.HubBomReportBuilder;
 import com.blackducksoftware.integration.hub.spdx.hub.HubBomReportGenerator;
 import com.blackducksoftware.integration.hub.spdx.hub.HubProjectVersion;
 
@@ -28,7 +27,7 @@ public class SpdxReportUtility {
     HubProjectVersion hubProjectVersion;
 
     @Autowired
-    HubBomReportBuilder spdxReportBuilder;
+    HubBomReportGenerator spdxReportGenerator;
 
     @Value("${output.filename}")
     private String outputFilename;
@@ -45,9 +44,6 @@ public class SpdxReportUtility {
         try {
             // Connect to Hub
             hub.connect();
-
-            // Create a HubBomReportGenerator with SpdxHubBomReportBuilder
-            final HubBomReportGenerator spdxReportGenerator = new HubBomReportGenerator(hub, spdxReportBuilder);
 
             // Generate an SPDX report
             final File outputFile = new File(outputFilename);
