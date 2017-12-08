@@ -60,7 +60,8 @@ public class SpdxHubBomReportBuilderTest {
         // Generate report for that mocked Hub project
         final SpdxHubBomReportBuilder reportBuilder = new SpdxHubBomReportBuilder();
         reportBuilder.spdxPkg = new SpdxPkg();
-        reportBuilder.hubLicense = new HubLicense();
+        reportBuilder.spdxLicense = new SpdxLicense();
+        reportBuilder.spdxLicense.setHubLicense(new HubLicense());
         reportBuilder.spdxPkg.setSpdxLicense(new SpdxLicense());
         reportBuilder.setProject(projectName, projectVersion, projectDescription, hubUrl);
         for (final VersionBomComponentModel bomComp : bom) {
