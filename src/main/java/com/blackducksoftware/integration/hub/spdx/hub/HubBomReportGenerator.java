@@ -44,7 +44,7 @@ public class HubBomReportGenerator {
         final ProjectVersionWrapper projectVersionWrapper = hub.getProjectDataService().getProjectVersion(projectName, projectVersion);
         logProjectVersionLicense(projectVersionWrapper);
         final String bomUrl = (new MetaService(new Slf4jIntLogger(logger))).getFirstLinkSafely(projectVersionWrapper.getProjectVersionView(), MetaService.COMPONENTS_LINK);
-        reportBuilder.setProject(projectName, projectVersion, projectVersionWrapper.getProjectView().description, bomUrl);
+        reportBuilder.setProject(projectVersionWrapper, bomUrl);
         logger.debug("Traversing BOM");
         final List<VersionBomComponentModel> bom = hub.getVersionBomComponentDataService().getComponentsForProjectVersion(projectVersionWrapper.getProjectVersionView());
         for (final VersionBomComponentModel bomComp : bom) {

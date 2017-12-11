@@ -16,9 +16,9 @@ public class HubLicense {
     private Hub hub;
 
     public LicenseView getLicenseView(final String licenseViewUrl) throws IntegrationException {
-        logger.trace("before hub.getLicenseDataService().getLicenseView(versionBomLicenseView)");
+        logger.trace("before hub.getLicenseDataService().getLicenseView(licenseViewUrl)");
         final LicenseView licenseView = hub.getLicenseDataService().getLicenseView(licenseViewUrl);
-        logger.trace("after hub.getLicenseDataService().getLicenseView(versionBomLicenseView)");
+        logger.trace("after hub.getLicenseDataService().getLicenseView(licenseViewUrl)");
         return licenseView;
     }
 

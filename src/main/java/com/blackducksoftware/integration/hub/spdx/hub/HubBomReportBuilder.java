@@ -3,11 +3,12 @@ package com.blackducksoftware.integration.hub.spdx.hub;
 import java.io.PrintStream;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.dataservice.project.ProjectVersionWrapper;
 import com.blackducksoftware.integration.hub.dataservice.versionbomcomponent.model.VersionBomComponentModel;
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
 
 public interface HubBomReportBuilder {
-    void setProject(String projectName, String projectVersion, String projectDescription, String projectUrl) throws HubIntegrationException;
+    void setProject(ProjectVersionWrapper projectVersionWrapper, String bomUrl) throws HubIntegrationException;
 
     String generateReportAsString() throws HubIntegrationException;
 

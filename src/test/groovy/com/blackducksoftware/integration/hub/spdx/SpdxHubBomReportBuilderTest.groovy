@@ -2,12 +2,7 @@ package com.blackducksoftware.integration.hub.spdx;
 
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
@@ -15,9 +10,12 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.dataservice.project.ProjectVersionWrapper;
 import com.blackducksoftware.integration.hub.dataservice.versionbomcomponent.model.VersionBomComponentModel;
 import com.blackducksoftware.integration.hub.model.enumeration.MatchedFileUsageEnum;
 import com.blackducksoftware.integration.hub.model.view.MatchedFilesView;
+import com.blackducksoftware.integration.hub.model.view.ProjectVersionView
+import com.blackducksoftware.integration.hub.model.view.ProjectView
 import com.blackducksoftware.integration.hub.model.view.VersionBomComponentView;
 import com.blackducksoftware.integration.hub.model.view.components.OriginView;
 import com.blackducksoftware.integration.hub.spdx.hub.HubLicense;
@@ -37,7 +35,7 @@ public class SpdxHubBomReportBuilderTest {
     @Test
     public void test() throws IOException, IntegrationException {
         // Mock up a hub project
-        final String hubUrl = "http://hub.mydomain.com";
+        final String bomUrl = "http://hub.mydomain.com/stuff"
         final String projectName = "testProject";
         final String projectVersion = "testProjectVersion";
         final String projectDescription = "testProjectDescription";
@@ -63,7 +61,17 @@ public class SpdxHubBomReportBuilderTest {
         reportBuilder.spdxLicense = new SpdxLicense();
         reportBuilder.spdxLicense.setHubLicense(new HubLicense());
         reportBuilder.spdxPkg.setSpdxLicense(new SpdxLicense());
-        reportBuilder.setProject(projectName, projectVersion, projectDescription, hubUrl);
+
+        final ProjectView projectView = new ProjectView();
+        projectView.name = projectName
+        projectView.description = projectDescription
+        final ProjectVersionView projectVersionView = new ProjectVersionView();
+        projectVersionView.versionName = projectVersion;
+        final ProjectVersionWrapper projectVersionWrapper = [
+            getProjectView : { projectView },
+            getProjectVersionView: { projectVersionView }
+        ]  as ProjectVersionWrapper
+        reportBuilder.setProject(projectVersionWrapper, bomUrl);
         for (final VersionBomComponentModel bomComp : bom) {
             reportBuilder.addComponent(bomComp);
         }

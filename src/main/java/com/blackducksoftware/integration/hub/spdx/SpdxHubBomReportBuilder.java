@@ -11,7 +11,6 @@ import org.spdx.rdfparser.InvalidSPDXAnalysisException;
 import org.spdx.rdfparser.SpdxDocumentContainer;
 import org.spdx.rdfparser.SpdxPackageVerificationCode;
 import org.spdx.rdfparser.license.AnyLicenseInfo;
-import org.spdx.rdfparser.license.ExtractedLicenseInfo;
 import org.spdx.rdfparser.license.SpdxNoAssertionLicense;
 import org.spdx.rdfparser.model.Annotation;
 import org.spdx.rdfparser.model.Checksum;
@@ -24,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.dataservice.project.ProjectVersionWrapper;
 import com.blackducksoftware.integration.hub.dataservice.versionbomcomponent.model.VersionBomComponentModel;
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
 import com.blackducksoftware.integration.hub.model.enumeration.MatchedFileUsageEnum;
@@ -55,7 +55,7 @@ public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
     private SpdxDocument bomDocument;
 
     @Override
-    public void setProject(final String projectName, final String projectVersion, final String projectDescription, final String projectUrl) throws HubIntegrationException {
+    public void setProject(final ProjectVersionWrapper projectVersionWrapper, final String bomUrl) throws HubIntegrationException {
         bomContainer = null;
         try {
             bomContainer = new SpdxDocumentContainer("http://blackducksoftware.com", SPDX_SPEC_VERSION);
@@ -69,10 +69,10 @@ public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
         } catch (final InvalidSPDXAnalysisException e) {
             throw new HubIntegrationException("Error setting creator on SPDX document", e);
         }
-        bomDocument.setName(String.format("%s:%s Bill Of Materials", projectName, projectVersion));
+        bomDocument.setName(String.format("%s:%s Bill Of Materials", projectVersionWrapper.getProjectView().name, projectVersionWrapper.getProjectVersionView().versionName));
 
         // Document level description package
-        final Relationship description = createDocumentDescription(projectName, projectVersion, projectDescription, projectUrl);
+        final Relationship description = createDocumentDescription(projectVersionWrapper.getProjectView().name, projectVersionWrapper.getProjectVersionView().versionName, projectVersionWrapper.getProjectView().description, bomUrl);
         try {
             bomDocument.addRelationship(description);
         } catch (final InvalidSPDXAnalysisException e) {
@@ -141,7 +141,21 @@ public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
         final AnyLicenseInfo[] licenseInfoInFiles = new AnyLicenseInfo[] { new SpdxNoAssertionLicense() };
         final String copyrightText = null;
         final String licenseComment = null;
-        final AnyLicenseInfo licenseDeclared = new SpdxNoAssertionLicense();
+        final AnyLicenseInfo licenseDeclared = new SpdxNoAssertionLicense(); // TODO project license goes here
+
+        // TODO Step to uncomment this, and reference project wrapper for licenses
+        // HubGenericComplexLicenseView hubGenericLicenseView = null;
+        // final List<VersionBomLicenseView> licenses = bomComp.getLicenses();
+        // // TODO This could be more concise, once you know the logic is correct
+        // if (licenses == null) {
+        // logger.warn(String.format("The Hub provided no license information for BOM component %s/%s", bomComp.getComponentName(), bomComp.getComponentVersionName()));
+        // hubGenericLicenseView = null;
+        // } else {
+        // logger.debug(String.format("Component %s:%s", bomComp.getComponentName(), bomComp.getComponentVersionName()));
+        // hubGenericLicenseView = HubGenericLicenseViewFactory.create(licenses.get(0));
+        // }
+        // final AnyLicenseInfo compSpdxLicense = spdxLicense.generateLicenseInfo(bomContainer, hubGenericLicenseView);
+
         final SpdxPackageVerificationCode packageVerificationCode = null;
         final SpdxPackage documentDescriptionPackage = new SpdxPackage(projectName, hubProjectComment, new Annotation[0], new Relationship[0], licenseConcluded, licenseInfoInFiles, copyrightText, licenseComment, licenseDeclared,
                 new Checksum[0], projectDescription, projectDownloadLocation, new SpdxFile[0], "http://www.blackducksoftware.com", projectDownloadLocation, null, packageVerificationCode, null, null, null, projectVersion);
@@ -154,7 +168,7 @@ public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
     }
 
     private void addPackage(final SpdxDocument bomDocument, final VersionBomComponentModel bomComp) throws IntegrationException {
-        final RelationshipType relType = getRelationshipType(bomComp);
+
         HubGenericComplexLicenseView hubGenericLicenseView = null;
         final List<VersionBomLicenseView> licenses = bomComp.getLicenses();
         // TODO This could be more concise, once you know the logic is correct
@@ -165,14 +179,11 @@ public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
             logger.debug(String.format("Component %s:%s", bomComp.getComponentName(), bomComp.getComponentVersionName()));
             hubGenericLicenseView = HubGenericLicenseViewFactory.create(licenses.get(0));
         }
-
         final AnyLicenseInfo compSpdxLicense = spdxLicense.generateLicenseInfo(bomContainer, hubGenericLicenseView);
+
+        logger.debug(String.format("Creating package for %s:%s", bomComp.getComponentName(), bomComp.getComponentVersionName()));
         final String bomCompDownloadLocation = "NOASSERTION";
-        String licenseId = "<none>";
-        if (compSpdxLicense instanceof ExtractedLicenseInfo) {
-            licenseId = ((ExtractedLicenseInfo) compSpdxLicense).getLicenseId();
-        }
-        logger.debug(String.format("Creating package for %s:%s [License: %s]", bomComp.getComponentName(), bomComp.getComponentVersionName(), licenseId));
+        final RelationshipType relType = getRelationshipType(bomComp);
         spdxPkg.addPackageToDocument(bomDocument, compSpdxLicense, bomComp.getComponentName(), bomComp.getComponentVersionName(), bomCompDownloadLocation, relType);
     }
 
