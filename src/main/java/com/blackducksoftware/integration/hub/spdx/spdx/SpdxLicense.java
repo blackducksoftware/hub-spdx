@@ -19,7 +19,6 @@ import org.spdx.rdfparser.license.AnyLicenseInfo;
 import org.spdx.rdfparser.license.ConjunctiveLicenseSet;
 import org.spdx.rdfparser.license.DisjunctiveLicenseSet;
 import org.spdx.rdfparser.license.ExtractedLicenseInfo;
-import org.spdx.rdfparser.license.SpdxNoAssertionLicense;
 import org.spdx.rdfparser.license.SpdxNoneLicense;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -69,7 +68,7 @@ public class SpdxLicense {
     }
 
     public AnyLicenseInfo generateLicenseInfo(final SpdxDocumentContainer bomContainer, final HubGenericComplexLicenseView hubComplexLicense) throws IntegrationException {
-        AnyLicenseInfo componentLicense = new SpdxNoAssertionLicense();
+        AnyLicenseInfo componentLicense = new SpdxNoneLicense();
         if (!includeLicenses) {
             return componentLicense;
         }
@@ -121,7 +120,7 @@ public class SpdxLicense {
 
     private AnyLicenseInfo createSimpleSpdxLicense(final SpdxDocumentContainer bomContainer, final HubGenericComplexLicenseView hubComplexLicense) throws IntegrationException {
         final LicenseView licenseView = hubLicense.getLicenseView(hubComplexLicense.getUrl());
-        logger.debug("creating simple license");
+        logger.trace("creating simple license");
         AnyLicenseInfo componentLicense;
         logger.debug(String.format("licenseView.name: %s", licenseView.name));
         componentLicense = reUseOrCreateSpdxLicense(bomContainer, licenseView);
@@ -149,7 +148,9 @@ public class SpdxLicense {
 
     private String generateLicenseId(final String licenseName, final String licenseText) {
         final String licenseNameText = String.format("%s::%s", licenseName, licenseText);
-        return String.format("LicenseRef-%s", generateHash(licenseNameText));
+        final String generatedId = String.format("LicenseRef-%s", generateHash(licenseNameText));
+        logger.debug(String.format("License name: %s; text: %s...; ID: %s", licenseName, truncate(licenseText, 100), generatedId));
+        return generatedId;
     }
 
     private String generateHash(final String sourceString) {

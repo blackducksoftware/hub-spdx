@@ -12,6 +12,7 @@ import org.spdx.rdfparser.SpdxDocumentContainer;
 import org.spdx.rdfparser.SpdxPackageVerificationCode;
 import org.spdx.rdfparser.license.AnyLicenseInfo;
 import org.spdx.rdfparser.license.SpdxNoAssertionLicense;
+import org.spdx.rdfparser.license.SpdxNoneLicense;
 import org.spdx.rdfparser.model.Annotation;
 import org.spdx.rdfparser.model.Checksum;
 import org.spdx.rdfparser.model.Relationship;
@@ -27,6 +28,7 @@ import com.blackducksoftware.integration.hub.dataservice.project.ProjectVersionW
 import com.blackducksoftware.integration.hub.dataservice.versionbomcomponent.model.VersionBomComponentModel;
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
 import com.blackducksoftware.integration.hub.model.enumeration.MatchedFileUsageEnum;
+import com.blackducksoftware.integration.hub.model.view.ComplexLicenseView;
 import com.blackducksoftware.integration.hub.model.view.components.OriginView;
 import com.blackducksoftware.integration.hub.model.view.components.VersionBomLicenseView;
 import com.blackducksoftware.integration.hub.spdx.hub.HubBomReportBuilder;
@@ -72,7 +74,7 @@ public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
         bomDocument.setName(String.format("%s:%s Bill Of Materials", projectVersionWrapper.getProjectView().name, projectVersionWrapper.getProjectVersionView().versionName));
 
         // Document level description package
-        final Relationship description = createDocumentDescription(projectVersionWrapper.getProjectView().name, projectVersionWrapper.getProjectVersionView().versionName, projectVersionWrapper.getProjectView().description, bomUrl);
+        final Relationship description = createDocumentDescription(projectVersionWrapper, bomUrl);
         try {
             bomDocument.addRelationship(description);
         } catch (final InvalidSPDXAnalysisException e) {
@@ -135,30 +137,17 @@ public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
         return relType;
     }
 
-    private Relationship createDocumentDescription(final String projectName, final String projectVersion, final String projectDescription, final String projectDownloadLocation) {
+    private Relationship createDocumentDescription(final ProjectVersionWrapper projectVersionWrapper, final String projectDownloadLocation) {
         final String hubProjectComment = null;
         final AnyLicenseInfo licenseConcluded = new SpdxNoAssertionLicense();
         final AnyLicenseInfo[] licenseInfoInFiles = new AnyLicenseInfo[] { new SpdxNoAssertionLicense() };
         final String copyrightText = null;
         final String licenseComment = null;
-        final AnyLicenseInfo licenseDeclared = new SpdxNoAssertionLicense(); // TODO project license goes here
-
-        // TODO Step to uncomment this, and reference project wrapper for licenses
-        // HubGenericComplexLicenseView hubGenericLicenseView = null;
-        // final List<VersionBomLicenseView> licenses = bomComp.getLicenses();
-        // // TODO This could be more concise, once you know the logic is correct
-        // if (licenses == null) {
-        // logger.warn(String.format("The Hub provided no license information for BOM component %s/%s", bomComp.getComponentName(), bomComp.getComponentVersionName()));
-        // hubGenericLicenseView = null;
-        // } else {
-        // logger.debug(String.format("Component %s:%s", bomComp.getComponentName(), bomComp.getComponentVersionName()));
-        // hubGenericLicenseView = HubGenericLicenseViewFactory.create(licenses.get(0));
-        // }
-        // final AnyLicenseInfo compSpdxLicense = spdxLicense.generateLicenseInfo(bomContainer, hubGenericLicenseView);
-
+        final AnyLicenseInfo licenseDeclared = getProjectVersionSpdxLicense(projectVersionWrapper);
         final SpdxPackageVerificationCode packageVerificationCode = null;
-        final SpdxPackage documentDescriptionPackage = new SpdxPackage(projectName, hubProjectComment, new Annotation[0], new Relationship[0], licenseConcluded, licenseInfoInFiles, copyrightText, licenseComment, licenseDeclared,
-                new Checksum[0], projectDescription, projectDownloadLocation, new SpdxFile[0], "http://www.blackducksoftware.com", projectDownloadLocation, null, packageVerificationCode, null, null, null, projectVersion);
+        final SpdxPackage documentDescriptionPackage = new SpdxPackage(projectVersionWrapper.getProjectView().name, hubProjectComment, new Annotation[0], new Relationship[0], licenseConcluded, licenseInfoInFiles, copyrightText,
+                licenseComment, licenseDeclared, new Checksum[0], projectVersionWrapper.getProjectView().description, projectDownloadLocation, new SpdxFile[0], "http://www.blackducksoftware.com", projectDownloadLocation, null,
+                packageVerificationCode, null, null, null, projectVersionWrapper.getProjectVersionView().versionName);
         documentDescriptionPackage.setCopyrightText("NOASSERTION");
         documentDescriptionPackage.setSupplier("NOASSERTION");
         documentDescriptionPackage.setOriginator("NOASSERTION");
@@ -167,20 +156,33 @@ public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
         return describes;
     }
 
+    private AnyLicenseInfo getProjectVersionSpdxLicense(final ProjectVersionWrapper projectVersionWrapper) {
+        AnyLicenseInfo licenseDeclared = new SpdxNoneLicense();
+        final ComplexLicenseView license = projectVersionWrapper.getProjectVersionView().license;
+        if (license == null) {
+            logger.warn("The Hub provided no license information for the project version");
+            return licenseDeclared;
+        }
+        final HubGenericComplexLicenseView hubGenericLicenseView = HubGenericLicenseViewFactory.create(license);
+        try {
+            licenseDeclared = spdxLicense.generateLicenseInfo(bomContainer, hubGenericLicenseView);
+        } catch (final IntegrationException e) {
+            logger.error(String.format("Unable to generate license information for the project: %s", e.getMessage()));
+        }
+        return licenseDeclared;
+    }
+
     private void addPackage(final SpdxDocument bomDocument, final VersionBomComponentModel bomComp) throws IntegrationException {
 
         HubGenericComplexLicenseView hubGenericLicenseView = null;
         final List<VersionBomLicenseView> licenses = bomComp.getLicenses();
-        // TODO This could be more concise, once you know the logic is correct
         if (licenses == null) {
             logger.warn(String.format("The Hub provided no license information for BOM component %s/%s", bomComp.getComponentName(), bomComp.getComponentVersionName()));
-            hubGenericLicenseView = null;
         } else {
             logger.debug(String.format("Component %s:%s", bomComp.getComponentName(), bomComp.getComponentVersionName()));
             hubGenericLicenseView = HubGenericLicenseViewFactory.create(licenses.get(0));
         }
         final AnyLicenseInfo compSpdxLicense = spdxLicense.generateLicenseInfo(bomContainer, hubGenericLicenseView);
-
         logger.debug(String.format("Creating package for %s:%s", bomComp.getComponentName(), bomComp.getComponentVersionName()));
         final String bomCompDownloadLocation = "NOASSERTION";
         final RelationshipType relType = getRelationshipType(bomComp);
