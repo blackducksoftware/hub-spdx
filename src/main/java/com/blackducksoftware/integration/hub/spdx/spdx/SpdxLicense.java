@@ -20,6 +20,7 @@ import org.spdx.rdfparser.license.ConjunctiveLicenseSet;
 import org.spdx.rdfparser.license.DisjunctiveLicenseSet;
 import org.spdx.rdfparser.license.ExtractedLicenseInfo;
 import org.spdx.rdfparser.license.SpdxNoAssertionLicense;
+import org.spdx.rdfparser.license.SpdxNoneLicense;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -83,11 +84,10 @@ public class SpdxLicense {
 
     private AnyLicenseInfo createComboSpdxLicense(final SpdxDocumentContainer bomContainer, final HubGenericComplexLicenseView hubComplexLicense) throws IntegrationException {
         logger.trace("createComboSpdxLicense()");
-        // AnyLicenseInfo componentLicense = new SpdxNoAssertionLicense();
-        AnyLicenseInfo componentLicense = null; // TODO: Is this right?
+        AnyLicenseInfo componentLicense = new SpdxNoneLicense();
         if (hubComplexLicense == null) {
             logger.warn("The Hub provided no license information for BOM component");
-            return componentLicense; // TODO: Is this right?
+            return componentLicense;
         }
         logger.debug(String.format("\tlicense (%s) display: %s", hubComplexLicense.getType().toString(), hubComplexLicense.getDisplayName()));
         final List<AnyLicenseInfo> subSpdxLicenses = new ArrayList<>();
