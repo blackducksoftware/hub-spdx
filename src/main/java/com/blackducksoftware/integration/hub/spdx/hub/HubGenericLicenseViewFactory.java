@@ -7,21 +7,21 @@ import com.blackducksoftware.integration.hub.model.view.ComplexLicenseView;
 import com.blackducksoftware.integration.hub.model.view.components.VersionBomLicenseView;
 
 public class HubGenericLicenseViewFactory {
-    public static HubGenericLicenseView create(final ComplexLicenseView sourceLicense) {
-        final List<HubGenericLicenseView> targetChildren = new ArrayList<>(sourceLicense.licenses.size());
-        final HubGenericLicenseView targetLicense = new HubGenericLicenseView(sourceLicense.license, sourceLicense.licenseDisplay, sourceLicense.type, targetChildren);
+    public static HubGenericComplexLicenseView create(final ComplexLicenseView sourceLicense) {
+        final List<HubGenericComplexLicenseView> targetChildren = new ArrayList<>(sourceLicense.licenses.size());
+        final HubGenericComplexLicenseView targetLicense = new HubGenericComplexLicenseView(sourceLicense.license, sourceLicense.licenseDisplay, sourceLicense.type, targetChildren);
         for (final ComplexLicenseView sourceChild : sourceLicense.licenses) {
-            final HubGenericLicenseView targetChildLicense = new HubGenericLicenseView(sourceChild.license, sourceChild.licenseDisplay, sourceChild.type, null);
+            final HubGenericComplexLicenseView targetChildLicense = new HubGenericComplexLicenseView(sourceChild.license, sourceChild.licenseDisplay, sourceChild.type, null);
             targetChildren.add(targetChildLicense);
         }
         return targetLicense;
     }
 
-    public static HubGenericLicenseView create(final VersionBomLicenseView sourceLicense) {
-        final List<HubGenericLicenseView> targetChildren = new ArrayList<>(sourceLicense.licenses.size());
-        final HubGenericLicenseView targetLicense = new HubGenericLicenseView(sourceLicense.license, sourceLicense.licenseDisplay, sourceLicense.licenseType, targetChildren);
+    public static HubGenericComplexLicenseView create(final VersionBomLicenseView sourceLicense) {
+        final List<HubGenericComplexLicenseView> targetChildren = new ArrayList<>(sourceLicense.licenses.size());
+        final HubGenericComplexLicenseView targetLicense = new HubGenericComplexLicenseView(sourceLicense.license, sourceLicense.licenseDisplay, sourceLicense.licenseType, targetChildren);
         for (final VersionBomLicenseView sourceChild : sourceLicense.licenses) {
-            final HubGenericLicenseView targetChildLicense = new HubGenericLicenseView(sourceChild.license, sourceChild.licenseDisplay, sourceChild.licenseType, null);
+            final HubGenericComplexLicenseView targetChildLicense = new HubGenericComplexLicenseView(sourceChild.license, sourceChild.licenseDisplay, sourceChild.licenseType, null);
             targetChildren.add(targetChildLicense);
         }
         return targetLicense;

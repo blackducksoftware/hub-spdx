@@ -54,7 +54,7 @@ public class HubBomReportGenerator {
 
     // TODO
     private void logProjectVersionLicense(final ProjectVersionWrapper projectVersionWrapper) {
-        final HubGenericLicenseView hubProjectVersionLicense = HubGenericLicenseViewFactory.create(projectVersionWrapper.getProjectVersionView().license);
+        final HubGenericComplexLicenseView hubProjectVersionLicense = HubGenericLicenseViewFactory.create(projectVersionWrapper.getProjectVersionView().license);
         if (hubProjectVersionLicense == null) {
             logger.info("Hub Project Version has no license");
             return;
@@ -75,7 +75,7 @@ public class HubBomReportGenerator {
         } catch (final IntegrationException e) {
             logger.warn("Error getting Hub Project Version license");
         }
-        for (final HubGenericLicenseView lic : hubProjectVersionLicense.getLicenses()) {
+        for (final HubGenericComplexLicenseView lic : hubProjectVersionLicense.getLicenses()) {
             logger.info(String.format("\tsub License URL: %s", lic.getUrl()));
             if (lic.getType() != null) {
                 logger.info(String.format("\tsub License type: %s", lic.getType().toString()));

@@ -30,7 +30,7 @@ import com.blackducksoftware.integration.hub.model.enumeration.MatchedFileUsageE
 import com.blackducksoftware.integration.hub.model.view.components.OriginView;
 import com.blackducksoftware.integration.hub.model.view.components.VersionBomLicenseView;
 import com.blackducksoftware.integration.hub.spdx.hub.HubBomReportBuilder;
-import com.blackducksoftware.integration.hub.spdx.hub.HubGenericLicenseView;
+import com.blackducksoftware.integration.hub.spdx.hub.HubGenericComplexLicenseView;
 import com.blackducksoftware.integration.hub.spdx.hub.HubGenericLicenseViewFactory;
 import com.blackducksoftware.integration.hub.spdx.hub.HubLicense;
 import com.blackducksoftware.integration.hub.spdx.spdx.SpdxLicense;
@@ -155,7 +155,7 @@ public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
 
     private void addPackage(final SpdxDocument bomDocument, final VersionBomComponentModel bomComp) throws IntegrationException {
         final RelationshipType relType = getRelationshipType(bomComp);
-        HubGenericLicenseView hubGenericLicenseView = null;
+        HubGenericComplexLicenseView hubGenericLicenseView = null;
         final List<VersionBomLicenseView> licenses = bomComp.getLicenses();
         // TODO This could be more concise, once you know the logic is correct
         if (licenses == null) {

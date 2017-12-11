@@ -5,14 +5,14 @@ import java.util.List;
 
 import com.blackducksoftware.integration.hub.model.enumeration.ComplexLicenseEnum;
 
-public class HubGenericLicenseView {
+public class HubGenericComplexLicenseView {
 
     private final String url;
     private final String displayName;
     private final ComplexLicenseEnum type;
-    private List<HubGenericLicenseView> licenses = new ArrayList<>();
+    private List<HubGenericComplexLicenseView> licenses = new ArrayList<>();
 
-    public HubGenericLicenseView(final String url, final String displayName, final ComplexLicenseEnum type, final List<HubGenericLicenseView> licenses) {
+    public HubGenericComplexLicenseView(final String url, final String displayName, final ComplexLicenseEnum type, final List<HubGenericComplexLicenseView> licenses) {
         this.url = url;
         this.displayName = displayName;
         this.type = type;
@@ -31,7 +31,7 @@ public class HubGenericLicenseView {
         return type;
     }
 
-    public List<HubGenericLicenseView> getLicenses() {
+    public List<HubGenericComplexLicenseView> getLicenses() {
         return licenses;
     }
 

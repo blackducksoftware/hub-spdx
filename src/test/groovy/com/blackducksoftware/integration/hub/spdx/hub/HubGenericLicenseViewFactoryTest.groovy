@@ -51,7 +51,7 @@ class HubGenericLicenseViewFactoryTest {
         sourceLicense.licenses.add(child1)
         sourceLicense.licenses.add(child2)
 
-        HubGenericLicenseView targetLicense = HubGenericLicenseViewFactory.create(sourceLicense);
+        HubGenericComplexLicenseView targetLicense = HubGenericLicenseViewFactory.create(sourceLicense);
 
         assertEquals("testLicenseDisplay", targetLicense.displayName);
         assertEquals(ComplexLicenseEnum.CONJUNCTIVE, targetLicense.type);
@@ -88,7 +88,7 @@ class HubGenericLicenseViewFactoryTest {
         sourceLicense.licenses.add(child1)
         sourceLicense.licenses.add(child2)
 
-        HubGenericLicenseView targetLicense = HubGenericLicenseViewFactory.create(sourceLicense);
+        HubGenericComplexLicenseView targetLicense = HubGenericLicenseViewFactory.create(sourceLicense);
 
         assertEquals("testLicenseDisplay", targetLicense.displayName);
         assertEquals(ComplexLicenseEnum.CONJUNCTIVE, targetLicense.type);
