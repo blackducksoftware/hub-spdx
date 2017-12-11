@@ -25,10 +25,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
-import com.blackducksoftware.integration.hub.dataservice.versionbomcomponent.model.VersionBomComponentModel;
 import com.blackducksoftware.integration.hub.model.enumeration.ComplexLicenseEnum;
 import com.blackducksoftware.integration.hub.model.view.LicenseView;
-import com.blackducksoftware.integration.hub.model.view.components.VersionBomLicenseView;
+import com.blackducksoftware.integration.hub.spdx.hub.HubGenericLicenseView;
 import com.blackducksoftware.integration.hub.spdx.hub.HubLicense;
 
 @Component
@@ -68,28 +67,23 @@ public class SpdxLicense {
         return fetchedName == null ? defaultReturnValue : fetchedName;
     }
 
-    public AnyLicenseInfo generateLicenseInfo(final SpdxDocumentContainer bomContainer, final VersionBomComponentModel bomComp) throws IntegrationException {
+    // TODO: Might be cleaner to pass in generic license object here, instead of bomComp
+    public AnyLicenseInfo generateLicenseInfo(final SpdxDocumentContainer bomContainer, final HubGenericLicenseView hubGenericLicenseView) throws IntegrationException {
         AnyLicenseInfo componentLicense = new SpdxNoAssertionLicense();
         if (!includeLicenses) {
             return componentLicense;
         }
-        final List<VersionBomLicenseView> licenses = bomComp.getLicenses();
-        if (licenses == null) {
-            logger.warn(String.format("The Hub provided no license information for BOM component %s/%s", bomComp.getComponentName(), bomComp.getComponentVersionName()));
-            return componentLicense;
-        }
-        logger.debug(String.format("Component %s:%s", bomComp.getComponentName(), bomComp.getComponentVersionName()));
-        final VersionBomLicenseView versionBomLicenseView = licenses.get(0);
-        logger.debug(String.format("\tlicense url: %s", versionBomLicenseView.license));
-        final LicenseView licenseView = hubLicense.getLicenseView(versionBomLicenseView);
-        componentLicense = createSpdxLicense(bomContainer, versionBomLicenseView, licenseView);
+
+        logger.debug(String.format("\tlicense url: %s", hubGenericLicenseView.getUrl()));
+        final LicenseView licenseView = hubLicense.getLicenseView(hubGenericLicenseView.getUrl());
+        componentLicense = createSpdxLicense(bomContainer, hubGenericLicenseView, licenseView);
         return componentLicense;
     }
 
-    private AnyLicenseInfo createSpdxLicense(final SpdxDocumentContainer bomContainer, final VersionBomLicenseView versionBomLicenseView, final LicenseView licenseView) throws IntegrationException {
+    private AnyLicenseInfo createSpdxLicense(final SpdxDocumentContainer bomContainer, final HubGenericLicenseView versionBomLicenseView, final LicenseView licenseView) throws IntegrationException {
         logger.trace("createSpdxLicense()");
         AnyLicenseInfo componentLicense;
-        if (versionBomLicenseView.licenseType == null) {
+        if (versionBomLicenseView.getType() == null) {
             componentLicense = createSimpleSpdxLicense(bomContainer, licenseView);
         } else {
             componentLicense = createComboSpdxLicense(bomContainer, versionBomLicenseView);
@@ -97,17 +91,23 @@ public class SpdxLicense {
         return componentLicense;
     }
 
-    private AnyLicenseInfo createComboSpdxLicense(final SpdxDocumentContainer bomContainer, final VersionBomLicenseView versionBomLicenseView) throws IntegrationException {
+    private AnyLicenseInfo createComboSpdxLicense(final SpdxDocumentContainer bomContainer, final HubGenericLicenseView versionBomLicenseView) throws IntegrationException {
         logger.trace("createComboSpdxLicense()");
-        logger.debug(String.format("\tlicense (%s) display: %s", versionBomLicenseView.licenseType.toString(), versionBomLicenseView.licenseDisplay));
+        // AnyLicenseInfo componentLicense = new SpdxNoAssertionLicense();
+        AnyLicenseInfo componentLicense = null; // TODO: Is this right?
+        if (versionBomLicenseView == null) {
+            logger.warn("The Hub provided no license information for BOM component");
+            return componentLicense; // TODO: Is this right?
+        }
+        logger.debug(String.format("\tlicense (%s) display: %s", versionBomLicenseView.getType().toString(), versionBomLicenseView.getDisplayName()));
         final List<AnyLicenseInfo> subSpdxLicenses = new ArrayList<>();
-        for (final VersionBomLicenseView subLicenseVersionBomLicenseView : versionBomLicenseView.licenses) {
-            logger.debug(String.format("\t\tsub license url: %s", subLicenseVersionBomLicenseView.license));
-            logger.debug(String.format("\t\tsub license display: %s", subLicenseVersionBomLicenseView.licenseDisplay));
+        for (final HubGenericLicenseView subLicenseVersionBomLicenseView : versionBomLicenseView.getLicenses()) {
+            logger.debug(String.format("\t\tsub license url: %s", subLicenseVersionBomLicenseView.getUrl()));
+            logger.debug(String.format("\t\tsub license display: %s", subLicenseVersionBomLicenseView.getDisplayName()));
             // Get license text for component of license
-            final LicenseView subLicenseView = hubLicense.getLicenseView(subLicenseVersionBomLicenseView);
+            final LicenseView subLicenseView = hubLicense.getLicenseView(subLicenseVersionBomLicenseView.getUrl());
             if (subLicenseView == null) {
-                throw new IntegrationException(String.format("Missing sub license view for license: %s", versionBomLicenseView.licenseDisplay));
+                throw new IntegrationException(String.format("Missing sub license view for license: %s", versionBomLicenseView.getDisplayName()));
             }
             logger.debug(String.format("subLicenseView.name: %s", subLicenseView.name));
             final String subLicenseText = hubLicense.getLicenseText(subLicenseView);
@@ -116,15 +116,15 @@ public class SpdxLicense {
             final AnyLicenseInfo subSpdxLicense = reUseOrCreateSpdxLicense(bomContainer, subLicenseView);
             subSpdxLicenses.add(subSpdxLicense);
         }
-        AnyLicenseInfo componentLicense = null;
-        if (versionBomLicenseView.licenseType == ComplexLicenseEnum.CONJUNCTIVE) {
+
+        if (versionBomLicenseView.getType() == ComplexLicenseEnum.CONJUNCTIVE) {
             logger.debug("creating conjunctive license");
             componentLicense = new ConjunctiveLicenseSet(subSpdxLicenses.toArray(new AnyLicenseInfo[subSpdxLicenses.size()]));
-        } else if (versionBomLicenseView.licenseType == ComplexLicenseEnum.DISJUNCTIVE) {
+        } else if (versionBomLicenseView.getType() == ComplexLicenseEnum.DISJUNCTIVE) {
             logger.debug("creating disjunctive license");
             componentLicense = new DisjunctiveLicenseSet(subSpdxLicenses.toArray(new AnyLicenseInfo[subSpdxLicenses.size()]));
         } else {
-            throw new IntegrationException(String.format("Invalid license type: %s", versionBomLicenseView.licenseType.toString()));
+            throw new IntegrationException(String.format("Invalid license type: %s", versionBomLicenseView.getType().toString()));
         }
         return componentLicense;
     }

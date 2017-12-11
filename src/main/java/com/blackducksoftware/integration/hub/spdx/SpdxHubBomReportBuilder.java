@@ -28,7 +28,10 @@ import com.blackducksoftware.integration.hub.dataservice.versionbomcomponent.mod
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
 import com.blackducksoftware.integration.hub.model.enumeration.MatchedFileUsageEnum;
 import com.blackducksoftware.integration.hub.model.view.components.OriginView;
+import com.blackducksoftware.integration.hub.model.view.components.VersionBomLicenseView;
 import com.blackducksoftware.integration.hub.spdx.hub.HubBomReportBuilder;
+import com.blackducksoftware.integration.hub.spdx.hub.HubGenericLicenseView;
+import com.blackducksoftware.integration.hub.spdx.hub.HubGenericLicenseViewFactory;
 import com.blackducksoftware.integration.hub.spdx.hub.HubLicense;
 import com.blackducksoftware.integration.hub.spdx.spdx.SpdxLicense;
 import com.blackducksoftware.integration.hub.spdx.spdx.SpdxPkg;
@@ -152,7 +155,18 @@ public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
 
     private void addPackage(final SpdxDocument bomDocument, final VersionBomComponentModel bomComp) throws IntegrationException {
         final RelationshipType relType = getRelationshipType(bomComp);
-        final AnyLicenseInfo compSpdxLicense = spdxLicense.generateLicenseInfo(bomContainer, bomComp);
+        HubGenericLicenseView hubGenericLicenseView = null;
+        final List<VersionBomLicenseView> licenses = bomComp.getLicenses();
+        // TODO This could be more concise, once you know the logic is correct
+        if (licenses == null) {
+            logger.warn(String.format("The Hub provided no license information for BOM component %s/%s", bomComp.getComponentName(), bomComp.getComponentVersionName()));
+            hubGenericLicenseView = null;
+        } else {
+            logger.debug(String.format("Component %s:%s", bomComp.getComponentName(), bomComp.getComponentVersionName()));
+            hubGenericLicenseView = HubGenericLicenseViewFactory.create(licenses.get(0));
+        }
+
+        final AnyLicenseInfo compSpdxLicense = spdxLicense.generateLicenseInfo(bomContainer, hubGenericLicenseView);
         final String bomCompDownloadLocation = "NOASSERTION";
         String licenseId = "<none>";
         if (compSpdxLicense instanceof ExtractedLicenseInfo) {

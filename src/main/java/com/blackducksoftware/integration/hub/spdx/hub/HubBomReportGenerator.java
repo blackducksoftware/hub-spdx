@@ -13,7 +13,6 @@ import com.blackducksoftware.integration.hub.api.item.MetaService;
 import com.blackducksoftware.integration.hub.dataservice.project.ProjectVersionWrapper;
 import com.blackducksoftware.integration.hub.dataservice.versionbomcomponent.model.VersionBomComponentModel;
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
-import com.blackducksoftware.integration.hub.model.view.ComplexLicenseView;
 import com.blackducksoftware.integration.hub.model.view.LicenseView;
 import com.blackducksoftware.integration.log.Slf4jIntLogger;
 
@@ -55,20 +54,19 @@ public class HubBomReportGenerator {
 
     // TODO
     private void logProjectVersionLicense(final ProjectVersionWrapper projectVersionWrapper) {
-        final ComplexLicenseView hubProjectVersionLicense = projectVersionWrapper.getProjectVersionView().license;
+        final HubGenericLicenseView hubProjectVersionLicense = HubGenericLicenseViewFactory.create(projectVersionWrapper.getProjectVersionView().license);
         if (hubProjectVersionLicense == null) {
             logger.info("Hub Project Version has no license");
             return;
         }
-        logger.info(String.format("Hub Project Version License URL: %s", hubProjectVersionLicense.license));
-        if (hubProjectVersionLicense.type != null) {
-            logger.info(String.format("Hub Project Version License type: %s", hubProjectVersionLicense.type.toString()));
+        logger.info(String.format("Hub Project Version License URL: %s", hubProjectVersionLicense.getUrl()));
+        if (hubProjectVersionLicense.getType() != null) {
+            logger.info(String.format("Hub Project Version License type: %s", hubProjectVersionLicense.getType().toString()));
         }
-        logger.info(String.format("Hub Project Version License display: %s", hubProjectVersionLicense.licenseDisplay));
-        logger.info(String.format("Hub Project Version License name: %s", hubProjectVersionLicense.name));
-        logger.info(String.format("Hub Project Version License # licenses: %d", hubProjectVersionLicense.licenses.size()));
+        logger.info(String.format("Hub Project Version License display: %s", hubProjectVersionLicense.getDisplayName()));
+        logger.info(String.format("Hub Project Version License # licenses: %d", hubProjectVersionLicense.getLicenses().size()));
         try {
-            final LicenseView hubProjectVersionLicenseView = hubLicense.getLicenseView(hubProjectVersionLicense);
+            final LicenseView hubProjectVersionLicenseView = hubLicense.getLicenseView(hubProjectVersionLicense.getUrl());
             if (hubProjectVersionLicenseView == null) {
                 logger.info("Hub Project Version complex license has no license view");
             } else {
@@ -77,15 +75,14 @@ public class HubBomReportGenerator {
         } catch (final IntegrationException e) {
             logger.warn("Error getting Hub Project Version license");
         }
-        for (final ComplexLicenseView lic : hubProjectVersionLicense.licenses) {
-            logger.info(String.format("\tsub License URL: %s", lic.license));
-            if (lic.type != null) {
-                logger.info(String.format("\tsub License type: %s", lic.type.toString()));
+        for (final HubGenericLicenseView lic : hubProjectVersionLicense.getLicenses()) {
+            logger.info(String.format("\tsub License URL: %s", lic.getUrl()));
+            if (lic.getType() != null) {
+                logger.info(String.format("\tsub License type: %s", lic.getType().toString()));
             }
-            logger.info(String.format("\tsub License display: %s", lic.licenseDisplay));
-            logger.info(String.format("\tsub License name: %s", lic.name));
+            logger.info(String.format("\tsub License display: %s", lic.getDisplayName()));
             try {
-                final LicenseView subLicenseView = hubLicense.getLicenseView(lic);
+                final LicenseView subLicenseView = hubLicense.getLicenseView(lic.getUrl());
                 if (subLicenseView == null) {
                     logger.info("Hub Project Version complex license has no license view");
                 } else {
