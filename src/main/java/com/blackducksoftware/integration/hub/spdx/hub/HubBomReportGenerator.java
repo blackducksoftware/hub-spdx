@@ -1,7 +1,6 @@
 package com.blackducksoftware.integration.hub.spdx.hub;
 
 import java.io.PrintStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -16,6 +15,7 @@ import com.blackducksoftware.integration.hub.api.item.MetaService;
 import com.blackducksoftware.integration.hub.dataservice.project.ProjectVersionWrapper;
 import com.blackducksoftware.integration.hub.dataservice.versionbomcomponent.model.VersionBomComponentModel;
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
+import com.blackducksoftware.integration.hub.spdx.SpdxHubBomReportBuilder;
 import com.blackducksoftware.integration.hub.spdx.SpdxRelatedLicensedPackage;
 import com.blackducksoftware.integration.log.Slf4jIntLogger;
 
@@ -27,7 +27,7 @@ public class HubBomReportGenerator {
     Hub hub;
 
     @Autowired
-    HubBomReportBuilder reportBuilder;
+    SpdxHubBomReportBuilder reportBuilder;
 
     @Autowired
     HubLicense hubLicense;
@@ -51,8 +51,8 @@ public class HubBomReportGenerator {
         final String bomUrl = (new MetaService(new Slf4jIntLogger(logger))).getFirstLinkSafely(projectVersionWrapper.getProjectVersionView(), MetaService.COMPONENTS_LINK);
         reportBuilder.setProject(projectVersionWrapper, bomUrl);
         final List<VersionBomComponentModel> bom = hub.getVersionBomComponentDataService().getComponentsForProjectVersion(projectVersionWrapper.getProjectVersionView());
-        final List<SpdxRelatedLicensedPackage> pkgs = new ArrayList<>(bom.size());
-        logger.info("Creating packages");
+        // final List<SpdxRelatedLicensedPackage> pkgs = new ArrayList<>(bom.size());
+        logger.info("Creating/adding packages");
         Stream<VersionBomComponentModel> bomCompStream = null;
         if (singleThread) {
             logger.info("Conversion of BOM components to SpdxPackages: Single-threaded");
@@ -61,14 +61,8 @@ public class HubBomReportGenerator {
             logger.info("Conversion of BOM components to SpdxPackages: Multi-threaded");
             bomCompStream = bom.parallelStream();
         }
-        bomCompStream.map(bomComp -> toSpdx(bomComp)).forEach(pkg -> pkgs.add(pkg));
-        logger.info("Creating packages: Done");
-
-        logger.info("Adding packages to document");
-        for (final SpdxRelatedLicensedPackage pkg : pkgs) {
-            reportBuilder.addPackageToDocument(pkg);
-        }
-        logger.info("Adding packages to document: Done");
+        bomCompStream.map(bomComp -> toSpdx(bomComp)).forEach(pkg -> reportBuilder.addPackageToDocument(pkg));
+        logger.info("Creating/adding packages: Done");
     }
 
     private SpdxRelatedLicensedPackage toSpdx(final VersionBomComponentModel bomComp) {

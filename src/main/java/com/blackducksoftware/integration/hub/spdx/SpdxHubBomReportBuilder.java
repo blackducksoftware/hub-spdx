@@ -31,7 +31,6 @@ import com.blackducksoftware.integration.hub.model.enumeration.MatchedFileUsageE
 import com.blackducksoftware.integration.hub.model.view.ComplexLicenseView;
 import com.blackducksoftware.integration.hub.model.view.components.OriginView;
 import com.blackducksoftware.integration.hub.model.view.components.VersionBomLicenseView;
-import com.blackducksoftware.integration.hub.spdx.hub.HubBomReportBuilder;
 import com.blackducksoftware.integration.hub.spdx.hub.HubGenericComplexLicenseView;
 import com.blackducksoftware.integration.hub.spdx.hub.HubGenericLicenseViewFactory;
 import com.blackducksoftware.integration.hub.spdx.hub.HubLicense;
@@ -39,7 +38,7 @@ import com.blackducksoftware.integration.hub.spdx.spdx.SpdxLicense;
 import com.blackducksoftware.integration.hub.spdx.spdx.SpdxPkg;
 
 @Component
-public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
+public class SpdxHubBomReportBuilder {
 
     @Autowired
     SpdxPkg spdxPkg;
@@ -56,7 +55,6 @@ public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
     private SpdxDocumentContainer bomContainer;
     private SpdxDocument bomDocument;
 
-    @Override
     public void setProject(final ProjectVersionWrapper projectVersionWrapper, final String bomUrl) throws HubIntegrationException {
         bomContainer = null;
         try {
@@ -82,14 +80,12 @@ public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
         }
     }
 
-    @Override
     public SpdxRelatedLicensedPackage toSpdxRelatedLicensedPackage(final VersionBomComponentModel bomComp) throws IntegrationException {
         logger.info(String.format("Converting component %s:%s to SpdxPackage", bomComp.getComponentName(), bomComp.getComponentVersionName()));
         logUsages(bomComp);
         return toSpdxRelatedLicensedPackage(bomDocument, bomComp);
     }
 
-    @Override
     public void addPackageToDocument(final SpdxRelatedLicensedPackage pkg) {
         spdxPkg.addPackageToDocument(bomDocument, pkg);
     }
@@ -113,7 +109,6 @@ public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
         return new SpdxRelatedLicensedPackage(relType, pkg, compSpdxLicense);
     }
 
-    @Override
     public String generateReportAsString() throws HubIntegrationException {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream ps = null;
@@ -133,7 +128,6 @@ public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
         return baos.toString();
     }
 
-    @Override
     public void writeReport(final PrintStream ps) {
         bomContainer.getModel().write(ps, "RDF/XML");
     }
