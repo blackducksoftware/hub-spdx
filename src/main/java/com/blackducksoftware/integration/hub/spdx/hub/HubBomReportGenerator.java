@@ -2,6 +2,7 @@ package com.blackducksoftware.integration.hub.spdx.hub;
 
 import java.io.PrintStream;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
@@ -51,7 +52,8 @@ public class HubBomReportGenerator {
         final String bomUrl = (new MetaService(new Slf4jIntLogger(logger))).getFirstLinkSafely(projectVersionWrapper.getProjectVersionView(), MetaService.COMPONENTS_LINK);
         reportBuilder.setProject(projectVersionWrapper, bomUrl);
         final List<VersionBomComponentModel> bom = hub.getVersionBomComponentDataService().getComponentsForProjectVersion(projectVersionWrapper.getProjectVersionView());
-        logger.info("Creating/adding packages");
+
+        logger.info("Creating packages");
         Stream<VersionBomComponentModel> bomCompStream = null;
         if (singleThread) {
             logger.info("Conversion of BOM components to SpdxPackages: Single-threaded");
@@ -60,8 +62,15 @@ public class HubBomReportGenerator {
             logger.info("Conversion of BOM components to SpdxPackages: Multi-threaded");
             bomCompStream = bom.parallelStream();
         }
-        bomCompStream.map(bomComp -> toSpdx(bomComp)).forEach(pkg -> reportBuilder.addPackageToDocument(pkg));
-        logger.info("Creating/adding packages: Done");
+        final List<SpdxRelatedLicensedPackage> pkgs = bomCompStream.map(bomComp -> toSpdx(bomComp)).collect(Collectors.toList());
+        logger.info("Creating packages: Done");
+
+        logger.info("Adding packages to document");
+        for (final SpdxRelatedLicensedPackage pkg : pkgs) {
+            reportBuilder.addPackageToDocument(pkg);
+        }
+        logger.info("Adding packages to document: Done");
+
     }
 
     private SpdxRelatedLicensedPackage toSpdx(final VersionBomComponentModel bomComp) {
