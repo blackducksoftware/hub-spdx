@@ -3,10 +3,12 @@ package com.blackducksoftware.integration.hub.spdx.hub;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
@@ -30,6 +32,9 @@ public class HubBomReportGenerator {
     @Autowired
     HubLicense hubLicense;
 
+    @Value("${single.thread:false}")
+    private boolean singleThread;
+
     public String createReport(final String projectName, final String projectVersion, final String hubUrl) throws IntegrationException {
         consumeHubProjectBom(hubUrl, projectName, projectVersion);
         return reportBuilder.generateReportAsString();
@@ -45,19 +50,34 @@ public class HubBomReportGenerator {
         final ProjectVersionWrapper projectVersionWrapper = hub.getProjectDataService().getProjectVersion(projectName, projectVersion);
         final String bomUrl = (new MetaService(new Slf4jIntLogger(logger))).getFirstLinkSafely(projectVersionWrapper.getProjectVersionView(), MetaService.COMPONENTS_LINK);
         reportBuilder.setProject(projectVersionWrapper, bomUrl);
-        logger.debug("Traversing BOM");
         final List<VersionBomComponentModel> bom = hub.getVersionBomComponentDataService().getComponentsForProjectVersion(projectVersionWrapper.getProjectVersionView());
         final List<SpdxRelatedLicensedPackage> pkgs = new ArrayList<>(bom.size());
-        logger.info("======= Create packages: START");
-        for (final VersionBomComponentModel bomComp : bom) {
-            final SpdxRelatedLicensedPackage pkg = reportBuilder.toSpdxRelatedLicensedPackage(bomComp);
-            pkgs.add(pkg);
+        logger.info("Creating packages");
+        Stream<VersionBomComponentModel> bomCompStream = null;
+        if (singleThread) {
+            logger.info("Conversion of BOM components to SpdxPackages: Single-threaded");
+            bomCompStream = bom.stream();
+        } else {
+            logger.info("Conversion of BOM components to SpdxPackages: Multi-threaded");
+            bomCompStream = bom.parallelStream();
         }
-        logger.info("======= Create packages: END");
-        logger.info("======= Add packages: START");
+        bomCompStream.map(bomComp -> toSpdx(bomComp)).forEach(pkg -> pkgs.add(pkg));
+        logger.info("Creating packages: Done");
+
+        logger.info("Adding packages to document");
         for (final SpdxRelatedLicensedPackage pkg : pkgs) {
             reportBuilder.addPackageToDocument(pkg);
         }
-        logger.info("======= Add packages: END");
+        logger.info("Adding packages to document: Done");
+    }
+
+    private SpdxRelatedLicensedPackage toSpdx(final VersionBomComponentModel bomComp) {
+        SpdxRelatedLicensedPackage pkg = null;
+        try {
+            pkg = reportBuilder.toSpdxRelatedLicensedPackage(bomComp);
+        } catch (final IntegrationException e) {
+            throw new RuntimeException("Error converting BOM components to Spdx packages", e);
+        }
+        return pkg;
     }
 }
