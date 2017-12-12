@@ -84,6 +84,7 @@ public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
 
     @Override
     public SpdxRelatedLicensedPackage toSpdxRelatedLicensedPackage(final VersionBomComponentModel bomComp) throws IntegrationException {
+        logger.info(String.format("Converting component %s:%s to SpdxPackage", bomComp.getComponentName(), bomComp.getComponentVersionName()));
         logUsages(bomComp);
         return toSpdxRelatedLicensedPackage(bomDocument, bomComp);
     }
@@ -97,10 +98,10 @@ public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
 
         HubGenericComplexLicenseView hubGenericLicenseView = null;
         final List<VersionBomLicenseView> licenses = bomComp.getLicenses();
-        if (licenses == null) {
+        if ((licenses == null) || (licenses.size() == 0)) {
             logger.warn(String.format("The Hub provided no license information for BOM component %s/%s", bomComp.getComponentName(), bomComp.getComponentVersionName()));
         } else {
-            logger.debug(String.format("Component %s:%s", bomComp.getComponentName(), bomComp.getComponentVersionName()));
+            logger.info(String.format("\tComponent %s:%s, license: %s", bomComp.getComponentName(), bomComp.getComponentVersionName(), licenses.get(0).licenseDisplay));
             hubGenericLicenseView = HubGenericLicenseViewFactory.create(licenses.get(0));
         }
         final AnyLicenseInfo compSpdxLicense = spdxLicense.generateLicenseInfo(bomContainer, hubGenericLicenseView);

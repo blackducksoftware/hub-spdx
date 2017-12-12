@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
@@ -14,6 +15,9 @@ import com.blackducksoftware.integration.log.Slf4jIntLogger;
 @Component
 public class HubLicense {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    @Value("${retry.count:5}")
+    private int retryCount;
 
     @Autowired
     private Hub hub;
@@ -40,7 +44,18 @@ public class HubLicense {
             return null;
         }
         logger.trace(String.format("before hub.getLicenseDataService().getLicenseView(%s)", licenseViewUrl));
-        final LicenseView licenseView = hub.getLicenseDataService().getLicenseView(licenseViewUrl);
+        LicenseView licenseView = null;
+        for (int i = 0; i < retryCount; i++) {
+            try {
+                licenseView = hub.getLicenseDataService().getLicenseView(licenseViewUrl);
+                break;
+            } catch (final IntegrationException e) {
+                logger.warn(String.format("Attempt #%d of %d: Error getting license from Hub: %s", (i + 1), retryCount, e.getMessage()));
+            }
+        }
+        if (licenseView == null) {
+            throw new IntegrationException(String.format("Exceeded retry count (%d) trying to get: %s", retryCount, licenseViewUrl));
+        }
         logger.trace(String.format("after hub.getLicenseDataService().getLicenseView(%s)", licenseViewUrl));
         return licenseView;
     }
