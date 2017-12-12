@@ -51,7 +51,6 @@ public class HubBomReportGenerator {
         final String bomUrl = (new MetaService(new Slf4jIntLogger(logger))).getFirstLinkSafely(projectVersionWrapper.getProjectVersionView(), MetaService.COMPONENTS_LINK);
         reportBuilder.setProject(projectVersionWrapper, bomUrl);
         final List<VersionBomComponentModel> bom = hub.getVersionBomComponentDataService().getComponentsForProjectVersion(projectVersionWrapper.getProjectVersionView());
-        // final List<SpdxRelatedLicensedPackage> pkgs = new ArrayList<>(bom.size());
         logger.info("Creating/adding packages");
         Stream<VersionBomComponentModel> bomCompStream = null;
         if (singleThread) {
@@ -70,7 +69,9 @@ public class HubBomReportGenerator {
         try {
             pkg = reportBuilder.toSpdxRelatedLicensedPackage(bomComp);
         } catch (final IntegrationException e) {
-            throw new RuntimeException("Error converting BOM components to Spdx packages", e);
+            final String msg = String.format("Error converting BOM component %s:%s to Spdx packages: %s", bomComp.getComponentName(), bomComp.getComponentVersionName(), e.getMessage());
+            logger.error(msg);
+            throw new RuntimeException(msg, e);
         }
         return pkg;
     }

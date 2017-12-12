@@ -42,10 +42,7 @@ public class SpdxReportUtility {
     private void writeReport() {
 
         try {
-            // Connect to Hub
             hub.connect();
-
-            // Generate an SPDX report
             final File outputFile = new File(outputFilename);
             final PrintStream ps = new PrintStream(outputFile);
             spdxReportGenerator.writeReport(ps, hubProjectVersion.getName(), hubProjectVersion.getVersion(), hub.getHubUrl());
@@ -71,6 +68,16 @@ public class SpdxReportUtility {
         sb.append("Optional arguments:\n");
         sb.append("\t--hub.password=<Hub password>\n");
         sb.append("\t--hub.always.trust.cert=true\n");
+
+        sb.append("\t--include.licenses=true # if true: Include license information in report\n");
+        sb.append("\t--hub.proxy.host=<Proxy hostname>\n");
+        sb.append("\t--hub.proxy.port=<Proxy port #>\n");
+        sb.append("\t--hub.proxy.username=<Proxy username>\n");
+        sb.append("\t--hub.proxy.password=<Proxy password>\n");
+        sb.append("\t--hub.timeout=<# seconds> # Timeout for Hub operations\n");
+        sb.append("\t--single.thread=true # if true: perform BOM component processing in a single thread\n");
+        sb.append("\t--retry.count=<max # retries for get license (from Hub) operation>\n");
+
         sb.append("\n");
         sb.append("Optional environment variable:\n");
         sb.append("\texport BD_HUB_PASSWORD=<password>\n");

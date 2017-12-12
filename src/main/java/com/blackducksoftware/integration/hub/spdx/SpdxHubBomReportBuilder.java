@@ -63,15 +63,12 @@ public class SpdxHubBomReportBuilder {
             throw new HubIntegrationException("Error creating SPDX container", e1);
         }
         bomDocument = bomContainer.getSpdxDocument();
-
         try {
             bomDocument.getCreationInfo().setCreators(new String[] { TOOL_NAME });
         } catch (final InvalidSPDXAnalysisException e) {
             throw new HubIntegrationException("Error setting creator on SPDX document", e);
         }
         bomDocument.setName(String.format("%s:%s Bill Of Materials", projectVersionWrapper.getProjectView().name, projectVersionWrapper.getProjectVersionView().versionName));
-
-        // Document level description package
         final Relationship description = createDocumentDescription(projectVersionWrapper, bomUrl);
         try {
             bomDocument.addRelationship(description);
