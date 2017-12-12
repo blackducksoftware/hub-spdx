@@ -52,18 +52,8 @@ public class SpdxPkg {
             pkg.setCopyrightText("NOASSERTION");
             pkg.setFilesAnalyzed(false);
             pkg.setPackageVerificationCode(null);
-
-            // TODO needs to be done later
-            // addPackageToDocument(containingDocument, pkg, relType);
-            // String licenseId = licenseDeclared.toString();
-            // if (licenseDeclared instanceof ExtractedLicenseInfo) {
-            // licenseId = ((ExtractedLicenseInfo) licenseDeclared).getLicenseId();
-            // containingDocument.addExtractedLicenseInfos((ExtractedLicenseInfo) licenseDeclared);
-            // }
-
             pkg.setVersionInfo(pkgVersion);
             pkg.setFilesAnalyzed(false);
-            // logger.info(String.format("Added package: %s:%s, license: %s", pkgName, pkgVersion, spdxLicense.getLicenseNameById(licenseId, licenseId)));
             return pkg;
         } catch (final InvalidSPDXAnalysisException e) {
             throw new RuntimeException(e);
