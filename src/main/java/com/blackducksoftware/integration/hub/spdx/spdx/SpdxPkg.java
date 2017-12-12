@@ -32,7 +32,7 @@ public class SpdxPkg {
             if (pkg.getLicense() instanceof ExtractedLicenseInfo) {
                 containingDocument.addExtractedLicenseInfos((ExtractedLicenseInfo) pkg.getLicense());
             }
-            logger.info(String.format("Added package: %s:%s", pkg.getPkg().getName(), pkg.getPkg().getVersionInfo()));
+            logger.debug(String.format("Added package: %s:%s", pkg.getPkg().getName(), pkg.getPkg().getVersionInfo()));
         } catch (final InvalidSPDXAnalysisException e) {
             throw new RuntimeException(e);
         }

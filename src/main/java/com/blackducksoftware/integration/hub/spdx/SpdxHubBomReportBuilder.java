@@ -94,7 +94,7 @@ public class SpdxHubBomReportBuilder {
         if ((licenses == null) || (licenses.size() == 0)) {
             logger.warn(String.format("The Hub provided no license information for BOM component %s/%s", bomComp.getComponentName(), bomComp.getComponentVersionName()));
         } else {
-            logger.info(String.format("\tComponent %s:%s, license: %s", bomComp.getComponentName(), bomComp.getComponentVersionName(), licenses.get(0).licenseDisplay));
+            logger.debug(String.format("\tComponent %s:%s, license: %s", bomComp.getComponentName(), bomComp.getComponentVersionName(), licenses.get(0).licenseDisplay));
             hubGenericLicenseView = HubGenericLicenseViewFactory.create(licenses.get(0));
         }
         final AnyLicenseInfo compSpdxLicense = spdxLicense.generateLicenseInfo(bomContainer, hubGenericLicenseView);
