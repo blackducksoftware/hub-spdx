@@ -35,4 +35,17 @@ public class HubGenericComplexLicenseView {
         return licenses;
     }
 
+    public boolean isLicenseNotFound() {
+        if ("License Not Found".equals(displayName)) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isUnknownLicense() {
+        if ("Unknown License".equals(displayName)) {
+            return true;
+        }
+        return false;
+    }
 }

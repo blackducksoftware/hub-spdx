@@ -78,17 +78,15 @@ public class SpdxLicense {
 
     private AnyLicenseInfo createComboSpdxLicense(final SpdxDocumentContainer bomContainer, final HubGenericComplexLicenseView hubComplexLicense) throws IntegrationException {
         logger.trace("createComboSpdxLicense()");
-        AnyLicenseInfo componentLicense = new SpdxNoneLicense();
-        if (hubComplexLicense == null) {
-            logger.warn("The Hub provided no license information for BOM component");
-            return componentLicense;
+        if ((hubComplexLicense == null) || (hubComplexLicense.isLicenseNotFound()) || (hubComplexLicense.isUnknownLicense())) {
+            logger.warn(String.format("Converting Hub license '%s' to SpdxNoneLicense", hubComplexLicense.getDisplayName()));
+            return new SpdxNoneLicense();
         }
         logger.debug(String.format("\tlicense (%s) display: %s", hubComplexLicense.getType().toString(), hubComplexLicense.getDisplayName()));
         final List<AnyLicenseInfo> subSpdxLicenses = new ArrayList<>();
         for (final HubGenericComplexLicenseView hubSubLicenseView : hubComplexLicense.getLicenses()) {
             logger.debug(String.format("\t\tsub license url: %s", hubSubLicenseView.getUrl()));
             logger.debug(String.format("\t\tsub license display: %s", hubSubLicenseView.getDisplayName()));
-            // Get license text for component of license
             final LicenseView subLicenseView = hubLicense.getLicenseView(hubSubLicenseView.getUrl());
             if (subLicenseView == null) {
                 throw new IntegrationException(String.format("Missing sub license view for license: %s", hubComplexLicense.getDisplayName()));
@@ -100,7 +98,7 @@ public class SpdxLicense {
             final AnyLicenseInfo subSpdxLicense = reUseOrCreateSpdxLicense(bomContainer, subLicenseView);
             subSpdxLicenses.add(subSpdxLicense);
         }
-
+        AnyLicenseInfo componentLicense = new SpdxNoneLicense();
         if (hubComplexLicense.getType() == ComplexLicenseEnum.CONJUNCTIVE) {
             logger.debug("creating conjunctive license");
             componentLicense = new ConjunctiveLicenseSet(subSpdxLicenses.toArray(new AnyLicenseInfo[subSpdxLicenses.size()]));
@@ -114,11 +112,14 @@ public class SpdxLicense {
     }
 
     private AnyLicenseInfo createSimpleSpdxLicense(final SpdxDocumentContainer bomContainer, final HubGenericComplexLicenseView hubComplexLicense) throws IntegrationException {
+        if (hubComplexLicense.isLicenseNotFound() || hubComplexLicense.isUnknownLicense()) {
+            logger.warn(String.format("Converting Hub license '%s' to SpdxNoneLicense", hubComplexLicense.getDisplayName()));
+            return new SpdxNoneLicense();
+        }
         final LicenseView licenseView = hubLicense.getLicenseView(hubComplexLicense.getUrl());
         logger.trace("creating simple license");
-        AnyLicenseInfo componentLicense;
         logger.debug(String.format("licenseView.name: %s", licenseView.name));
-        componentLicense = reUseOrCreateSpdxLicense(bomContainer, licenseView);
+        final AnyLicenseInfo componentLicense = reUseOrCreateSpdxLicense(bomContainer, licenseView);
         return componentLicense;
     }
 
