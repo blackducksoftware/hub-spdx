@@ -12,26 +12,36 @@ import org.spdx.rdfparser.model.Relationship.RelationshipType;
 import org.spdx.rdfparser.model.SpdxDocument;
 import org.spdx.rdfparser.model.SpdxFile;
 import org.spdx.rdfparser.model.SpdxPackage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.blackducksoftware.integration.hub.spdx.SpdxRelatedLicensedPackage;
 
 @Component
 public class SpdxPkg {
-    @Autowired
-    private SpdxLicense spdxLicense;
 
     private static final Logger logger = LoggerFactory.getLogger(SpdxPkg.class);
     public static final String SPDX_URI_NAMESPACE = "http://spdx.org/rdf/terms#";
     public static final String RDFS_URI_NAMESPACE = "http://www.w3.org/2000/01/rdf-schema#";
 
-    public void setSpdxLicense(final SpdxLicense spdxLicense) {
-        this.spdxLicense = spdxLicense;
+    /**
+     * Creates a new package with the specified license, name, comment, and root path.
+     */
+    public void addPackageToDocument(final SpdxDocument containingDocument, final SpdxRelatedLicensedPackage pkg) {
+        try {
+            addPackageToDocument(containingDocument, pkg.getPkg(), pkg.getRelType());
+            if (pkg.getLicense() instanceof ExtractedLicenseInfo) {
+                containingDocument.addExtractedLicenseInfos((ExtractedLicenseInfo) pkg.getLicense());
+            }
+            logger.info(String.format("Added package: %s:%s", pkg.getPkg().getName(), pkg.getPkg().getVersionInfo()));
+        } catch (final InvalidSPDXAnalysisException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
      * Creates a new package with the specified license, name, comment, and root path.
      */
-    public SpdxPackage addPackageToDocument(final SpdxDocument containingDocument, final AnyLicenseInfo licenseDeclared, final String pkgName, final String pkgVersion, final String downloadLocation, final RelationshipType relType) {
+    public SpdxPackage createSpdxPackage(final AnyLicenseInfo licenseDeclared, final String pkgName, final String pkgVersion, final String downloadLocation, final RelationshipType relType) {
         try {
             final AnyLicenseInfo licenseConcluded = new SpdxNoAssertionLicense();
             final SpdxPackage pkg = new SpdxPackage(pkgName, licenseConcluded, new AnyLicenseInfo[] {} /* Licenses from files */, null /* Declared licenses */, licenseDeclared, downloadLocation, new SpdxFile[] {} /* Files */,
@@ -42,16 +52,18 @@ public class SpdxPkg {
             pkg.setCopyrightText("NOASSERTION");
             pkg.setFilesAnalyzed(false);
             pkg.setPackageVerificationCode(null);
-            addPackageToDocument(containingDocument, pkg, relType);
-            String licenseId = licenseDeclared.toString();
-            if (licenseDeclared instanceof ExtractedLicenseInfo) {
-                licenseId = ((ExtractedLicenseInfo) licenseDeclared).getLicenseId();
-                containingDocument.addExtractedLicenseInfos((ExtractedLicenseInfo) licenseDeclared);
-            }
+
+            // TODO needs to be done later
+            // addPackageToDocument(containingDocument, pkg, relType);
+            // String licenseId = licenseDeclared.toString();
+            // if (licenseDeclared instanceof ExtractedLicenseInfo) {
+            // licenseId = ((ExtractedLicenseInfo) licenseDeclared).getLicenseId();
+            // containingDocument.addExtractedLicenseInfos((ExtractedLicenseInfo) licenseDeclared);
+            // }
+
             pkg.setVersionInfo(pkgVersion);
             pkg.setFilesAnalyzed(false);
-            pkg.setCopyrightText("NOASSERTION");
-            logger.info(String.format("Added package: %s:%s, license: %s", pkgName, pkgVersion, spdxLicense.getLicenseNameById(licenseId, licenseId)));
+            // logger.info(String.format("Added package: %s:%s, license: %s", pkgName, pkgVersion, spdxLicense.getLicenseNameById(licenseId, licenseId)));
             return pkg;
         } catch (final InvalidSPDXAnalysisException e) {
             throw new RuntimeException(e);

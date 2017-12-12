@@ -60,7 +60,6 @@ public class SpdxHubBomReportBuilderTest {
         reportBuilder.spdxPkg = new SpdxPkg();
         reportBuilder.spdxLicense = new SpdxLicense();
         reportBuilder.spdxLicense.setHubLicense(new HubLicense());
-        reportBuilder.spdxPkg.setSpdxLicense(new SpdxLicense());
 
         final ProjectView projectView = new ProjectView();
         projectView.name = projectName
@@ -73,7 +72,8 @@ public class SpdxHubBomReportBuilderTest {
         ]  as ProjectVersionWrapper
         reportBuilder.setProject(projectVersionWrapper, bomUrl);
         for (final VersionBomComponentModel bomComp : bom) {
-            reportBuilder.addComponent(bomComp);
+            SpdxRelatedLicensedPackage pkg = reportBuilder.toSpdxRelatedLicensedPackage(bomComp)
+            reportBuilder.addPackageToDocument(pkg);
         }
         final File actualSpdxFile = new File("test/actualSpdx1.rdf");
         final PrintStream ps = new PrintStream(actualSpdxFile);

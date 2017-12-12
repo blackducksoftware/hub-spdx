@@ -10,15 +10,15 @@
         <spdx:relationshipType rdf:resource="http://spdx.org/rdf/terms#relationshipType_dynamicLink"/>
         <spdx:relatedSpdxElement>
           <spdx:Package rdf:about="http://blackducksoftware.com#SPDXRef-2">
-            <spdx:copyrightText>
-              <spdx:noassertion rdf:about="http://spdx.org/rdf/terms#noassertion"/>
-            </spdx:copyrightText>
+            <spdx:filesAnalyzed>false</spdx:filesAnalyzed>
             <spdx:versionInfo>1.2.3</spdx:versionInfo>
-            <spdx:downloadLocation rdf:resource="http://spdx.org/rdf/terms#noassertion"/>
+            <spdx:downloadLocation>
+              <spdx:noassertion rdf:about="http://spdx.org/rdf/terms#noassertion"/>
+            </spdx:downloadLocation>
             <spdx:licenseDeclared>
               <spdx:none rdf:about="http://spdx.org/rdf/terms#none"/>
             </spdx:licenseDeclared>
-            <spdx:filesAnalyzed>false</spdx:filesAnalyzed>
+            <spdx:copyrightText rdf:resource="http://spdx.org/rdf/terms#noassertion"/>
             <spdx:licenseInfoFromFiles rdf:resource="http://spdx.org/rdf/terms#noassertion"/>
             <spdx:licenseConcluded rdf:resource="http://spdx.org/rdf/terms#noassertion"/>
             <spdx:name>OpenSSL</spdx:name>
@@ -87,7 +87,7 @@ For these and/or other purposes and motivations, and without any expectation of 
       <spdx:CreationInfo>
         <spdx:creator>Tool: Black Duck Hub SPDX Report Generator</spdx:creator>
         <spdx:licenseListVersion>2.5</spdx:licenseListVersion>
-        <spdx:created>2017-12-11T15:58:09Z</spdx:created>
+        <spdx:created>2017-12-12T11:26:37Z</spdx:created>
       </spdx:CreationInfo>
     </spdx:creationInfo>
   </spdx:SpdxDocument>

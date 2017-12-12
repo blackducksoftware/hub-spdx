@@ -83,9 +83,33 @@ public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
     }
 
     @Override
-    public void addComponent(final VersionBomComponentModel bomComp) throws IntegrationException {
+    public SpdxRelatedLicensedPackage toSpdxRelatedLicensedPackage(final VersionBomComponentModel bomComp) throws IntegrationException {
         logUsages(bomComp);
-        addPackage(bomDocument, bomComp);
+        return toSpdxRelatedLicensedPackage(bomDocument, bomComp);
+    }
+
+    @Override
+    public void addPackageToDocument(final SpdxRelatedLicensedPackage pkg) {
+        spdxPkg.addPackageToDocument(bomDocument, pkg);
+    }
+
+    private SpdxRelatedLicensedPackage toSpdxRelatedLicensedPackage(final SpdxDocument bomDocument, final VersionBomComponentModel bomComp) throws IntegrationException {
+
+        HubGenericComplexLicenseView hubGenericLicenseView = null;
+        final List<VersionBomLicenseView> licenses = bomComp.getLicenses();
+        if (licenses == null) {
+            logger.warn(String.format("The Hub provided no license information for BOM component %s/%s", bomComp.getComponentName(), bomComp.getComponentVersionName()));
+        } else {
+            logger.debug(String.format("Component %s:%s", bomComp.getComponentName(), bomComp.getComponentVersionName()));
+            hubGenericLicenseView = HubGenericLicenseViewFactory.create(licenses.get(0));
+        }
+        final AnyLicenseInfo compSpdxLicense = spdxLicense.generateLicenseInfo(bomContainer, hubGenericLicenseView);
+        logger.debug(String.format("Creating package for %s:%s", bomComp.getComponentName(), bomComp.getComponentVersionName()));
+        final String bomCompDownloadLocation = "NOASSERTION";
+        final RelationshipType relType = getRelationshipType(bomComp);
+
+        final SpdxPackage pkg = spdxPkg.createSpdxPackage(compSpdxLicense, bomComp.getComponentName(), bomComp.getComponentVersionName(), bomCompDownloadLocation, relType);
+        return new SpdxRelatedLicensedPackage(relType, pkg, compSpdxLicense);
     }
 
     @Override
@@ -170,23 +194,6 @@ public class SpdxHubBomReportBuilder implements HubBomReportBuilder {
             logger.error(String.format("Unable to generate license information for the project: %s", e.getMessage()));
         }
         return licenseDeclared;
-    }
-
-    private void addPackage(final SpdxDocument bomDocument, final VersionBomComponentModel bomComp) throws IntegrationException {
-
-        HubGenericComplexLicenseView hubGenericLicenseView = null;
-        final List<VersionBomLicenseView> licenses = bomComp.getLicenses();
-        if (licenses == null) {
-            logger.warn(String.format("The Hub provided no license information for BOM component %s/%s", bomComp.getComponentName(), bomComp.getComponentVersionName()));
-        } else {
-            logger.debug(String.format("Component %s:%s", bomComp.getComponentName(), bomComp.getComponentVersionName()));
-            hubGenericLicenseView = HubGenericLicenseViewFactory.create(licenses.get(0));
-        }
-        final AnyLicenseInfo compSpdxLicense = spdxLicense.generateLicenseInfo(bomContainer, hubGenericLicenseView);
-        logger.debug(String.format("Creating package for %s:%s", bomComp.getComponentName(), bomComp.getComponentVersionName()));
-        final String bomCompDownloadLocation = "NOASSERTION";
-        final RelationshipType relType = getRelationshipType(bomComp);
-        spdxPkg.addPackageToDocument(bomDocument, compSpdxLicense, bomComp.getComponentName(), bomComp.getComponentVersionName(), bomCompDownloadLocation, relType);
     }
 
     private void logUsages(final VersionBomComponentModel bomComp) {

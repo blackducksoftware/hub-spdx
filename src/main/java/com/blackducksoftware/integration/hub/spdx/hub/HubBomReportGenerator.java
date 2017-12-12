@@ -13,6 +13,7 @@ import com.blackducksoftware.integration.hub.api.item.MetaService;
 import com.blackducksoftware.integration.hub.dataservice.project.ProjectVersionWrapper;
 import com.blackducksoftware.integration.hub.dataservice.versionbomcomponent.model.VersionBomComponentModel;
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
+import com.blackducksoftware.integration.hub.spdx.SpdxRelatedLicensedPackage;
 import com.blackducksoftware.integration.log.Slf4jIntLogger;
 
 @Component
@@ -46,7 +47,8 @@ public class HubBomReportGenerator {
         logger.debug("Traversing BOM");
         final List<VersionBomComponentModel> bom = hub.getVersionBomComponentDataService().getComponentsForProjectVersion(projectVersionWrapper.getProjectVersionView());
         for (final VersionBomComponentModel bomComp : bom) {
-            reportBuilder.addComponent(bomComp);
+            final SpdxRelatedLicensedPackage pkg = reportBuilder.toSpdxRelatedLicensedPackage(bomComp);
+            reportBuilder.addPackageToDocument(pkg);
         }
     }
 }
