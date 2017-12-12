@@ -26,7 +26,11 @@ public class HubLicense {
         final String embeddedLicenseUrl = (new MetaService(new Slf4jIntLogger(logger))).getFirstLinkSafely(licenseView, MetaService.LICENSE_LINK);
         if (!StringUtils.isBlank(embeddedLicenseUrl)) {
             logger.debug(String.format("Found embedded license URL: %s; fetching that licenseView", embeddedLicenseUrl));
-            licenseView = getLicenseViewSingleLevel(embeddedLicenseUrl);
+            try {
+                licenseView = getLicenseViewSingleLevel(embeddedLicenseUrl);
+            } catch (final IntegrationException e) {
+                logger.debug(String.format("Unable to get license for embedded license URL: %s", embeddedLicenseUrl));
+            }
         }
         return licenseView;
     }

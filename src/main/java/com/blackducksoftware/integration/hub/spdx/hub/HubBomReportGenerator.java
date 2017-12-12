@@ -1,6 +1,7 @@
 package com.blackducksoftware.integration.hub.spdx.hub;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -46,9 +47,17 @@ public class HubBomReportGenerator {
         reportBuilder.setProject(projectVersionWrapper, bomUrl);
         logger.debug("Traversing BOM");
         final List<VersionBomComponentModel> bom = hub.getVersionBomComponentDataService().getComponentsForProjectVersion(projectVersionWrapper.getProjectVersionView());
+        final List<SpdxRelatedLicensedPackage> pkgs = new ArrayList<>(bom.size());
+        logger.info("======= Create packages: START");
         for (final VersionBomComponentModel bomComp : bom) {
             final SpdxRelatedLicensedPackage pkg = reportBuilder.toSpdxRelatedLicensedPackage(bomComp);
+            pkgs.add(pkg);
+        }
+        logger.info("======= Create packages: END");
+        logger.info("======= Add packages: START");
+        for (final SpdxRelatedLicensedPackage pkg : pkgs) {
             reportBuilder.addPackageToDocument(pkg);
         }
+        logger.info("======= Add packages: END");
     }
 }
