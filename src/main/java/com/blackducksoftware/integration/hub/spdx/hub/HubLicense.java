@@ -1,5 +1,7 @@
 package com.blackducksoftware.integration.hub.spdx.hub;
 
+import java.util.Optional;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,11 +24,11 @@ public class HubLicense {
     @Autowired
     private Hub hub;
 
-    public LicenseView getLicenseView(final String licenseViewUrl) throws IntegrationException {
-        if (licenseViewUrl == null) {
+    public LicenseView getLicenseView(final Optional<String> licenseViewUrl) throws IntegrationException {
+        if (!licenseViewUrl.isPresent()) {
             return null;
         }
-        LicenseView licenseView = getLicenseViewSingleLevel(licenseViewUrl);
+        LicenseView licenseView = getLicenseViewSingleLevel(licenseViewUrl.get());
         final String embeddedLicenseUrl = (new MetaService(new Slf4jIntLogger(logger))).getFirstLinkSafely(licenseView, MetaService.LICENSE_LINK);
         if (!StringUtils.isBlank(embeddedLicenseUrl)) {
             logger.debug(String.format("Found embedded license URL: %s; fetching that licenseView", embeddedLicenseUrl));

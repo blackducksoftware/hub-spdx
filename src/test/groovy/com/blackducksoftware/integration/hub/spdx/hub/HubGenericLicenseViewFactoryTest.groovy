@@ -55,16 +55,16 @@ class HubGenericLicenseViewFactoryTest {
 
         assertEquals("testLicenseDisplay", targetLicense.displayName);
         assertEquals(ComplexLicenseEnum.CONJUNCTIVE, targetLicense.type);
-        assertEquals("testUrl", targetLicense.url);
+        assertEquals("testUrl", targetLicense.url.get());
 
         assertEquals(null, targetLicense.licenses.get(0).type);
         assertEquals("testLicenseDisplayChild1", targetLicense.licenses.get(0).displayName);
-        assertEquals("testUrlChild1", targetLicense.licenses.get(0).url);
+        assertEquals("testUrlChild1", targetLicense.licenses.get(0).url.get());
         assertEquals(null, targetLicense.licenses.get(0).licenses);
 
         assertEquals(null, targetLicense.licenses.get(1).type);
         assertEquals("testLicenseDisplayChild2", targetLicense.licenses.get(1).displayName);
-        assertEquals("testUrlChild2", targetLicense.licenses.get(1).url);
+        assertEquals("testUrlChild2", targetLicense.licenses.get(1).url.get());
         assertEquals(null, targetLicense.licenses.get(1).licenses);
     }
 
@@ -92,16 +92,16 @@ class HubGenericLicenseViewFactoryTest {
 
         assertEquals("testLicenseDisplay", targetLicense.displayName);
         assertEquals(ComplexLicenseEnum.CONJUNCTIVE, targetLicense.type);
-        assertEquals("testUrl", targetLicense.url);
+        assertEquals("testUrl", targetLicense.url.get());
 
         assertEquals(null, targetLicense.licenses.get(0).type);
         assertEquals("testLicenseDisplayChild1", targetLicense.licenses.get(0).displayName);
-        assertEquals("testUrlChild1", targetLicense.licenses.get(0).url);
+        assertEquals("testUrlChild1", targetLicense.licenses.get(0).url.get());
         assertEquals(null, targetLicense.licenses.get(0).licenses);
 
         assertEquals(null, targetLicense.licenses.get(1).type);
         assertEquals("testLicenseDisplayChild2", targetLicense.licenses.get(1).displayName);
-        assertEquals("testUrlChild2", targetLicense.licenses.get(1).url);
+        assertEquals("testUrlChild2", targetLicense.licenses.get(1).url.get());
         assertEquals(null, targetLicense.licenses.get(1).licenses);
     }
 }
