@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
-import com.blackducksoftware.integration.hub.api.item.MetaService;
+import com.blackducksoftware.integration.hub.api.view.MetaHandler;
 import com.blackducksoftware.integration.hub.model.view.LicenseView;
 import com.blackducksoftware.integration.log.Slf4jIntLogger;
 
@@ -29,7 +29,7 @@ public class HubLicense {
             return null;
         }
         LicenseView licenseView = getLicenseViewSingleLevel(licenseViewUrl.get());
-        final String embeddedLicenseUrl = (new MetaService(new Slf4jIntLogger(logger))).getFirstLinkSafely(licenseView, MetaService.LICENSE_LINK);
+        final String embeddedLicenseUrl = (new MetaHandler(new Slf4jIntLogger(logger))).getFirstLinkSafely(licenseView, MetaHandler.LICENSE_LINK);
         if (!StringUtils.isBlank(embeddedLicenseUrl)) {
             logger.debug(String.format("Found embedded license URL: %s; fetching that licenseView", embeddedLicenseUrl));
             try {
