@@ -11,12 +11,10 @@ import org.junit.Test;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.dataservice.project.ProjectVersionWrapper;
-import com.blackducksoftware.integration.hub.dataservice.versionbomcomponent.model.VersionBomComponentModel;
 import com.blackducksoftware.integration.hub.model.enumeration.MatchedFileUsageEnum;
-import com.blackducksoftware.integration.hub.model.view.MatchedFilesView;
 import com.blackducksoftware.integration.hub.model.view.ProjectVersionView
 import com.blackducksoftware.integration.hub.model.view.ProjectView
-import com.blackducksoftware.integration.hub.model.view.VersionBomComponentView;
+import com.blackducksoftware.integration.hub.model.view.VersionBomComponentView
 import com.blackducksoftware.integration.hub.model.view.components.OriginView;
 import com.blackducksoftware.integration.hub.spdx.hub.HubLicense;
 import com.blackducksoftware.integration.hub.spdx.spdx.SpdxLicense;
@@ -39,7 +37,7 @@ public class SpdxHubBomReportBuilderTest {
         final String projectName = "testProject";
         final String projectVersion = "testProjectVersion";
         final String projectDescription = "testProjectDescription";
-        final List<VersionBomComponentModel> bom = new ArrayList<>();
+        final List<VersionBomComponentView> bom = new ArrayList<>();
         final VersionBomComponentView bomCompView = new VersionBomComponentView();
         bomCompView.componentName = "OpenSSL";
         bomCompView.componentVersionName = "1.2.3";
@@ -52,8 +50,7 @@ public class SpdxHubBomReportBuilderTest {
         final List<MatchedFileUsageEnum> usages = new ArrayList<>();
         usages.add(MatchedFileUsageEnum.DYNAMICALLY_LINKED);
         bomCompView.usages = usages;
-        final VersionBomComponentModel bomCompModel = new VersionBomComponentModel(bomCompView, new ArrayList<MatchedFilesView>());
-        bom.add(bomCompModel);
+        bom.add(bomCompView);
 
         // Generate report for that mocked Hub project
         final SpdxHubBomReportBuilder reportBuilder = new SpdxHubBomReportBuilder();
@@ -71,7 +68,7 @@ public class SpdxHubBomReportBuilderTest {
             getProjectVersionView: { projectVersionView }
         ]  as ProjectVersionWrapper
         reportBuilder.setProject(projectVersionWrapper, bomUrl);
-        for (final VersionBomComponentModel bomComp : bom) {
+        for (final VersionBomComponentView bomComp : bom) {
             SpdxRelatedLicensedPackage pkg = reportBuilder.toSpdxRelatedLicensedPackage(bomComp)
             reportBuilder.addPackageToDocument(pkg);
         }

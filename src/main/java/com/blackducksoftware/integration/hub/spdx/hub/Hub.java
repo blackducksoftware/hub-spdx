@@ -8,10 +8,10 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.EncryptionException;
 import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.api.aggregate.bom.AggregateBomService;
 import com.blackducksoftware.integration.hub.builder.HubServerConfigBuilder;
 import com.blackducksoftware.integration.hub.dataservice.license.LicenseDataService;
 import com.blackducksoftware.integration.hub.dataservice.project.ProjectDataService;
-import com.blackducksoftware.integration.hub.dataservice.versionbomcomponent.VersionBomComponentDataService;
 import com.blackducksoftware.integration.hub.global.HubServerConfig;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
@@ -61,8 +61,8 @@ public class Hub {
         return hubSvcsFactory.createProjectDataService();
     }
 
-    public VersionBomComponentDataService getVersionBomComponentDataService() {
-        return hubSvcsFactory.createVersionBomComponentDataService();
+    public AggregateBomService getVersionBomComponentDataService() {
+        return hubSvcsFactory.createAggregateBomService();
     }
 
     public LicenseDataService getLicenseDataService() {

@@ -25,10 +25,10 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.dataservice.project.ProjectVersionWrapper;
-import com.blackducksoftware.integration.hub.dataservice.versionbomcomponent.model.VersionBomComponentModel;
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
 import com.blackducksoftware.integration.hub.model.enumeration.MatchedFileUsageEnum;
 import com.blackducksoftware.integration.hub.model.view.ComplexLicenseView;
+import com.blackducksoftware.integration.hub.model.view.VersionBomComponentView;
 import com.blackducksoftware.integration.hub.model.view.components.OriginView;
 import com.blackducksoftware.integration.hub.model.view.components.VersionBomLicenseView;
 import com.blackducksoftware.integration.hub.spdx.hub.HubGenericComplexLicenseView;
@@ -77,8 +77,8 @@ public class SpdxHubBomReportBuilder {
         }
     }
 
-    public SpdxRelatedLicensedPackage toSpdxRelatedLicensedPackage(final VersionBomComponentModel bomComp) throws IntegrationException {
-        logger.info(String.format("Converting component %s:%s to SpdxPackage", bomComp.getComponentName(), bomComp.getComponentVersionName()));
+    public SpdxRelatedLicensedPackage toSpdxRelatedLicensedPackage(final VersionBomComponentView bomComp) throws IntegrationException {
+        logger.info(String.format("Converting component %s:%s to SpdxPackage", bomComp.componentName, bomComp.componentVersionName));
         logUsages(bomComp);
         return toSpdxRelatedLicensedPackage(bomDocument, bomComp);
     }
@@ -87,22 +87,22 @@ public class SpdxHubBomReportBuilder {
         spdxPkg.addPackageToDocument(bomDocument, pkg);
     }
 
-    private SpdxRelatedLicensedPackage toSpdxRelatedLicensedPackage(final SpdxDocument bomDocument, final VersionBomComponentModel bomComp) throws IntegrationException {
+    private SpdxRelatedLicensedPackage toSpdxRelatedLicensedPackage(final SpdxDocument bomDocument, final VersionBomComponentView bomComp) throws IntegrationException {
 
         HubGenericComplexLicenseView hubGenericLicenseView = null;
-        final List<VersionBomLicenseView> licenses = bomComp.getLicenses();
+        final List<VersionBomLicenseView> licenses = bomComp.licenses;
         if ((licenses == null) || (licenses.size() == 0)) {
-            logger.warn(String.format("The Hub provided no license information for BOM component %s/%s", bomComp.getComponentName(), bomComp.getComponentVersionName()));
+            logger.warn(String.format("The Hub provided no license information for BOM component %s/%s", bomComp.componentName, bomComp.componentVersionName));
         } else {
-            logger.debug(String.format("\tComponent %s:%s, license: %s", bomComp.getComponentName(), bomComp.getComponentVersionName(), licenses.get(0).licenseDisplay));
+            logger.debug(String.format("\tComponent %s:%s, license: %s", bomComp.componentName, bomComp.componentVersionName, licenses.get(0).licenseDisplay));
             hubGenericLicenseView = HubGenericLicenseViewFactory.create(licenses.get(0));
         }
         final AnyLicenseInfo compSpdxLicense = spdxLicense.generateLicenseInfo(bomContainer, hubGenericLicenseView);
-        logger.debug(String.format("Creating package for %s:%s", bomComp.getComponentName(), bomComp.getComponentVersionName()));
+        logger.debug(String.format("Creating package for %s:%s", bomComp.componentName, bomComp.componentVersionName));
         final String bomCompDownloadLocation = "NOASSERTION";
         final RelationshipType relType = getRelationshipType(bomComp);
 
-        final SpdxPackage pkg = spdxPkg.createSpdxPackage(compSpdxLicense, bomComp.getComponentName(), bomComp.getComponentVersionName(), bomCompDownloadLocation, relType);
+        final SpdxPackage pkg = spdxPkg.createSpdxPackage(compSpdxLicense, bomComp.componentName, bomComp.componentVersionName, bomCompDownloadLocation, relType);
         return new SpdxRelatedLicensedPackage(relType, pkg, compSpdxLicense);
     }
 
@@ -129,11 +129,11 @@ public class SpdxHubBomReportBuilder {
         bomContainer.getModel().write(ps, "RDF/XML");
     }
 
-    private RelationshipType getRelationshipType(final VersionBomComponentModel bomComp) {
+    private RelationshipType getRelationshipType(final VersionBomComponentView bomComp) {
         RelationshipType relType = RelationshipType.OTHER;
-        final List<MatchedFileUsageEnum> usages = bomComp.getUsages();
+        final List<MatchedFileUsageEnum> usages = bomComp.usages;
         if (usages.size() > 1) {
-            logger.warn(String.format("# Usages for component %s:%s is > 1: %d; only the first is used", bomComp.getComponentName(), bomComp.getComponentVersionName(), usages.size()));
+            logger.warn(String.format("# Usages for component %s:%s is > 1: %d; only the first is used", bomComp.componentName, bomComp.componentVersionName, usages.size()));
         }
         if (usages.size() > 0) {
             if (usages.get(0) == MatchedFileUsageEnum.DYNAMICALLY_LINKED) {
@@ -188,8 +188,8 @@ public class SpdxHubBomReportBuilder {
         return licenseDeclared;
     }
 
-    private void logUsages(final VersionBomComponentModel bomComp) {
-        final List<OriginView> origins = bomComp.getOrigins();
+    private void logUsages(final VersionBomComponentView bomComp) {
+        final List<OriginView> origins = bomComp.origins;
         logger.debug(String.format("# Origins: %d", origins.size()));
         for (final OriginView origin : origins) {
             logger.debug(String.format("\tOrigin: externalNamespace=%s, externalId=%s, name=%s", origin.externalNamespace, origin.externalId, origin.name));
