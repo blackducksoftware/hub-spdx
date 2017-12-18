@@ -107,22 +107,22 @@ public class SpdxHubBomReportBuilder {
     }
 
     public String generateReportAsString() throws HubIntegrationException {
-        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        PrintStream ps = null;
+        final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream printStream = null;
         try {
             try {
-                ps = new PrintStream(baos, true, "utf-8");
+                printStream = new PrintStream(outputStream, true, "utf-8");
             } catch (final UnsupportedEncodingException e) {
                 throw new HubIntegrationException("Error creating PrintStream", e);
             }
-            writeReport(ps);
+            writeReport(printStream);
         } finally {
-            if (ps != null) {
-                ps.flush();
-                ps.close();
+            if (printStream != null) {
+                printStream.flush();
+                printStream.close();
             }
         }
-        return baos.toString();
+        return outputStream.toString();
     }
 
     public void writeReport(final PrintStream ps) {

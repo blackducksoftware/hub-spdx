@@ -53,19 +53,19 @@ class HubGenericLicenseViewFactoryTest {
 
         HubGenericComplexLicenseView targetLicense = HubGenericLicenseViewFactory.create(sourceLicense);
 
-        assertEquals("testLicenseDisplay", targetLicense.displayName);
-        assertEquals(ComplexLicenseEnum.CONJUNCTIVE, targetLicense.type);
+        assertEquals("testLicenseDisplay", targetLicense.displayName.get());
+        assertEquals(ComplexLicenseEnum.CONJUNCTIVE, targetLicense.type.get());
         assertEquals("testUrl", targetLicense.url.get());
 
-        assertEquals(null, targetLicense.licenses.get(0).type);
-        assertEquals("testLicenseDisplayChild1", targetLicense.licenses.get(0).displayName);
-        assertEquals("testUrlChild1", targetLicense.licenses.get(0).url.get());
-        assertEquals(null, targetLicense.licenses.get(0).licenses);
+        assertFalse(targetLicense.licenses.get().get(0).type.isPresent());
+        assertEquals("testLicenseDisplayChild1", targetLicense.licenses.get().get(0).displayName.get());
+        assertEquals("testUrlChild1", targetLicense.licenses.get().get(0).url.get());
+        assertEquals(Optional.empty(), targetLicense.licenses.get().get(0).licenses);
 
-        assertEquals(null, targetLicense.licenses.get(1).type);
-        assertEquals("testLicenseDisplayChild2", targetLicense.licenses.get(1).displayName);
-        assertEquals("testUrlChild2", targetLicense.licenses.get(1).url.get());
-        assertEquals(null, targetLicense.licenses.get(1).licenses);
+        assertFalse(targetLicense.licenses.get().get(1).type.isPresent());
+        assertEquals("testLicenseDisplayChild2", targetLicense.licenses.get().get(1).displayName.get());
+        assertEquals("testUrlChild2", targetLicense.licenses.get().get(1).url.get());
+        assertEquals(Optional.empty(), targetLicense.licenses.get().get(1).licenses);
     }
 
     @Test
@@ -90,18 +90,18 @@ class HubGenericLicenseViewFactoryTest {
 
         HubGenericComplexLicenseView targetLicense = HubGenericLicenseViewFactory.create(sourceLicense);
 
-        assertEquals("testLicenseDisplay", targetLicense.displayName);
-        assertEquals(ComplexLicenseEnum.CONJUNCTIVE, targetLicense.type);
+        assertEquals("testLicenseDisplay", targetLicense.displayName.get());
+        assertEquals(ComplexLicenseEnum.CONJUNCTIVE, targetLicense.type.get());
         assertEquals("testUrl", targetLicense.url.get());
 
-        assertEquals(null, targetLicense.licenses.get(0).type);
-        assertEquals("testLicenseDisplayChild1", targetLicense.licenses.get(0).displayName);
-        assertEquals("testUrlChild1", targetLicense.licenses.get(0).url.get());
-        assertEquals(null, targetLicense.licenses.get(0).licenses);
+        assertFalse(targetLicense.licenses.get().get(0).type.isPresent());
+        assertEquals("testLicenseDisplayChild1", targetLicense.licenses.get().get(0).displayName.get());
+        assertEquals("testUrlChild1", targetLicense.licenses.get().get(0).url.get());
+        assertEquals(Optional.empty(), targetLicense.licenses.get().get(0).licenses);
 
-        assertEquals(null, targetLicense.licenses.get(1).type);
-        assertEquals("testLicenseDisplayChild2", targetLicense.licenses.get(1).displayName);
-        assertEquals("testUrlChild2", targetLicense.licenses.get(1).url.get());
-        assertEquals(null, targetLicense.licenses.get(1).licenses);
+        assertFalse(targetLicense.licenses.get().get(1).type.isPresent());
+        assertEquals("testLicenseDisplayChild2", targetLicense.licenses.get().get(1).displayName.get());
+        assertEquals("testUrlChild2", targetLicense.licenses.get().get(1).url.get());
+        assertEquals(Optional.empty(), targetLicense.licenses.get().get(1).licenses);
     }
 }

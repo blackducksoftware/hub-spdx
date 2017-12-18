@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
 import com.blackducksoftware.integration.hub.model.enumeration.ComplexLicenseEnum;
 import com.blackducksoftware.integration.hub.model.view.LicenseView;
 import com.blackducksoftware.integration.hub.spdx.hub.HubGenericComplexLicenseView;
@@ -68,7 +69,7 @@ public class SpdxLicense {
             return componentLicense;
         }
         logger.debug(String.format("\tlicense url: %s", hubComplexLicense.getUrl()));
-        if (hubComplexLicense.getType() == null) {
+        if (!hubComplexLicense.getType().isPresent()) {
             componentLicense = createSimpleSpdxLicense(bomContainer, hubComplexLicense);
         } else {
             componentLicense = createComboSpdxLicense(bomContainer, hubComplexLicense);
@@ -84,7 +85,7 @@ public class SpdxLicense {
         }
         logger.debug(String.format("\tlicense (%s) display: %s", hubComplexLicense.getType().toString(), hubComplexLicense.getDisplayName()));
         final List<AnyLicenseInfo> subSpdxLicenses = new ArrayList<>();
-        for (final HubGenericComplexLicenseView hubSubLicenseView : hubComplexLicense.getLicenses()) {
+        for (final HubGenericComplexLicenseView hubSubLicenseView : hubComplexLicense.getLicenses().orElseThrow(() -> new HubIntegrationException(String.format("Missing sub-licenses for license: %s", hubComplexLicense.getDisplayName())))) {
             logger.debug(String.format("\t\tsub license url: %s", hubSubLicenseView.getUrl()));
             logger.debug(String.format("\t\tsub license display: %s", hubSubLicenseView.getDisplayName()));
             final LicenseView subLicenseView = hubLicense.getLicenseView(hubSubLicenseView.getUrl());
@@ -99,10 +100,10 @@ public class SpdxLicense {
             subSpdxLicenses.add(subSpdxLicense);
         }
         AnyLicenseInfo componentLicense = new SpdxNoneLicense();
-        if (hubComplexLicense.getType() == ComplexLicenseEnum.CONJUNCTIVE) {
+        if (hubComplexLicense.getType().get() == ComplexLicenseEnum.CONJUNCTIVE) {
             logger.debug("creating conjunctive license");
             componentLicense = new ConjunctiveLicenseSet(subSpdxLicenses.toArray(new AnyLicenseInfo[subSpdxLicenses.size()]));
-        } else if (hubComplexLicense.getType() == ComplexLicenseEnum.DISJUNCTIVE) {
+        } else if (hubComplexLicense.getType().get() == ComplexLicenseEnum.DISJUNCTIVE) {
             logger.debug("creating disjunctive license");
             componentLicense = new DisjunctiveLicenseSet(subSpdxLicenses.toArray(new AnyLicenseInfo[subSpdxLicenses.size()]));
         } else {

@@ -68,8 +68,8 @@ public class HubBomReportGenerator {
 
         logger.info("Adding packages to document");
         for (final Optional<SpdxRelatedLicensedPackage> pkg : pkgs) {
-            pkg.orElseThrow(() -> new HubIntegrationException("Conversion to SPDX failed for one or more components"));
-            reportBuilder.addPackageToDocument(pkg.get());
+            final SpdxRelatedLicensedPackage actualPkg = pkg.orElseThrow(() -> new HubIntegrationException("Conversion to SPDX failed for one or more components"));
+            reportBuilder.addPackageToDocument(actualPkg);
         }
         logger.info("Adding packages to document: Done");
 

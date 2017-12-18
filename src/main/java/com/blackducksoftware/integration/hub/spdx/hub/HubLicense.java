@@ -52,7 +52,7 @@ public class HubLicense {
                 licenseView = hub.getLicenseDataService().getLicenseView(licenseViewUrl);
                 break;
             } catch (final IntegrationException e) {
-                logger.warn(String.format("Attempt #%d of %d: Error getting license from Hub: %s", (i + 1), retryCount, e.getMessage()));
+                logger.warn(String.format("Attempt #%d of %d: Error getting license %s from Hub: %s", (i + 1), retryCount, licenseViewUrl, e.getMessage()));
             }
         }
         if (licenseView == null) {

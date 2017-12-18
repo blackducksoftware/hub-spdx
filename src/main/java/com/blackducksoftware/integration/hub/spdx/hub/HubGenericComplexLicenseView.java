@@ -1,6 +1,5 @@
 package com.blackducksoftware.integration.hub.spdx.hub;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -9,11 +8,11 @@ import com.blackducksoftware.integration.hub.model.enumeration.ComplexLicenseEnu
 public class HubGenericComplexLicenseView {
 
     private final Optional<String> url;
-    private final String displayName;
-    private final ComplexLicenseEnum type;
-    private List<HubGenericComplexLicenseView> licenses = new ArrayList<>();
+    private final Optional<String> displayName;
+    private final Optional<ComplexLicenseEnum> type;
+    private final Optional<List<HubGenericComplexLicenseView>> licenses;
 
-    public HubGenericComplexLicenseView(final Optional<String> url, final String displayName, final ComplexLicenseEnum type, final List<HubGenericComplexLicenseView> licenses) {
+    public HubGenericComplexLicenseView(final Optional<String> url, final Optional<String> displayName, final Optional<ComplexLicenseEnum> type, final Optional<List<HubGenericComplexLicenseView>> licenses) {
         this.url = url;
         this.displayName = displayName;
         this.type = type;
@@ -24,15 +23,15 @@ public class HubGenericComplexLicenseView {
         return url;
     }
 
-    public String getDisplayName() {
+    public Optional<String> getDisplayName() {
         return displayName;
     }
 
-    public ComplexLicenseEnum getType() {
+    public Optional<ComplexLicenseEnum> getType() {
         return type;
     }
 
-    public List<HubGenericComplexLicenseView> getLicenses() {
+    public Optional<List<HubGenericComplexLicenseView>> getLicenses() {
         return licenses;
     }
 
