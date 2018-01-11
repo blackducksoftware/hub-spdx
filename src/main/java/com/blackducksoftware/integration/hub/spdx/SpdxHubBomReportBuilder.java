@@ -33,7 +33,6 @@ import com.blackducksoftware.integration.hub.model.view.components.OriginView;
 import com.blackducksoftware.integration.hub.model.view.components.VersionBomLicenseView;
 import com.blackducksoftware.integration.hub.spdx.hub.HubGenericComplexLicenseView;
 import com.blackducksoftware.integration.hub.spdx.hub.HubGenericLicenseViewFactory;
-import com.blackducksoftware.integration.hub.spdx.hub.HubLicense;
 import com.blackducksoftware.integration.hub.spdx.spdx.SpdxLicense;
 import com.blackducksoftware.integration.hub.spdx.spdx.SpdxPkg;
 
@@ -42,9 +41,6 @@ public class SpdxHubBomReportBuilder {
 
     @Autowired
     SpdxPkg spdxPkg;
-
-    @Autowired
-    HubLicense hubLicense;
 
     @Autowired
     SpdxLicense spdxLicense;

@@ -13,11 +13,13 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.spdx.rdfparser.InvalidSPDXAnalysisException;
 import org.spdx.rdfparser.SpdxDocumentContainer;
 import org.spdx.rdfparser.license.AnyLicenseInfo;
 import org.spdx.rdfparser.license.ConjunctiveLicenseSet;
 import org.spdx.rdfparser.license.DisjunctiveLicenseSet;
 import org.spdx.rdfparser.license.ExtractedLicenseInfo;
+import org.spdx.rdfparser.license.ListedLicenses;
 import org.spdx.rdfparser.license.SpdxNoneLicense;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -126,19 +128,34 @@ public class SpdxLicense {
 
     private AnyLicenseInfo reUseOrCreateSpdxLicense(final SpdxDocumentContainer spdxDocContainer, final LicenseView licenseView) throws IntegrationException {
         logger.trace("reUseOrCreateSpdxLicense()");
-        AnyLicenseInfo componentLicense;
-        final String licenseText = hubLicense.getLicenseText(licenseView);
-        final String licenseId = generateLicenseId(licenseView.name, licenseText);
-        logger.debug(String.format("License name: %s with license text from Hub hashed to ID: %s", licenseView.name, licenseId));
-        final Optional<? extends ExtractedLicenseInfo> existingSpdxLicense = this.findExtractedLicenseInfoById(spdxDocContainer, licenseId);
-        if (existingSpdxLicense.isPresent()) {
-            logger.debug(String.format("Re-using license id: %s, name: %s", licenseId, licenseView.name));
-            componentLicense = existingSpdxLicense.get();
-        } else {
-            logger.debug(String.format("Unable to find existing license in document: id: %s, %s; will create a custom license and add it to the document", licenseId, licenseView.name));
-            logger.debug(String.format("Adding new license: ID: %s, name: %s text: %s", licenseId, licenseView.name, String.format("%s...", truncate(licenseText, 200))));
-            componentLicense = new ExtractedLicenseInfo(licenseId, licenseText);
-            this.put(licenseId, licenseView.name);
+        final Optional<String> spdxLicenseId = Optional.empty(); // TODO: = StringUtils.isBlank(licenseView.spdxId) ? Optional.empty() : Optional.of(licenseView.spdxId);
+        AnyLicenseInfo componentLicense = tryStandardLicense(spdxLicenseId);
+        if (componentLicense == null) {
+            final String licenseText = hubLicense.getLicenseText(licenseView);
+            final String licenseId = generateLicenseId(licenseView.name, licenseText);
+            logger.debug(String.format("License name: %s with license text from Hub hashed to ID: %s", licenseView.name, licenseId));
+            final Optional<? extends ExtractedLicenseInfo> existingSpdxLicense = this.findExtractedLicenseInfoById(spdxDocContainer, licenseId);
+            if (existingSpdxLicense.isPresent()) {
+                logger.debug(String.format("Re-using license id: %s, name: %s", licenseId, licenseView.name));
+                componentLicense = existingSpdxLicense.get();
+            } else {
+                logger.debug(String.format("Unable to find existing license in document: id: %s, %s; will create a custom license and add it to the document", licenseId, licenseView.name));
+                logger.debug(String.format("Adding new license: ID: %s, name: %s text: %s", licenseId, licenseView.name, String.format("%s...", truncate(licenseText, 200))));
+                componentLicense = new ExtractedLicenseInfo(licenseId, licenseText);
+                this.put(licenseId, licenseView.name);
+            }
+        }
+        return componentLicense;
+    }
+
+    private AnyLicenseInfo tryStandardLicense(final Optional<String> spdxLicenseId) {
+        AnyLicenseInfo componentLicense = null;
+        if (spdxLicenseId.isPresent()) {
+            try {
+                componentLicense = ListedLicenses.getListedLicenses().getListedLicenseById(spdxLicenseId.get());
+            } catch (final InvalidSPDXAnalysisException e) {
+                logger.warn(String.format("Error looking up SPDX License ID %s; will include this license as a custom license. The lookup error was: %s", spdxLicenseId.get(), e.getMessage()));
+            }
         }
         return componentLicense;
     }

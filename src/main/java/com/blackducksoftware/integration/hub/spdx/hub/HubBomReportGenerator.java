@@ -31,9 +31,6 @@ public class HubBomReportGenerator {
     @Autowired
     SpdxHubBomReportBuilder reportBuilder;
 
-    @Autowired
-    HubLicense hubLicense;
-
     @Value("${single.thread:false}")
     private boolean singleThread;
 
