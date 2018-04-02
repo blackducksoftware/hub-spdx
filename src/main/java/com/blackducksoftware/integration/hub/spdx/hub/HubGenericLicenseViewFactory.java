@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.blackducksoftware.integration.hub.model.view.ComplexLicenseView;
-import com.blackducksoftware.integration.hub.model.view.components.VersionBomLicenseView;
+import com.blackducksoftware.integration.hub.api.generated.component.VersionBomLicenseView;
+import com.blackducksoftware.integration.hub.api.generated.view.ComplexLicenseView;
 
 public class HubGenericLicenseViewFactory {
     public static HubGenericComplexLicenseView create(final ComplexLicenseView sourceLicense) {

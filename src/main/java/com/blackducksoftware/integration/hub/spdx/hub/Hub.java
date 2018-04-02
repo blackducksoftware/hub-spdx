@@ -8,13 +8,12 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.EncryptionException;
 import com.blackducksoftware.integration.exception.IntegrationException;
-import com.blackducksoftware.integration.hub.api.aggregate.bom.AggregateBomService;
-import com.blackducksoftware.integration.hub.builder.HubServerConfigBuilder;
-import com.blackducksoftware.integration.hub.dataservice.license.LicenseDataService;
-import com.blackducksoftware.integration.hub.dataservice.project.ProjectDataService;
-import com.blackducksoftware.integration.hub.global.HubServerConfig;
+import com.blackducksoftware.integration.hub.configuration.HubServerConfig;
+import com.blackducksoftware.integration.hub.configuration.HubServerConfigBuilder;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
+import com.blackducksoftware.integration.hub.service.LicenseService;
+import com.blackducksoftware.integration.hub.service.ProjectService;
 import com.blackducksoftware.integration.log.Slf4jIntLogger;
 
 @Component
@@ -57,16 +56,12 @@ public class Hub {
         hubSvcsFactory = new HubServicesFactory(restConnection);
     }
 
-    public ProjectDataService getProjectDataService() {
-        return hubSvcsFactory.createProjectDataService();
+    public ProjectService getProjectService() {
+        return hubSvcsFactory.createProjectService();
     }
 
-    public AggregateBomService getVersionBomComponentDataService() {
-        return hubSvcsFactory.createAggregateBomService();
-    }
-
-    public LicenseDataService getLicenseDataService() {
-        return hubSvcsFactory.createLicenseDataService();
+    public LicenseService getLicenseService() {
+        return hubSvcsFactory.createLicenseService();
     }
 
     public String getHubUrl() {

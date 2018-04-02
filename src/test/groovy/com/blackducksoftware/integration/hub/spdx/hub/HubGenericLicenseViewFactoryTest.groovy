@@ -6,11 +6,11 @@ import org.junit.AfterClass
 import org.junit.BeforeClass
 import org.junit.Test
 
-import com.blackducksoftware.integration.hub.model.enumeration.ComplexLicenseCodeSharingEnum
-import com.blackducksoftware.integration.hub.model.enumeration.ComplexLicenseEnum
-import com.blackducksoftware.integration.hub.model.enumeration.ComplexLicenseOwnershipEnum
-import com.blackducksoftware.integration.hub.model.view.ComplexLicenseView
-import com.blackducksoftware.integration.hub.model.view.components.VersionBomLicenseView
+import com.blackducksoftware.integration.hub.api.generated.component.VersionBomLicenseView
+import com.blackducksoftware.integration.hub.api.generated.enumeration.ComplexLicenseType;
+import com.blackducksoftware.integration.hub.api.generated.enumeration.LicenseCodeSharingType;
+import com.blackducksoftware.integration.hub.api.generated.enumeration.LicenseOwnershipType
+import com.blackducksoftware.integration.hub.api.generated.view.ComplexLicenseView
 
 class HubGenericLicenseViewFactoryTest {
 
@@ -26,26 +26,26 @@ class HubGenericLicenseViewFactoryTest {
     public void testCreateFromComplexLicenseView() {
         ComplexLicenseView child1 = new ComplexLicenseView();
         child1.license = "testUrlChild1"
-        child1.codeSharing = ComplexLicenseCodeSharingEnum.PERMISSIVE;
+        child1.codeSharing = LicenseCodeSharingType.PERMISSIVE;
         child1.name = "testNameChild1"
-        child1.ownership = ComplexLicenseOwnershipEnum.OPEN_SOURCE
+        child1.ownership = LicenseOwnershipType.OPEN_SOURCE
         child1.type = null
         child1.licenseDisplay = "testLicenseDisplayChild1"
 
         ComplexLicenseView child2 = new ComplexLicenseView();
         child2.license = "testUrlChild2"
-        child2.codeSharing = ComplexLicenseCodeSharingEnum.PERMISSIVE;
+        child2.codeSharing = LicenseCodeSharingType.PERMISSIVE;
         child2.name = "testNameChild2"
-        child2.ownership = ComplexLicenseOwnershipEnum.OPEN_SOURCE
+        child2.ownership = LicenseOwnershipType.OPEN_SOURCE
         child2.type = null
         child2.licenseDisplay = "testLicenseDisplayChild2"
 
         ComplexLicenseView sourceLicense = new ComplexLicenseView();
         sourceLicense.license = "testUrl"
-        sourceLicense.codeSharing = ComplexLicenseCodeSharingEnum.PERMISSIVE;
+        sourceLicense.codeSharing = LicenseCodeSharingType.PERMISSIVE;
         sourceLicense.name = "testName"
-        sourceLicense.ownership = ComplexLicenseOwnershipEnum.OPEN_SOURCE
-        sourceLicense.type = ComplexLicenseEnum.CONJUNCTIVE
+        sourceLicense.ownership = LicenseOwnershipType.OPEN_SOURCE
+        sourceLicense.type = ComplexLicenseType.CONJUNCTIVE
         sourceLicense.licenseDisplay = "testLicenseDisplay"
         sourceLicense.licenses = new ArrayList<ComplexLicenseView>()
         sourceLicense.licenses.add(child1)
@@ -54,7 +54,7 @@ class HubGenericLicenseViewFactoryTest {
         HubGenericComplexLicenseView targetLicense = HubGenericLicenseViewFactory.create(sourceLicense);
 
         assertEquals("testLicenseDisplay", targetLicense.displayName.get());
-        assertEquals(ComplexLicenseEnum.CONJUNCTIVE, targetLicense.type.get());
+        assertEquals(ComplexLicenseType.CONJUNCTIVE, targetLicense.type.get());
         assertEquals("testUrl", targetLicense.url.get());
 
         assertFalse(targetLicense.licenses.get().get(0).type.isPresent());
@@ -83,7 +83,7 @@ class HubGenericLicenseViewFactoryTest {
         VersionBomLicenseView sourceLicense = new VersionBomLicenseView();
         sourceLicense.license = "testUrl"
         sourceLicense.licenseDisplay = "testLicenseDisplay"
-        sourceLicense.licenseType = ComplexLicenseEnum.CONJUNCTIVE
+        sourceLicense.licenseType = ComplexLicenseType.CONJUNCTIVE
         sourceLicense.licenses = new ArrayList<VersionBomLicenseView>()
         sourceLicense.licenses.add(child1)
         sourceLicense.licenses.add(child2)
@@ -91,7 +91,7 @@ class HubGenericLicenseViewFactoryTest {
         HubGenericComplexLicenseView targetLicense = HubGenericLicenseViewFactory.create(sourceLicense);
 
         assertEquals("testLicenseDisplay", targetLicense.displayName.get());
-        assertEquals(ComplexLicenseEnum.CONJUNCTIVE, targetLicense.type.get());
+        assertEquals(ComplexLicenseType.CONJUNCTIVE, targetLicense.type.get());
         assertEquals("testUrl", targetLicense.url.get());
 
         assertFalse(targetLicense.licenses.get().get(0).type.isPresent());

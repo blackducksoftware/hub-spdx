@@ -13,10 +13,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.api.generated.view.ProjectVersionView;
+import com.blackducksoftware.integration.hub.api.generated.view.VersionBomComponentView;
 import com.blackducksoftware.integration.hub.api.view.MetaHandler;
-import com.blackducksoftware.integration.hub.dataservice.project.ProjectVersionWrapper;
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
-import com.blackducksoftware.integration.hub.model.view.VersionBomComponentView;
+import com.blackducksoftware.integration.hub.service.model.ProjectVersionWrapper;
 import com.blackducksoftware.integration.hub.spdx.SpdxHubBomReportBuilder;
 import com.blackducksoftware.integration.hub.spdx.SpdxRelatedLicensedPackage;
 import com.blackducksoftware.integration.log.Slf4jIntLogger;
@@ -49,10 +50,10 @@ public class HubBomReportGenerator {
 
     private void consumeHubProjectBom(final String hubUrl, final String projectName, final String projectVersion) throws IntegrationException, HubIntegrationException {
         logger.info(String.format("Generating report for project %s:%s", projectName, projectVersion));
-        final ProjectVersionWrapper projectVersionWrapper = hub.getProjectDataService().getProjectVersion(projectName, projectVersion);
-        final String bomUrl = (new MetaHandler(new Slf4jIntLogger(logger))).getFirstLinkSafely(projectVersionWrapper.getProjectVersionView(), MetaHandler.COMPONENTS_LINK);
+        final ProjectVersionWrapper projectVersionWrapper = hub.getProjectService().getProjectVersion(projectName, projectVersion);
+        final String bomUrl = new MetaHandler(new Slf4jIntLogger(logger)).getFirstLinkSafely(projectVersionWrapper.getProjectVersionView(), ProjectVersionView.COMPONENTS_LINK);
         reportBuilder.setProject(projectVersionWrapper, bomUrl);
-        final List<VersionBomComponentView> bom = hub.getVersionBomComponentDataService().getBomEntries(projectVersionWrapper.getProjectVersionView());
+        final List<VersionBomComponentView> bom = hub.getProjectService().getComponentsForProjectVersion(projectVersionWrapper.getProjectVersionView());
 
         logger.info("Creating packages");
         Stream<VersionBomComponentView> bomCompStream = null;

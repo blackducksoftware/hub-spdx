@@ -3,16 +3,16 @@ package com.blackducksoftware.integration.hub.spdx.hub;
 import java.util.List;
 import java.util.Optional;
 
-import com.blackducksoftware.integration.hub.model.enumeration.ComplexLicenseEnum;
+import com.blackducksoftware.integration.hub.api.generated.enumeration.ComplexLicenseType;
 
 public class HubGenericComplexLicenseView {
 
     private final Optional<String> url;
     private final Optional<String> displayName;
-    private final Optional<ComplexLicenseEnum> type;
+    private final Optional<ComplexLicenseType> type;
     private final Optional<List<HubGenericComplexLicenseView>> licenses;
 
-    public HubGenericComplexLicenseView(final Optional<String> url, final Optional<String> displayName, final Optional<ComplexLicenseEnum> type, final Optional<List<HubGenericComplexLicenseView>> licenses) {
+    public HubGenericComplexLicenseView(final Optional<String> url, final Optional<String> displayName, final Optional<ComplexLicenseType> type, final Optional<List<HubGenericComplexLicenseView>> licenses) {
         this.url = url;
         this.displayName = displayName;
         this.type = type;
@@ -27,7 +27,7 @@ public class HubGenericComplexLicenseView {
         return displayName;
     }
 
-    public Optional<ComplexLicenseEnum> getType() {
+    public Optional<ComplexLicenseType> getType() {
         return type;
     }
 

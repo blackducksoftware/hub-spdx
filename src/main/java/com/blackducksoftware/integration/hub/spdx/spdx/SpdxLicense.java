@@ -24,9 +24,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.api.generated.enumeration.ComplexLicenseType;
+import com.blackducksoftware.integration.hub.api.generated.view.LicenseView;
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
-import com.blackducksoftware.integration.hub.model.enumeration.ComplexLicenseEnum;
-import com.blackducksoftware.integration.hub.model.view.LicenseView;
 import com.blackducksoftware.integration.hub.spdx.hub.HubGenericComplexLicenseView;
 import com.blackducksoftware.integration.hub.spdx.hub.HubLicense;
 
@@ -79,7 +79,7 @@ public class SpdxLicense {
 
     private AnyLicenseInfo createComboSpdxLicense(final SpdxDocumentContainer bomContainer, final HubGenericComplexLicenseView hubComplexLicense) throws IntegrationException {
         logger.trace("createComboSpdxLicense()");
-        if ((hubComplexLicense == null) || (hubComplexLicense.isLicenseNotFound()) || (hubComplexLicense.isUnknownLicense())) {
+        if (hubComplexLicense == null || hubComplexLicense.isLicenseNotFound() || hubComplexLicense.isUnknownLicense()) {
             logger.warn(String.format("Converting Hub license '%s' to SpdxNoneLicense", hubComplexLicense.getDisplayName()));
             return new SpdxNoneLicense();
         }
@@ -100,10 +100,10 @@ public class SpdxLicense {
             subSpdxLicenses.add(subSpdxLicense);
         }
         AnyLicenseInfo componentLicense = new SpdxNoneLicense();
-        if (hubComplexLicense.getType().get() == ComplexLicenseEnum.CONJUNCTIVE) {
+        if (hubComplexLicense.getType().get() == ComplexLicenseType.CONJUNCTIVE) {
             logger.debug("creating conjunctive license");
             componentLicense = new ConjunctiveLicenseSet(subSpdxLicenses.toArray(new AnyLicenseInfo[subSpdxLicenses.size()]));
-        } else if (hubComplexLicense.getType().get() == ComplexLicenseEnum.DISJUNCTIVE) {
+        } else if (hubComplexLicense.getType().get() == ComplexLicenseType.DISJUNCTIVE) {
             logger.debug("creating disjunctive license");
             componentLicense = new DisjunctiveLicenseSet(subSpdxLicenses.toArray(new AnyLicenseInfo[subSpdxLicenses.size()]));
         } else {

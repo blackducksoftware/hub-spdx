@@ -24,13 +24,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
-import com.blackducksoftware.integration.hub.dataservice.project.ProjectVersionWrapper;
+import com.blackducksoftware.integration.hub.api.generated.component.VersionBomLicenseView;
+import com.blackducksoftware.integration.hub.api.generated.component.VersionBomOriginView;
+import com.blackducksoftware.integration.hub.api.generated.enumeration.MatchedFileUsagesType;
+import com.blackducksoftware.integration.hub.api.generated.view.ComplexLicenseView;
+import com.blackducksoftware.integration.hub.api.generated.view.VersionBomComponentView;
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
-import com.blackducksoftware.integration.hub.model.enumeration.MatchedFileUsageEnum;
-import com.blackducksoftware.integration.hub.model.view.ComplexLicenseView;
-import com.blackducksoftware.integration.hub.model.view.VersionBomComponentView;
-import com.blackducksoftware.integration.hub.model.view.components.OriginView;
-import com.blackducksoftware.integration.hub.model.view.components.VersionBomLicenseView;
+import com.blackducksoftware.integration.hub.service.model.ProjectVersionWrapper;
 import com.blackducksoftware.integration.hub.spdx.hub.HubGenericComplexLicenseView;
 import com.blackducksoftware.integration.hub.spdx.hub.HubGenericLicenseViewFactory;
 import com.blackducksoftware.integration.hub.spdx.hub.HubLicense;
@@ -91,7 +91,7 @@ public class SpdxHubBomReportBuilder {
 
         HubGenericComplexLicenseView hubGenericLicenseView = null;
         final List<VersionBomLicenseView> licenses = bomComp.licenses;
-        if ((licenses == null) || (licenses.size() == 0)) {
+        if (licenses == null || licenses.size() == 0) {
             logger.warn(String.format("The Hub provided no license information for BOM component %s/%s", bomComp.componentName, bomComp.componentVersionName));
         } else {
             logger.debug(String.format("\tComponent %s:%s, license: %s", bomComp.componentName, bomComp.componentVersionName, licenses.get(0).licenseDisplay));
@@ -131,22 +131,22 @@ public class SpdxHubBomReportBuilder {
 
     private RelationshipType getRelationshipType(final VersionBomComponentView bomComp) {
         RelationshipType relType = RelationshipType.OTHER;
-        final List<MatchedFileUsageEnum> usages = bomComp.usages;
+        final List<MatchedFileUsagesType> usages = bomComp.usages;
         if (usages.size() > 1) {
             logger.warn(String.format("# Usages for component %s:%s is > 1: %d; only the first is used", bomComp.componentName, bomComp.componentVersionName, usages.size()));
         }
         if (usages.size() > 0) {
-            if (usages.get(0) == MatchedFileUsageEnum.DYNAMICALLY_LINKED) {
+            if (usages.get(0) == MatchedFileUsagesType.DYNAMICALLY_LINKED) {
                 relType = RelationshipType.DYNAMIC_LINK;
-            } else if (usages.get(0) == MatchedFileUsageEnum.STATICALLY_LINKED) {
+            } else if (usages.get(0) == MatchedFileUsagesType.STATICALLY_LINKED) {
                 relType = RelationshipType.STATIC_LINK;
-            } else if (usages.get(0) == MatchedFileUsageEnum.SOURCE_CODE) {
+            } else if (usages.get(0) == MatchedFileUsagesType.SOURCE_CODE) {
                 relType = RelationshipType.GENERATED_FROM;
-            } else if (usages.get(0) == MatchedFileUsageEnum.DEV_TOOL_EXCLUDED) {
+            } else if (usages.get(0) == MatchedFileUsagesType.DEV_TOOL_EXCLUDED) {
                 relType = RelationshipType.BUILD_TOOL_OF;
-            } else if (usages.get(0) == MatchedFileUsageEnum.IMPLEMENTATION_OF_STANDARD) {
+            } else if (usages.get(0) == MatchedFileUsagesType.IMPLEMENTATION_OF_STANDARD) {
                 relType = RelationshipType.DESCRIBED_BY;
-            } else if (usages.get(0) == MatchedFileUsageEnum.SEPARATE_WORK) {
+            } else if (usages.get(0) == MatchedFileUsagesType.SEPARATE_WORK) {
                 relType = RelationshipType.OTHER;
             }
         }
@@ -189,9 +189,9 @@ public class SpdxHubBomReportBuilder {
     }
 
     private void logUsages(final VersionBomComponentView bomComp) {
-        final List<OriginView> origins = bomComp.origins;
+        final List<VersionBomOriginView> origins = bomComp.origins;
         logger.debug(String.format("# Origins: %d", origins.size()));
-        for (final OriginView origin : origins) {
+        for (final VersionBomOriginView origin : origins) {
             logger.debug(String.format("\tOrigin: externalNamespace=%s, externalId=%s, name=%s", origin.externalNamespace, origin.externalId, origin.name));
         }
     }

@@ -6,7 +6,7 @@ import org.junit.AfterClass
 import org.junit.BeforeClass
 import org.junit.Test
 
-import com.blackducksoftware.integration.hub.builder.HubServerConfigBuilder
+import com.blackducksoftware.integration.hub.configuration.HubServerConfigBuilder
 
 class HubConfigTest {
 
