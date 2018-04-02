@@ -24,6 +24,10 @@ public class SpdxHubBomReportBuilderTest {
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
+        File testDir = new File("test");
+        if (!testDir.exists()) {
+            testDir.mkdir();
+        }
     }
 
     @AfterClass
