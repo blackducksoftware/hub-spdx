@@ -10,12 +10,12 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
-import com.blackducksoftware.integration.hub.dataservice.project.ProjectVersionWrapper;
-import com.blackducksoftware.integration.hub.model.enumeration.MatchedFileUsageEnum;
-import com.blackducksoftware.integration.hub.model.view.ProjectVersionView
-import com.blackducksoftware.integration.hub.model.view.ProjectView
-import com.blackducksoftware.integration.hub.model.view.VersionBomComponentView
-import com.blackducksoftware.integration.hub.model.view.components.OriginView;
+import com.blackducksoftware.integration.hub.api.generated.component.VersionBomOriginView
+import com.blackducksoftware.integration.hub.api.generated.enumeration.MatchedFileUsagesType
+import com.blackducksoftware.integration.hub.api.generated.view.ProjectVersionView
+import com.blackducksoftware.integration.hub.api.generated.view.ProjectView
+import com.blackducksoftware.integration.hub.api.generated.view.VersionBomComponentView
+import com.blackducksoftware.integration.hub.service.model.ProjectVersionWrapper
 import com.blackducksoftware.integration.hub.spdx.hub.HubLicense;
 import com.blackducksoftware.integration.hub.spdx.spdx.SpdxLicense;
 import com.blackducksoftware.integration.hub.spdx.spdx.SpdxPkg;
@@ -24,6 +24,10 @@ public class SpdxHubBomReportBuilderTest {
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
+        File testDir = new File("test");
+        if (!testDir.exists()) {
+            testDir.mkdir();
+        }
     }
 
     @AfterClass
@@ -42,13 +46,13 @@ public class SpdxHubBomReportBuilderTest {
         bomCompView.componentName = "OpenSSL";
         bomCompView.componentVersionName = "1.2.3";
         bomCompView.origins = new ArrayList<>();
-        final OriginView origin = new OriginView();
+        final VersionBomOriginView origin = new VersionBomOriginView();
         origin.name = "Test Origin";
         origin.externalId = "testOriginExtId";
         origin.externalNamespace = "testOriginExtNamespace";
         bomCompView.origins.add(origin);
-        final List<MatchedFileUsageEnum> usages = new ArrayList<>();
-        usages.add(MatchedFileUsageEnum.DYNAMICALLY_LINKED);
+        final List<MatchedFileUsagesType> usages = new ArrayList<>();
+        usages.add(MatchedFileUsagesType.DYNAMICALLY_LINKED);
         bomCompView.usages = usages;
         bom.add(bomCompView);
 
