@@ -1,4 +1,4 @@
-package com.blackducksoftware.integration.hub.spdx.hub;
+package com.blackducksoftware.integration.hub.spdx.hub.license;
 
 import java.util.ArrayList;
 import java.util.List;

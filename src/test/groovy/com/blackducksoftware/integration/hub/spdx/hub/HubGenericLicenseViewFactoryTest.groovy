@@ -11,6 +11,8 @@ import com.blackducksoftware.integration.hub.api.generated.enumeration.ComplexLi
 import com.blackducksoftware.integration.hub.api.generated.enumeration.LicenseCodeSharingType;
 import com.blackducksoftware.integration.hub.api.generated.enumeration.LicenseOwnershipType
 import com.blackducksoftware.integration.hub.api.generated.view.ComplexLicenseView
+import com.blackducksoftware.integration.hub.spdx.hub.license.HubGenericComplexLicenseView
+import com.blackducksoftware.integration.hub.spdx.hub.license.HubGenericLicenseViewFactory
 
 class HubGenericLicenseViewFactoryTest {
 

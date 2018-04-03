@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spdx.rdfparser.InvalidSPDXAnalysisException;
@@ -27,10 +28,10 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.api.generated.enumeration.ComplexLicenseType;
-import com.blackducksoftware.integration.hub.api.generated.view.LicenseView;
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
-import com.blackducksoftware.integration.hub.spdx.hub.HubGenericComplexLicenseView;
-import com.blackducksoftware.integration.hub.spdx.hub.HubLicense;
+import com.blackducksoftware.integration.hub.spdx.hub.license.HubGenericComplexLicenseView;
+import com.blackducksoftware.integration.hub.spdx.hub.license.HubLicense;
+import com.blackducksoftware.integration.hub.spdx.hub.license.SpdxIdAwareLicenseView;
 
 @Component
 public class SpdxLicense {
@@ -90,13 +91,11 @@ public class SpdxLicense {
         for (final HubGenericComplexLicenseView hubSubLicenseView : hubComplexLicense.getLicenses().orElseThrow(() -> new HubIntegrationException(String.format("Missing sub-licenses for license: %s", hubComplexLicense.getDisplayName())))) {
             logger.debug(String.format("\t\tsub license url: %s", hubSubLicenseView.getUrl()));
             logger.debug(String.format("\t\tsub license display: %s", hubSubLicenseView.getDisplayName()));
-            final LicenseView subLicenseView = hubLicense.getLicenseView(hubSubLicenseView.getUrl());
+            final SpdxIdAwareLicenseView subLicenseView = hubLicense.getLicenseView(hubSubLicenseView.getUrl());
             if (subLicenseView == null) {
                 throw new IntegrationException(String.format("Missing sub license view for license: %s", hubComplexLicense.getDisplayName()));
             }
             logger.debug(String.format("subLicenseView.name: %s", subLicenseView.name));
-            final String subLicenseText = hubLicense.getLicenseText(subLicenseView);
-            logger.debug(String.format("sub license text: %s...", truncate(subLicenseText, 200)));
             logger.debug("Creating (or re-using) sub license");
             final AnyLicenseInfo subSpdxLicense = reUseOrCreateSpdxLicense(bomContainer, subLicenseView);
             subSpdxLicenses.add(subSpdxLicense);
@@ -119,18 +118,19 @@ public class SpdxLicense {
             logger.warn(String.format("Converting Hub license '%s' to SpdxNoneLicense", hubComplexLicense.getDisplayName()));
             return new SpdxNoneLicense();
         }
-        final LicenseView licenseView = hubLicense.getLicenseView(hubComplexLicense.getUrl());
+        final SpdxIdAwareLicenseView licenseView = hubLicense.getLicenseView(hubComplexLicense.getUrl());
         logger.trace("creating simple license");
         logger.debug(String.format("licenseView.name: %s", licenseView.name));
         final AnyLicenseInfo componentLicense = reUseOrCreateSpdxLicense(bomContainer, licenseView);
         return componentLicense;
     }
 
-    private AnyLicenseInfo reUseOrCreateSpdxLicense(final SpdxDocumentContainer spdxDocContainer, final LicenseView licenseView) throws IntegrationException {
+    private AnyLicenseInfo reUseOrCreateSpdxLicense(final SpdxDocumentContainer spdxDocContainer, final SpdxIdAwareLicenseView licenseView) throws IntegrationException {
         logger.trace("reUseOrCreateSpdxLicense()");
-        final Optional<String> spdxLicenseId = Optional.empty(); // TODO: = StringUtils.isBlank(licenseView.spdxId) ? Optional.empty() : Optional.of(licenseView.spdxId);
+        final Optional<String> spdxLicenseId = StringUtils.isBlank(licenseView.spdxId) ? Optional.empty() : Optional.of(licenseView.spdxId);
         AnyLicenseInfo componentLicense = tryStandardLicense(spdxLicenseId);
         if (componentLicense == null) {
+            logger.info(String.format("*** [GOOD] Calling getLicenseText() for license %s, id: %s", licenseView.name, licenseView.spdxId));
             final String licenseText = hubLicense.getLicenseText(licenseView);
             final String licenseId = generateLicenseId(licenseView.name, licenseText);
             logger.debug(String.format("License name: %s with license text from Hub hashed to ID: %s", licenseView.name, licenseId));
@@ -149,8 +149,10 @@ public class SpdxLicense {
     }
 
     private AnyLicenseInfo tryStandardLicense(final Optional<String> spdxLicenseId) {
+        logger.info(String.format("*** tryStandardLicense() Called for spdxLicenseId %s ***", spdxLicenseId));
         AnyLicenseInfo componentLicense = null;
         if (spdxLicenseId.isPresent()) {
+            logger.info("*** spdxLicenseId IS PRESENT ***");
             try {
                 componentLicense = ListedLicenses.getListedLicenses().getListedLicenseById(spdxLicenseId.get());
             } catch (final InvalidSPDXAnalysisException e) {

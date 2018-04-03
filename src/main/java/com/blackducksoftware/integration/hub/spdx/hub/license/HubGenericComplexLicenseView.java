@@ -1,4 +1,4 @@
-package com.blackducksoftware.integration.hub.spdx.hub;
+package com.blackducksoftware.integration.hub.spdx.hub.license;
 
 import java.util.List;
 import java.util.Optional;

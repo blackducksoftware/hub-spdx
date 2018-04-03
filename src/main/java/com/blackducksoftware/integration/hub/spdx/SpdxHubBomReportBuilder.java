@@ -31,8 +31,8 @@ import com.blackducksoftware.integration.hub.api.generated.view.ComplexLicenseVi
 import com.blackducksoftware.integration.hub.api.generated.view.VersionBomComponentView;
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
 import com.blackducksoftware.integration.hub.service.model.ProjectVersionWrapper;
-import com.blackducksoftware.integration.hub.spdx.hub.HubGenericComplexLicenseView;
-import com.blackducksoftware.integration.hub.spdx.hub.HubGenericLicenseViewFactory;
+import com.blackducksoftware.integration.hub.spdx.hub.license.HubGenericComplexLicenseView;
+import com.blackducksoftware.integration.hub.spdx.hub.license.HubGenericLicenseViewFactory;
 import com.blackducksoftware.integration.hub.spdx.spdx.SpdxLicense;
 import com.blackducksoftware.integration.hub.spdx.spdx.SpdxPkg;
 

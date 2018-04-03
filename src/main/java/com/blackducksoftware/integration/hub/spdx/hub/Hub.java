@@ -12,8 +12,8 @@ import com.blackducksoftware.integration.hub.configuration.HubServerConfig;
 import com.blackducksoftware.integration.hub.configuration.HubServerConfigBuilder;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
-import com.blackducksoftware.integration.hub.service.LicenseService;
 import com.blackducksoftware.integration.hub.service.ProjectService;
+import com.blackducksoftware.integration.hub.spdx.hub.license.SpdxIdAwareLicenseService;
 import com.blackducksoftware.integration.log.Slf4jIntLogger;
 
 @Component
@@ -60,8 +60,8 @@ public class Hub {
         return hubSvcsFactory.createProjectService();
     }
 
-    public LicenseService getLicenseService() {
-        return hubSvcsFactory.createLicenseService();
+    public SpdxIdAwareLicenseService getLicenseService() {
+        return new SpdxIdAwareLicenseService(hubSvcsFactory.createHubService(), hubSvcsFactory.createLicenseService());
     }
 
     public String getHubUrl() {

@@ -16,7 +16,7 @@ import com.blackducksoftware.integration.hub.api.generated.view.ProjectVersionVi
 import com.blackducksoftware.integration.hub.api.generated.view.ProjectView
 import com.blackducksoftware.integration.hub.api.generated.view.VersionBomComponentView
 import com.blackducksoftware.integration.hub.service.model.ProjectVersionWrapper
-import com.blackducksoftware.integration.hub.spdx.hub.HubLicense;
+import com.blackducksoftware.integration.hub.spdx.hub.license.HubLicense
 import com.blackducksoftware.integration.hub.spdx.spdx.SpdxLicense;
 import com.blackducksoftware.integration.hub.spdx.spdx.SpdxPkg;
 
