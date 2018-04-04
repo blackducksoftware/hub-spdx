@@ -21,13 +21,16 @@ public class HubGenericLicenseViewFactory {
     }
 
     public static HubGenericComplexLicenseView create(final VersionBomLicenseView sourceLicense) {
-        final List<HubGenericComplexLicenseView> targetChildren = new ArrayList<>(sourceLicense.licenses.size());
+        final List<HubGenericComplexLicenseView> targetChildren = new ArrayList<>(sourceLicense.licenses == null ? 0 : sourceLicense.licenses.size());
         final HubGenericComplexLicenseView targetLicense = new HubGenericComplexLicenseView(Optional.ofNullable(sourceLicense.license), Optional.ofNullable(sourceLicense.licenseDisplay), Optional.ofNullable(sourceLicense.licenseType),
                 Optional.of(targetChildren));
-        for (final VersionBomLicenseView sourceChild : sourceLicense.licenses) {
-            final HubGenericComplexLicenseView targetChildLicense = new HubGenericComplexLicenseView(Optional.ofNullable(sourceChild.license), Optional.ofNullable(sourceChild.licenseDisplay), Optional.ofNullable(sourceChild.licenseType),
-                    Optional.empty());
-            targetChildren.add(targetChildLicense);
+        if (sourceLicense.licenses != null) {
+            for (final VersionBomLicenseView sourceChild : sourceLicense.licenses) {
+                final HubGenericComplexLicenseView targetChildLicense = new HubGenericComplexLicenseView(Optional.ofNullable(sourceChild.license), Optional.ofNullable(sourceChild.licenseDisplay),
+                        Optional.ofNullable(sourceChild.licenseType),
+                        Optional.empty());
+                targetChildren.add(targetChildLicense);
+            }
         }
         return targetLicense;
     }

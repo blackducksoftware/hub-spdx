@@ -48,6 +48,14 @@ public class SpdxLicense {
 
     private final Map<String, String> licenseIdToName = new HashMap<>();
 
+    public void setIncludeLicenses(final boolean includeLicenses) {
+        this.includeLicenses = includeLicenses;
+    }
+
+    public void setUseSpdxOrgLicenseData(final boolean useSpdxOrgLicenseData) {
+        this.useSpdxOrgLicenseData = useSpdxOrgLicenseData;
+    }
+
     public void setHubLicense(final HubLicense hubLicense) {
         this.hubLicense = hubLicense;
     }
