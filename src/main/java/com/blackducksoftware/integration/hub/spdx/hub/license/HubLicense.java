@@ -31,7 +31,7 @@ public class HubLicense {
         SpdxIdAwareLicenseView licenseView = getLicenseViewSingleLevel(licenseViewUrl.get());
         // TODO the link WAS: MetaHandler.LICENSE_LINK, which seems to be gone now. May belong in LicenseView?
         final String embeddedLicenseUrl = new MetaHandler(new Slf4jIntLogger(logger)).getFirstLinkSafely(licenseView, "license");
-        logger.info(String.format("*** embeddedLicenseUrl: %s", embeddedLicenseUrl));
+        logger.debug(String.format("Embedded license URL: %s", embeddedLicenseUrl));
         if (!StringUtils.isBlank(embeddedLicenseUrl)) {
             logger.debug(String.format("Found embedded license URL: %s; fetching that licenseView", embeddedLicenseUrl));
             try {
@@ -60,7 +60,7 @@ public class HubLicense {
         if (licenseView == null) {
             throw new IntegrationException(String.format("Exceeded retry count (%d) trying to get: %s", retryCount, licenseViewUrl));
         }
-        logger.info(String.format("*** licenseView.spdxId: %s", licenseView.spdxId));
+        logger.debug(String.format("License SPDX ID from Hub: %s", licenseView.spdxId));
         return licenseView;
     }
 

@@ -27,7 +27,7 @@ public class SpdxIdAwareLicenseService {
     }
 
     public String getLicenseText(final SpdxIdAwareLicenseView licenseView) throws IntegrationException {
-        logger.info(String.format("******** getLicenseText() CALLED for %s; ID: %s********", licenseView.name, licenseView.spdxId));
+        logger.debug(String.format("Fetching license text from Hub for license name: %s; ID: %s", licenseView.name, licenseView.spdxId));
         return licenseService.getLicenseText(licenseView);
     }
 }
