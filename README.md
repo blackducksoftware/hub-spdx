@@ -35,7 +35,7 @@ java -jar hub-spdx-<version>.jar \
 --hub.proxy.username=<proxy username>
 --hub.proxy.password=<proxy password>
 --include.licenses=true # If true, include license info for each component
---use.spdx.org.license.data=false # If true (the default): fetch license details from spdx.org when possible; see https://spdx.org/licenses/
+--use.spdx.org.license.data=false # If true (the default): fetch license text from spdx.org when possible; see https://spdx.org/licenses/
 --hub.always.trust.cert=true # If true, trust any Hub server certificate
 --logging.level.com.blackducksoftware=<logging level> # INFO, DEBUG, TRACE
 ```
