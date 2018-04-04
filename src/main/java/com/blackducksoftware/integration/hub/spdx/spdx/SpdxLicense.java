@@ -129,7 +129,6 @@ public class SpdxLicense {
     }
 
     private AnyLicenseInfo reUseOrCreateSpdxLicense(final SpdxDocumentContainer spdxDocContainer, final SpdxIdAwareLicenseView licenseView) throws IntegrationException {
-        logger.trace("reUseOrCreateSpdxLicense()");
         final Optional<String> spdxLicenseId = StringUtils.isBlank(licenseView.spdxId) ? Optional.empty() : Optional.of(licenseView.spdxId);
         AnyLicenseInfo componentLicense = tryStandardLicense(spdxLicenseId);
         if (componentLicense == null) {
@@ -143,7 +142,7 @@ public class SpdxLicense {
                 componentLicense = existingSpdxLicense.get();
             } else {
                 logger.debug(String.format("Unable to find existing license in document: id: %s, %s; will create a custom license and add it to the document", licenseId, licenseView.name));
-                logger.debug(String.format("Adding new license: ID: %s, name: %s text: %s", licenseId, licenseView.name, String.format("%s...", truncate(licenseText, 200))));
+                logger.debug(String.format("Adding new license (as ExtractedLicenseInfo): ID: %s, name: %s text: %s", licenseId, licenseView.name, String.format("%s...", truncate(licenseText, 200))));
                 componentLicense = new ExtractedLicenseInfo(licenseId, licenseText);
                 this.put(licenseId, licenseView.name);
             }
@@ -160,7 +159,7 @@ public class SpdxLicense {
             logger.debug("The Hub does not have an SPDX License ID for this license, so will use license data from the Hub (not spdx.org)");
             return null;
         }
-        logger.debug(String.format("Fetching license details for license %s from spdx.org", spdxLicenseId.get()));
+        logger.debug(String.format("Fetching license details (as SpdxListedLicense) for license %s from spdx.org", spdxLicenseId.get()));
         AnyLicenseInfo componentLicense = null;
         try {
             componentLicense = ListedLicenses.getListedLicenses().getListedLicenseById(spdxLicenseId.get());
