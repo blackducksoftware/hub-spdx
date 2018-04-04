@@ -47,14 +47,15 @@ public class SpdxHubBomReportBuilder {
 
     private static final String TOOL_NAME = "Tool: Black Duck Hub SPDX Report Generator";
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private static final String SPDX_SPEC_VERSION = "SPDX-2.1";
+    public static final String SPDX_VERSION = "2.1";
+    private static final String SPDX_SPEC_VERSION_ID = String.format("SPDX-%s", SPDX_VERSION);
     private SpdxDocumentContainer bomContainer;
     private SpdxDocument bomDocument;
 
     public void setProject(final ProjectVersionWrapper projectVersionWrapper, final String bomUrl) throws HubIntegrationException {
         bomContainer = null;
         try {
-            bomContainer = new SpdxDocumentContainer("http://blackducksoftware.com", SPDX_SPEC_VERSION);
+            bomContainer = new SpdxDocumentContainer("http://blackducksoftware.com", SPDX_SPEC_VERSION_ID);
         } catch (final InvalidSPDXAnalysisException e1) {
             throw new HubIntegrationException("Error creating SPDX container", e1);
         }

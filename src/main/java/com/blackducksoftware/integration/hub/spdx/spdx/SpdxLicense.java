@@ -129,8 +129,7 @@ public class SpdxLicense {
     }
 
     private AnyLicenseInfo reUseOrCreateSpdxLicense(final SpdxDocumentContainer spdxDocContainer, final SpdxIdAwareLicenseView licenseView) throws IntegrationException {
-        final Optional<String> spdxLicenseId = StringUtils.isBlank(licenseView.spdxId) ? Optional.empty() : Optional.of(licenseView.spdxId);
-        AnyLicenseInfo componentLicense = tryStandardLicense(spdxLicenseId);
+        AnyLicenseInfo componentLicense = tryStandardLicense(licenseView);
         if (componentLicense == null) {
             logger.debug(String.format("Fetching license text for license %s, id: %s, from Hub", licenseView.name, licenseView.spdxId));
             final String licenseText = hubLicense.getLicenseText(licenseView);
@@ -150,21 +149,21 @@ public class SpdxLicense {
         return componentLicense;
     }
 
-    private AnyLicenseInfo tryStandardLicense(final Optional<String> spdxLicenseId) {
-        if (!this.useSpdxOrgLicenseData) {
+    private AnyLicenseInfo tryStandardLicense(final SpdxIdAwareLicenseView licenseView) {
+        if (!useSpdxOrgLicenseData) {
             logger.debug("Use of spdx.org license data is disabled");
             return null;
         }
-        if (!spdxLicenseId.isPresent()) {
-            logger.debug("The Hub does not have an SPDX License ID for this license, so will use license data from the Hub (not spdx.org)");
+        if (StringUtils.isBlank(licenseView.spdxId)) {
+            logger.info(String.format("The Hub does not have an SPDX License ID for license '%s', so will use license text from the Hub (not spdx.org)", licenseView.name));
             return null;
         }
-        logger.debug(String.format("Fetching license details (as SpdxListedLicense) for license %s from spdx.org", spdxLicenseId.get()));
+        logger.debug(String.format("Fetching license details (as SpdxListedLicense) for license %s from spdx.org", licenseView.spdxId));
         AnyLicenseInfo componentLicense = null;
         try {
-            componentLicense = ListedLicenses.getListedLicenses().getListedLicenseById(spdxLicenseId.get());
+            componentLicense = ListedLicenses.getListedLicenses().getListedLicenseById(licenseView.spdxId);
         } catch (final InvalidSPDXAnalysisException e) {
-            logger.warn(String.format("Error looking up SPDX License ID %s on spdx.org; will rely on the Hub for the license data instead. The lookup error was: %s", spdxLicenseId.get(), e.getMessage()));
+            logger.warn(String.format("Error looking up SPDX License ID %s on spdx.org; will rely on the Hub for the license text instead. The lookup error was: %s", licenseView.spdxId, e.getMessage()));
         }
         return componentLicense;
     }

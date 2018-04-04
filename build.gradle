@@ -17,6 +17,10 @@ group = 'com.blackducksoftware.integration'
 version = '1.0.0-SNAPSHOT'
 description = ''
 
+final def versionFile = new File("${projectDir}/src/main/resources/version.properties")
+versionFile.delete()
+versionFile << "program.version=${version}"
+
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 

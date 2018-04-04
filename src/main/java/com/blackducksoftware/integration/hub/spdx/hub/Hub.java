@@ -1,5 +1,7 @@
 package com.blackducksoftware.integration.hub.spdx.hub;
 
+import java.io.IOException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +14,13 @@ import com.blackducksoftware.integration.hub.configuration.HubServerConfig;
 import com.blackducksoftware.integration.hub.configuration.HubServerConfigBuilder;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
+import com.blackducksoftware.integration.hub.service.PhoneHomeService;
 import com.blackducksoftware.integration.hub.service.ProjectService;
+import com.blackducksoftware.integration.hub.spdx.ProgramVersion;
+import com.blackducksoftware.integration.hub.spdx.SpdxHubBomReportBuilder;
 import com.blackducksoftware.integration.hub.spdx.hub.license.SpdxIdAwareLicenseService;
 import com.blackducksoftware.integration.log.Slf4jIntLogger;
+import com.blackducksoftware.integration.phonehome.PhoneHomeRequestBodyBuilder;
 
 @Component
 public class Hub {
@@ -22,6 +28,9 @@ public class Hub {
 
     @Autowired
     private HubPasswords hubPasswords;
+
+    @Autowired
+    private ProgramVersion programVersion;
 
     @Value("${hub.url}")
     private String hubUrl;
@@ -54,6 +63,21 @@ public class Hub {
         final RestConnection restConnection = hubServerConfig.createCredentialsRestConnection(new Slf4jIntLogger(logger));
         restConnection.connect();
         hubSvcsFactory = new HubServicesFactory(restConnection);
+        phoneHome();
+    }
+
+    private void phoneHome() {
+        logger.trace("Phoning home");
+        final PhoneHomeService phoneHomeService = hubSvcsFactory.createPhoneHomeService();
+        final PhoneHomeRequestBodyBuilder phoneHomeRequestBodyBuilder = phoneHomeService.createInitialPhoneHomeRequestBodyBuilder();
+        phoneHomeRequestBodyBuilder.setThirdPartyName("SPDX Report");
+        phoneHomeRequestBodyBuilder.setThirdPartyVersion(SpdxHubBomReportBuilder.SPDX_VERSION);
+        try {
+            phoneHomeRequestBodyBuilder.setPluginVersion(programVersion.getProgramVersion());
+            phoneHomeService.phoneHome(phoneHomeRequestBodyBuilder);
+        } catch (final IOException e) {
+            logger.warn(String.format("Unable to phone home: %s", e.getMessage()));
+        }
     }
 
     public ProjectService getProjectService() {
@@ -67,5 +91,4 @@ public class Hub {
     public String getHubUrl() {
         return hubUrl;
     }
-
 }
