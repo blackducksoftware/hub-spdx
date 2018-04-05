@@ -1,5 +1,5 @@
 # hub-spdx
-hub-spdx is a utility that generates an SPDX report representing the Bill Of Materials (BOM) of a Black Duck Hub project version.
+hub-spdx is a utility that generates an SPDX report (RDF format) representing the Bill Of Materials (BOM) of a Black Duck Hub project version.
 
 ## Prerequisites
 
@@ -34,10 +34,16 @@ java -jar hub-spdx-<version>.jar \
 --hub.proxy.port=<proxy port>
 --hub.proxy.username=<proxy username>
 --hub.proxy.password=<proxy password>
---include.licenses=true # If true, include license info for each component
---use.spdx.org.license.data=false # If true (the default): fetch license text from spdx.org when possible; see https://spdx.org/licenses/
---hub.always.trust.cert=true # If true, trust any Hub server certificate
---logging.level.com.blackducksoftware=<logging level> # INFO, DEBUG, TRACE
+--include.licenses=true
+    # If true, include license info for each component
+    # default: false
+--use.spdx.org.license.data=false
+    # If true: fetch license text from spdx.org when possible; see https://spdx.org/licenses/
+    # default: true
+--hub.always.trust.cert=true
+    # If true, trust any Hub server certificate
+--logging.level.com.blackducksoftware=<logging level>
+    # Logging levels: INFO, DEBUG, TRACE
 ```
 
 ### Optional environment variables:
