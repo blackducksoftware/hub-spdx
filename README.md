@@ -47,4 +47,4 @@ export BD_HUB_PROXY_PASSWORD=<proxy password>
 ```
 
 ## Other SPDX Tools
-If you a need a utility to validate and view SPDX files, you can get one here: https://github.com/spdx/tools/releases
+If you a need a utility to validate and view SPDX files, convert RDF format to HTML, etc., please see: https://github.com/spdx/tools/
