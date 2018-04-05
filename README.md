@@ -42,6 +42,7 @@ java -jar hub-spdx-<version>.jar \
     # default: true
 --hub.always.trust.cert=true
     # If true, trust any Hub server certificate
+    # default: false
 --logging.level.com.blackducksoftware=<logging level>
     # Logging levels: INFO, DEBUG, TRACE
 ```
