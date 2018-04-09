@@ -44,12 +44,14 @@ repositories {
      maven { url "http://repo.maven.apache.org/maven2" }
      maven { url "https://mvnrepository.com/artifact/org.spdx/spdx-tools" }
      maven { url "https://dl.bintray.com/yevster/maven/" }
+     maven { url "https://mvnrepository.com/artifact/xerces/xercesImpl" }
 }
 
 dependencies {
     compile (group: 'org.spdx', name: 'spdx-tools', version:'2.1.7') {
         exclude group: 'org.slf4j', module: 'slf4j-log4j12'
     }
+    compile group: 'xerces', name: 'xercesImpl', version: '2.11.0'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter'
     compile group: 'org.apache.httpcomponents', name: 'httpclient', version:'4.5.5'
     compile group: 'com.blackducksoftware.integration', name: 'hub-common', version: '29.1.1'
