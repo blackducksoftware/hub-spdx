@@ -5,6 +5,7 @@ hub-spdx is a utility that generates an SPDX report (RDF format) representing th
 
 # Build
 
+[![Build Status](https://travis-ci.org/blackducksoftware/hub-spdx.svg?branch=master)](https://travis-ci.org/blackducksoftware/hub-spdx)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 # Prerequisites
