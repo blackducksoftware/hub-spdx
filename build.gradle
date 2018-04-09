@@ -47,6 +47,7 @@ dependencies {
     compile (group: 'org.spdx', name: 'spdx-tools', version:'2.1.7') {
         exclude group: 'org.slf4j', module: 'slf4j-log4j12'
     }
+    compile group: 'com.yevster.net.rootdev', name: 'java-rdfa', version: '0.4.3'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter'
     compile group: 'org.apache.httpcomponents', name: 'httpclient', version:'4.5.5'
     compile group: 'com.blackducksoftware.integration', name: 'hub-common', version: '29.1.1'
