@@ -117,7 +117,7 @@ public class SpdxHubBomReportBuilderTest {
             final SpdxRelatedLicensedPackage pkg = reportBuilder.toSpdxRelatedLicensedPackage(bomComp);
             reportBuilder.addPackageToDocument(pkg);
         }
-        final File actualSpdxFile = new File("test/actualSpdxWithoutLicenses.rdf");
+        final File actualSpdxFile = new File("test/actualSpdx.rdf");
         final PrintStream ps = new PrintStream(actualSpdxFile);
         reportBuilder.writeReport(ps);
         ps.flush();
