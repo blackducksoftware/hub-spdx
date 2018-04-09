@@ -14,7 +14,7 @@ apply plugin: 'eclipse'
 apply plugin: 'java'
 
 group = 'com.blackducksoftware.integration'
-version = '1.0.0'
+version = '1.0.1-SNAPSHOT'
 description = ''
 
 final def versionFile = new File("${projectDir}/src/main/resources/version.properties")
