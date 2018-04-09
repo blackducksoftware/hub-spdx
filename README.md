@@ -1,13 +1,17 @@
-# hub-spdx
+# Overview
 The Software Package Data Exchange® (SPDX®) specification (https://spdx.org) is a standard format for communicating the components and licenses associated with software packages. Software Suppliers sometimes use SPDX format to communicate the list of open source components contained in the software they are supplying. 
 
 hub-spdx is a utility that generates an SPDX report (RDF format) representing the Bill Of Materials (BOM) of a Black Duck Hub project version.
 
-## Prerequisites
+# Build
+
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
+# Prerequisites
 
 Java 1.8
 
-## Example usage:
+# Example usage:
 ```
 java -jar hub-spdx-<version>.jar \
 --hub.url=<Hub URL> \
@@ -19,7 +23,7 @@ java -jar hub-spdx-<version>.jar \
 --include.licenses=true
 ```
 
-### Required arguments:
+## Required arguments:
 ```
 --hub.url=<Hub URL>
 --hub.username=<Hub username>
@@ -28,7 +32,7 @@ java -jar hub-spdx-<version>.jar \
 --output.filename=<path to report file>
 ```
   
-### Optional arguments:
+## Optional arguments:
 ```
 --hub.timeout=<Hub timeout in seconds>
 --hub.password=<Hub password>
@@ -49,7 +53,7 @@ java -jar hub-spdx-<version>.jar \
     # Logging levels: INFO, DEBUG, TRACE
 ```
 
-### Optional environment variables:
+## Optional environment variables:
 ```
 export BD_HUB_PASSWORD=<Hub password>
 export BD_HUB_PROXY_PASSWORD=<proxy password>
