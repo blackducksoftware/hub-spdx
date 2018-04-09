@@ -1,4 +1,6 @@
 # hub-spdx
+The Software Package Data Exchange® (SPDX®) specification (https://spdx.org) is a standard format for communicating the components, licenses and copyrights associated with software packages. Software Suppliers sometimes use SPDX format to communicate the list of open source components contained in the software they are supplying. 
+
 hub-spdx is a utility that generates an SPDX report (RDF format) representing the Bill Of Materials (BOM) of a Black Duck Hub project version.
 
 ## Prerequisites
