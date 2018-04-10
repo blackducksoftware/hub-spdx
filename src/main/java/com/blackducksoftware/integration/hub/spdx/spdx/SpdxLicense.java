@@ -1,3 +1,26 @@
+/**
+ * hub-spdx
+ *
+ * Copyright (C) 2018 Black Duck Software, Inc.
+ * http://www.blackducksoftware.com/
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package com.blackducksoftware.integration.hub.spdx.spdx;
 
 import java.math.BigInteger;
@@ -93,7 +116,11 @@ public class SpdxLicense {
 
     private AnyLicenseInfo createComboSpdxLicense(final SpdxDocumentContainer bomContainer, final HubGenericComplexLicenseView hubComplexLicense) throws IntegrationException {
         logger.trace("createComboSpdxLicense()");
-        if (hubComplexLicense == null || hubComplexLicense.isLicenseNotFound() || hubComplexLicense.isUnknownLicense()) {
+        if (hubComplexLicense == null) {
+            logger.warn(String.format("Converting Hub license to SpdxNoneLicense, but Hub license is null"));
+            return new SpdxNoneLicense();
+        }
+        if (hubComplexLicense.isLicenseNotFound() || hubComplexLicense.isUnknownLicense()) {
             logger.warn(String.format("Converting Hub license '%s' to SpdxNoneLicense", hubComplexLicense.getDisplayName()));
             return new SpdxNoneLicense();
         }
@@ -111,7 +138,10 @@ public class SpdxLicense {
             final AnyLicenseInfo subSpdxLicense = reUseOrCreateSpdxLicense(bomContainer, subLicenseView);
             subSpdxLicenses.add(subSpdxLicense);
         }
-        AnyLicenseInfo componentLicense = new SpdxNoneLicense();
+        if (!hubComplexLicense.getType().isPresent()) {
+            throw new IntegrationException(String.format("License %s has no type", hubComplexLicense.getDisplayName()));
+        }
+        AnyLicenseInfo componentLicense = null;
         if (hubComplexLicense.getType().get() == ComplexLicenseType.CONJUNCTIVE) {
             logger.debug("creating conjunctive license");
             componentLicense = new ConjunctiveLicenseSet(subSpdxLicenses.toArray(new AnyLicenseInfo[subSpdxLicenses.size()]));
@@ -132,8 +162,7 @@ public class SpdxLicense {
         final SpdxIdAwareLicenseView licenseView = hubLicense.getLicenseView(hubComplexLicense.getUrl());
         logger.trace("creating simple license");
         logger.debug(String.format("licenseView.name: %s", licenseView.name));
-        final AnyLicenseInfo componentLicense = reUseOrCreateSpdxLicense(bomContainer, licenseView);
-        return componentLicense;
+        return reUseOrCreateSpdxLicense(bomContainer, licenseView);
     }
 
     private AnyLicenseInfo reUseOrCreateSpdxLicense(final SpdxDocumentContainer spdxDocContainer, final SpdxIdAwareLicenseView licenseView) throws IntegrationException {

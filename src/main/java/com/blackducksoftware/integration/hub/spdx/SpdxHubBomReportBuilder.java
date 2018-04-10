@@ -1,3 +1,26 @@
+/**
+ * hub-spdx
+ *
+ * Copyright (C) 2018 Black Duck Software, Inc.
+ * http://www.blackducksoftware.com/
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package com.blackducksoftware.integration.hub.spdx;
 
 import java.io.ByteArrayOutputStream;
@@ -25,7 +48,6 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.api.generated.component.VersionBomLicenseView;
-import com.blackducksoftware.integration.hub.api.generated.component.VersionBomOriginView;
 import com.blackducksoftware.integration.hub.api.generated.enumeration.MatchedFileUsagesType;
 import com.blackducksoftware.integration.hub.api.generated.view.ComplexLicenseView;
 import com.blackducksoftware.integration.hub.api.generated.view.VersionBomComponentView;
@@ -38,6 +60,8 @@ import com.blackducksoftware.integration.hub.spdx.spdx.SpdxPkg;
 
 @Component
 public class SpdxHubBomReportBuilder {
+
+    private static final String NO_ASSERTION = "NOASSERTION";
 
     @Autowired
     SpdxPkg spdxPkg;
@@ -74,21 +98,15 @@ public class SpdxHubBomReportBuilder {
         }
     }
 
-    public SpdxRelatedLicensedPackage toSpdxRelatedLicensedPackage(final VersionBomComponentView bomComp) throws IntegrationException {
-        logger.info(String.format("Converting component %s:%s to SpdxPackage", bomComp.componentName, bomComp.componentVersionName));
-        logUsages(bomComp);
-        return toSpdxRelatedLicensedPackage(bomDocument, bomComp);
-    }
-
     public void addPackageToDocument(final SpdxRelatedLicensedPackage pkg) {
         spdxPkg.addPackageToDocument(bomDocument, pkg);
     }
 
-    private SpdxRelatedLicensedPackage toSpdxRelatedLicensedPackage(final SpdxDocument bomDocument, final VersionBomComponentView bomComp) throws IntegrationException {
-
+    public SpdxRelatedLicensedPackage toSpdxRelatedLicensedPackage(final VersionBomComponentView bomComp) throws IntegrationException {
+        logger.info(String.format("Converting component %s:%s to SpdxPackage", bomComp.componentName, bomComp.componentVersionName));
         HubGenericComplexLicenseView hubGenericLicenseView = null;
         final List<VersionBomLicenseView> licenses = bomComp.licenses;
-        if (licenses == null || licenses.size() == 0) {
+        if (licenses == null || licenses.isEmpty()) {
             logger.warn(String.format("The Hub provided no license information for BOM component %s/%s", bomComp.componentName, bomComp.componentVersionName));
         } else {
             logger.debug(String.format("\tComponent %s:%s, license: %s", bomComp.componentName, bomComp.componentVersionName, licenses.get(0).licenseDisplay));
@@ -96,7 +114,7 @@ public class SpdxHubBomReportBuilder {
         }
         final AnyLicenseInfo compSpdxLicense = spdxLicense.generateLicenseInfo(bomContainer, hubGenericLicenseView);
         logger.debug(String.format("Creating package for %s:%s", bomComp.componentName, bomComp.componentVersionName));
-        final String bomCompDownloadLocation = "NOASSERTION";
+        final String bomCompDownloadLocation = NO_ASSERTION;
         final RelationshipType relType = getRelationshipType(bomComp);
 
         final SpdxPackage pkg = spdxPkg.createSpdxPackage(compSpdxLicense, bomComp.componentName, bomComp.componentVersionName, bomCompDownloadLocation, relType);
@@ -161,12 +179,11 @@ public class SpdxHubBomReportBuilder {
         final SpdxPackage documentDescriptionPackage = new SpdxPackage(projectVersionWrapper.getProjectView().name, hubProjectComment, new Annotation[0], new Relationship[0], licenseConcluded, licenseInfoInFiles, copyrightText,
                 licenseComment, licenseDeclared, new Checksum[0], projectVersionWrapper.getProjectView().description, projectDownloadLocation, new SpdxFile[0], "http://www.blackducksoftware.com", projectDownloadLocation, null,
                 packageVerificationCode, null, null, null, projectVersionWrapper.getProjectVersionView().versionName);
-        documentDescriptionPackage.setCopyrightText("NOASSERTION");
-        documentDescriptionPackage.setSupplier("NOASSERTION");
-        documentDescriptionPackage.setOriginator("NOASSERTION");
+        documentDescriptionPackage.setCopyrightText(NO_ASSERTION);
+        documentDescriptionPackage.setSupplier(NO_ASSERTION);
+        documentDescriptionPackage.setOriginator(NO_ASSERTION);
         documentDescriptionPackage.setFilesAnalyzed(false);
-        final Relationship describes = new Relationship(documentDescriptionPackage, RelationshipType.DESCRIBES, "top level comment");
-        return describes;
+        return new Relationship(documentDescriptionPackage, RelationshipType.DESCRIBES, "top level comment");
     }
 
     private AnyLicenseInfo getProjectVersionSpdxLicense(final ProjectVersionWrapper projectVersionWrapper) {
@@ -183,13 +200,5 @@ public class SpdxHubBomReportBuilder {
             logger.error(String.format("Unable to generate license information for the project: %s", e.getMessage()));
         }
         return licenseDeclared;
-    }
-
-    private void logUsages(final VersionBomComponentView bomComp) {
-        final List<VersionBomOriginView> origins = bomComp.origins;
-        logger.debug(String.format("# Origins: %d", origins.size()));
-        for (final VersionBomOriginView origin : origins) {
-            logger.debug(String.format("\tOrigin: externalNamespace=%s, externalId=%s, name=%s", origin.externalNamespace, origin.externalId, origin.name));
-        }
     }
 }

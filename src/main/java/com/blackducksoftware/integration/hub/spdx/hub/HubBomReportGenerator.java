@@ -1,3 +1,26 @@
+/**
+ * hub-spdx
+ *
+ * Copyright (C) 2018 Black Duck Software, Inc.
+ * http://www.blackducksoftware.com/
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package com.blackducksoftware.integration.hub.spdx.hub;
 
 import java.io.PrintStream;
@@ -35,17 +58,12 @@ public class HubBomReportGenerator {
     @Value("${single.thread:false}")
     private boolean singleThread;
 
-    public String createReport(final String projectName, final String projectVersion, final String hubUrl) throws IntegrationException {
-        consumeHubProjectBom(hubUrl, projectName, projectVersion);
-        return reportBuilder.generateReportAsString();
-    }
-
-    public void writeReport(final PrintStream ps, final String projectName, final String projectVersion, final String hubUrl) throws IntegrationException {
-        consumeHubProjectBom(hubUrl, projectName, projectVersion);
+    public void writeReport(final PrintStream ps, final String projectName, final String projectVersion) throws IntegrationException {
+        consumeHubProjectBom(projectName, projectVersion);
         reportBuilder.writeReport(ps);
     }
 
-    private void consumeHubProjectBom(final String hubUrl, final String projectName, final String projectVersion) throws IntegrationException, HubIntegrationException {
+    private void consumeHubProjectBom(final String projectName, final String projectVersion) throws IntegrationException {
         logger.info(String.format("Generating report for project %s:%s", projectName, projectVersion));
         final ProjectVersionWrapper projectVersionWrapper = hub.getProjectService().getProjectVersion(projectName, projectVersion);
         final String bomUrl = new MetaHandler(new Slf4jIntLogger(logger)).getFirstLinkSafely(projectVersionWrapper.getProjectVersionView(), ProjectVersionView.COMPONENTS_LINK);

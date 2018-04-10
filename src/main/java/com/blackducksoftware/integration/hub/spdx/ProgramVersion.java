@@ -1,5 +1,5 @@
 /**
- * hub-docker-inspector
+ * hub-spdx
  *
  * Copyright (C) 2018 Black Duck Software, Inc.
  * http://www.blackducksoftware.com/
@@ -43,7 +43,7 @@ public class ProgramVersion {
         logger.debug(String.format("programVersion: %s", programVersion));
     }
 
-    public String getProgramVersion() throws IOException {
+    public String getProgramVersion() {
         return programVersion;
     }
 
