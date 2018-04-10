@@ -142,10 +142,10 @@ public class SpdxLicense {
             throw new IntegrationException(String.format("License %s has no type", hubComplexLicense.getDisplayName()));
         }
         AnyLicenseInfo componentLicense = null;
-        if (hubComplexLicense.getType().get() == ComplexLicenseType.CONJUNCTIVE) {
+        if (hubComplexLicense.getType().isPresent() && hubComplexLicense.getType().get() == ComplexLicenseType.CONJUNCTIVE) {
             logger.debug("creating conjunctive license");
             componentLicense = new ConjunctiveLicenseSet(subSpdxLicenses.toArray(new AnyLicenseInfo[subSpdxLicenses.size()]));
-        } else if (hubComplexLicense.getType().get() == ComplexLicenseType.DISJUNCTIVE) {
+        } else if (hubComplexLicense.getType().isPresent() && hubComplexLicense.getType().get() == ComplexLicenseType.DISJUNCTIVE) {
             logger.debug("creating disjunctive license");
             componentLicense = new DisjunctiveLicenseSet(subSpdxLicenses.toArray(new AnyLicenseInfo[subSpdxLicenses.size()]));
         } else {
