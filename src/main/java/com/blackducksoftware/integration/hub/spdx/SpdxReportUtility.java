@@ -93,21 +93,21 @@ public class SpdxReportUtility {
         sb.append("\t--output.filename=<path to report file>\n");
         sb.append("\n");
         sb.append("Optional arguments:\n");
-        sb.append("\t--hub.password=<Hub password>\n");
+        sb.append("\t--hub.password=<Hub password>\n"); // NOSONAR
         sb.append("\t--hub.always.trust.cert=true\n");
 
         sb.append("\t--include.licenses=true # if true: Include license information in report\n");
         sb.append("\t--hub.proxy.host=<Proxy hostname>\n");
         sb.append("\t--hub.proxy.port=<Proxy port #>\n");
         sb.append("\t--hub.proxy.username=<Proxy username>\n");
-        sb.append("\t--hub.proxy.password=<Proxy password>\n");
+        sb.append("\t--hub.proxy.password=<Proxy password>\n"); // NOSONAR
         sb.append("\t--hub.timeout=<# seconds> # Timeout for Hub operations\n");
         sb.append("\t--single.thread=true # if true: perform BOM component processing in a single thread\n");
         sb.append("\t--retry.count=<max # retries for get license (from Hub) operation>\n");
 
         sb.append("\n");
         sb.append("Optional environment variable:\n");
-        sb.append("\texport BD_HUB_PASSWORD=<password>\n");
+        sb.append("\texport BD_HUB_PASSWORD=<password>\n"); // NOSONAR
         sb.append("\n");
         sb.append("Documentation: https://github.com/blackducksoftware/hub-spdx/blob/master/README.md\n");
 
