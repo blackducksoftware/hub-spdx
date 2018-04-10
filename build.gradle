@@ -2,19 +2,21 @@ buildscript {
     repositories {
         mavenCentral()
         jcenter()
+        maven { url 'https://plugins.gradle.org/m2/' }
         }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.1.RELEASE")
+        classpath 'com.blackducksoftware.integration:common-gradle-plugin:0.0.+'
         }
 }
+group = 'com.blackducksoftware.integration'
+description = ''
+version = '1.0.0-SNAPSHOT'
 
+apply plugin: 'com.blackducksoftware.integration.solution'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'eclipse'
 apply plugin: 'java'
-
-group = 'com.blackducksoftware.integration'
-version = '1.0.0-SNAPSHOT'
-description = ''
 
 final def versionFile = new File("${projectDir}/src/main/resources/version.properties")
 versionFile.delete()
