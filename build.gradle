@@ -36,10 +36,13 @@ repositories {
 }
 
 dependencies {
-    compile ('org.spdx:spdx-tools:2.1.7') {
+    compile ('org.spdx:spdx-tools:2.1.11') {
         exclude group: 'org.slf4j', module: 'slf4j-log4j12'
     }
-    compile 'org.springframework.boot:spring-boot-starter'
+    compile ('org.springframework.boot:spring-boot-starter') {
+        exclude group: 'ch.qos.logback', module: 'logback-classic'
+    }
+
     compile 'org.apache.httpcomponents:httpclient:4.5.5'
     compile 'com.blackducksoftware.integration:hub-common:29.1.1'
 
