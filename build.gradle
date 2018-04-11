@@ -39,8 +39,9 @@ dependencies {
     compile ('org.spdx:spdx-tools:2.1.11') {
         exclude group: 'org.slf4j', module: 'slf4j-log4j12'
     }
-    // remediate high sev vuln:
-    compile 'org.apache.thrift:libthrift:0.10.0'
+    // remediate vulns:
+    compile 'org.apache.thrift:libthrift:0.11.0'
+    compile 'org.apache.poi:poi:3.17'
             
     compile ('org.springframework.boot:spring-boot-starter') {
         exclude group: 'ch.qos.logback', module: 'logback-classic'
