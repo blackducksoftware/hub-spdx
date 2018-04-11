@@ -63,11 +63,8 @@ public class SpdxHubBomReportBuilder {
 
     private static final String NO_ASSERTION = "NOASSERTION";
 
-    @Autowired
-    SpdxPkg spdxPkg;
-
-    @Autowired
-    SpdxLicense spdxLicense;
+    private SpdxPkg spdxPkg;
+    private SpdxLicense spdxLicense;
 
     private static final String TOOL_NAME = "Tool: Black Duck Hub SPDX Report Generator";
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -75,6 +72,16 @@ public class SpdxHubBomReportBuilder {
     private static final String SPDX_SPEC_VERSION_ID = String.format("SPDX-%s", SPDX_VERSION);
     private SpdxDocumentContainer bomContainer;
     private SpdxDocument bomDocument;
+
+    @Autowired
+    public void setSpdxLicense(final SpdxLicense spdxLicense) {
+        this.spdxLicense = spdxLicense;
+    }
+
+    @Autowired
+    public void setSpdxPkg(final SpdxPkg spdxPkg) {
+        this.spdxPkg = spdxPkg;
+    }
 
     public void setProject(final ProjectVersionWrapper projectVersionWrapper, final String bomUrl) throws HubIntegrationException {
         bomContainer = null;

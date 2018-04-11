@@ -88,10 +88,11 @@ public class SpdxHubBomReportBuilderTest {
 
         // Generate report for that mocked Hub project
         final SpdxHubBomReportBuilder reportBuilder = new SpdxHubBomReportBuilder();
-        reportBuilder.spdxPkg = new SpdxPkg();
-        reportBuilder.spdxLicense = new SpdxLicense();
-        reportBuilder.spdxLicense.setIncludeLicenses(includeLicenseInfo);
-        reportBuilder.spdxLicense.setUseSpdxOrgLicenseData(useSpdxOrgLicenseData);
+        reportBuilder.setSpdxPkg(new SpdxPkg());
+        final SpdxLicense spdxLicense = new SpdxLicense();
+        reportBuilder.setSpdxLicense(spdxLicense);
+        spdxLicense.setIncludeLicenses(includeLicenseInfo);
+        spdxLicense.setUseSpdxOrgLicenseData(useSpdxOrgLicenseData);
 
         final HubLicense hubLicense = Mockito.mock(HubLicense.class);
         final SpdxIdAwareLicenseView spdxIdAwareLicenseView = new SpdxIdAwareLicenseView();
@@ -100,7 +101,7 @@ public class SpdxHubBomReportBuilderTest {
         ////////
         Mockito.when(hubLicense.getLicenseView(Mockito.any(Optional.class))).thenReturn(spdxIdAwareLicenseView);
         Mockito.when(hubLicense.getLicenseText(spdxIdAwareLicenseView)).thenReturn("MIT License text blah, blah, blah...");
-        reportBuilder.spdxLicense.setHubLicense(hubLicense);
+        spdxLicense.setHubLicense(hubLicense);
 
         final ProjectView projectView = new ProjectView();
         projectView.name = projectName;
