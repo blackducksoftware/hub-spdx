@@ -35,6 +35,9 @@ sourceSets {
 			includes = ['*.properties']
 		}
 	}
+	test {
+		java.srcDirs = ['src/test/groovy']
+	}
 }
 
 repositories {
