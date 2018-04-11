@@ -3,47 +3,30 @@ buildscript {
         mavenCentral()
         jcenter()
         maven { url 'https://plugins.gradle.org/m2/' }
-        }
+    }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.1.RELEASE")
         classpath 'com.blackducksoftware.integration:common-gradle-plugin:0.0.+'
-        }
+    }
 }
+
+plugins {
+    id 'groovy'
+}
+
 group = 'com.blackducksoftware.integration'
-description = ''
 version = '1.0.0-SNAPSHOT'
 
 apply plugin: 'com.blackducksoftware.integration.solution'
 apply plugin: 'org.springframework.boot'
-apply plugin: 'eclipse'
-apply plugin: 'java'
 
 final def versionFile = new File("${projectDir}/src/main/resources/version.properties")
 versionFile.delete()
 versionFile << "program.version=${version}"
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
 springBoot { mainClass = 'com.blackducksoftware.integration.hub.spdx.SpdxReportUtility' }
 
-
-sourceSets {
-	main {
-		resources {
-			srcDirs = ['src/main/resources']
-			includes = ['*.properties']
-		}
-	}
-	test {
-		java.srcDirs = ['src/test/groovy']
-	}
-}
-
 repositories {
-    mavenCentral()
-    jcenter()
-    mavenLocal()
      maven { url "https://repository.apache.org/content/repositories/releases" }
      maven { url "http://repo.maven.apache.org/maven2" }
      maven { url "https://mvnrepository.com/artifact/org.spdx/spdx-tools" }
@@ -52,15 +35,15 @@ repositories {
 }
 
 dependencies {
-    compile (group: 'org.spdx', name: 'spdx-tools', version:'2.1.7') {
+    compile ('org.spdx:spdx-tools:2.1.7') {
         exclude group: 'org.slf4j', module: 'slf4j-log4j12'
     }
-    compile group: 'xerces', name: 'xercesImpl', version: '2.11.0'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter'
-    compile group: 'org.apache.httpcomponents', name: 'httpclient', version:'4.5.5'
-    compile group: 'com.blackducksoftware.integration', name: 'hub-common', version: '29.1.1'
+    compile 'xerces:xercesImpl:2.11.0'
+    compile 'org.springframework.boot:spring-boot-starter'
+    compile 'org.apache.httpcomponents:httpclient:4.5.5'
+    compile 'com.blackducksoftware.integration:hub-common:29.1.1'
 
-    testCompile group: 'junit', name: 'junit', version:'4.12'
-    testCompile group: 'org.codehaus.groovy', name: 'groovy', version: '2.3.7'
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.codehaus.groovy:groovy:2.3.7'
     testCompile 'org.mockito:mockito-core:2.13.0'
 }
