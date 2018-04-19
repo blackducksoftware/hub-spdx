@@ -11,57 +11,8 @@ hub-spdx is a utility that generates an SPDX report (RDF format) representing th
 [![Black Duck Security Risk](https://copilot.blackducksoftware.com/github/repos/blackducksoftware/hub-spdx/branches/master/badge-risk.svg)](https://copilot.blackducksoftware.com/github/repos/blackducksoftware/hub-spdx/branches/master)
 [![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=com.blackducksoftware.integration%3Ahub-spdx&metric=alert_status)](https://sonarcloud.io/dashboard?id=com.blackducksoftware.integration%3Ahub-spdx)
 
-# Prerequisites
+# Where can I get the latest release?
+You can download the latest binary and/or source from GitHub: https://github.com/blackducksoftware/hub-spdx. 
 
-Java 1.8
-
-# Example usage:
-```
-java -jar hub-spdx-<version>.jar \
---hub.url=<Hub URL> \
---hub.username=<Hub username> \
---hub.password=<Hub password> \
---hub.project.name=<Hub project name> \
---hub.project.version=<Hub project version> \
---output.filename=<path to report file> \
---include.licenses=true
-```
-
-## Required arguments:
-```
---hub.url=<Hub URL>
---hub.username=<Hub username>
---hub.project.name=<Hub project name>
---hub.project.version=<Hub project version>
---output.filename=<path to report file>
-```
-  
-## Optional arguments:
-```
---hub.timeout=<Hub timeout in seconds>
---hub.password=<Hub password>
---hub.proxy.host=<proxy host>
---hub.proxy.port=<proxy port>
---hub.proxy.username=<proxy username>
---hub.proxy.password=<proxy password>
---include.licenses=true
-    # If true, include license info for each component
-    # default: false
---use.spdx.org.license.data=false
-    # If true: fetch license text from spdx.org when possible; see https://spdx.org/licenses/
-    # default: true
---hub.always.trust.cert=true
-    # If true, trust any Hub server certificate
-    # default: false
---logging.level.com.blackducksoftware=<logging level>
-    # Logging levels: INFO, DEBUG, TRACE
-```
-
-## Optional environment variables:
-```
-export BD_HUB_PASSWORD=<Hub password>
-export BD_HUB_PROXY_PASSWORD=<proxy password>
-```
-
-## Other SPDX Tools
-If you a need a utility to validate and view SPDX files, convert RDF format to HTML, etc., please see: https://github.com/spdx/tools/
+# Documentation
+All documentation for hub-docker-inspector can be found on our public [Black Duck Confluence](https://blackducksoftware.atlassian.net/wiki/spaces/INTDOCS/pages/199458819/Hub+SPDX+Plugin)
