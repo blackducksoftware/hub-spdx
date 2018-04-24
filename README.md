@@ -15,4 +15,4 @@ hub-spdx is a utility that generates an SPDX report (RDF format) representing th
 You can download the latest binary and/or source from GitHub: https://github.com/blackducksoftware/hub-spdx. 
 
 # Documentation
-All documentation for hub-docker-inspector can be found on our public [Black Duck Confluence](https://blackducksoftware.atlassian.net/wiki/spaces/INTDOCS/pages/199458819/Hub+SPDX+Plugin)
+All documentation for the hub-spdx utility can be found on our public [Black Duck Confluence](https://blackducksoftware.atlassian.net/wiki/spaces/INTDOCS/pages/199458819/Hub+SPDX+Plugin)
