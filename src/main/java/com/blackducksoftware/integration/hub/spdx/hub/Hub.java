@@ -77,8 +77,10 @@ public class Hub {
         final HubServerConfigBuilder hubServerConfigBuilder = new HubServerConfigBuilder();
         final HubConfig hubConfig = new HubConfig();
         final HubServerConfig hubServerConfig = hubConfig
-                .configure(hubServerConfigBuilder, hubUrl, hubUsername, hubPasswords.getHubPassword(), hubProxyHost, hubProxyPort, hubProxyUsername, hubPasswords.getHubProxyPassword(), hubTimeoutSeconds, hubAlwaysTrustCert).build();
-        final RestConnection restConnection = hubServerConfig.createCredentialsRestConnection(new Slf4jIntLogger(logger));
+                .configure(hubServerConfigBuilder, hubUrl, hubUsername, hubPasswords.getHubPassword(), hubPasswords.getHubToken(), hubProxyHost, hubProxyPort, hubProxyUsername, hubPasswords.getHubProxyPassword(), hubTimeoutSeconds,
+                        hubAlwaysTrustCert)
+                .build();
+        final RestConnection restConnection = hubServerConfig.createRestConnection(new Slf4jIntLogger(logger));
         restConnection.connect();
         hubSvcsFactory = new HubServicesFactory(restConnection);
         phoneHome();

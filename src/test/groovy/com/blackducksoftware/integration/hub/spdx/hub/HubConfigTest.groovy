@@ -22,7 +22,7 @@ class HubConfigTest {
     public void testWithNullProxyInfo() {
         HubConfig hubConfig = new HubConfig();
         HubServerConfigBuilder cb = new HubServerConfigBuilder();
-        cb = hubConfig.configure(cb, 'hubUrl', 'hubUsername', 'hubPassword', null, 0, null, null, 456, true)
+        cb = hubConfig.configure(cb, 'hubUrl', 'hubUsername', 'hubPassword', null, null, 0, null, null, 456, true)
         assertEquals('hubUrl', cb.hubUrl)
         assertEquals('hubUsername', cb.hubCredentials.getUsername())
         assertEquals('hubPassword', cb.hubCredentials.getDecryptedPassword())
@@ -38,7 +38,7 @@ class HubConfigTest {
     public void testWithEmptyProxyInfo() {
         HubConfig hubConfig = new HubConfig();
         HubServerConfigBuilder cb = new HubServerConfigBuilder();
-        cb = hubConfig.configure(cb, 'hubUrl', 'hubUsername', 'hubPassword', '', 0, '', '', 456, true)
+        cb = hubConfig.configure(cb, 'hubUrl', 'hubUsername', 'hubPassword', null, '', 0, '', '', 456, true)
         assertEquals('hubUrl', cb.hubUrl)
         assertEquals('hubUsername', cb.hubCredentials.getUsername())
         assertEquals('hubPassword', cb.hubCredentials.getDecryptedPassword())
@@ -54,7 +54,7 @@ class HubConfigTest {
     public void testWithProxyInfo() {
         HubConfig hubConfig = new HubConfig();
         HubServerConfigBuilder cb = new HubServerConfigBuilder();
-        cb = hubConfig.configure(cb, 'hubUrl', 'hubUsername', 'hubPassword', 'hubProxyHost', 123, 'hubProxyUsername', 'hubProxyPassword', 456, true)
+        cb = hubConfig.configure(cb, 'hubUrl', 'hubUsername', 'hubPassword', null, 'hubProxyHost', 123, 'hubProxyUsername', 'hubProxyPassword', 456, true)
         assertEquals('hubUrl', cb.hubUrl)
         assertEquals('hubUsername', cb.hubCredentials.getUsername())
         assertEquals('hubPassword', cb.hubCredentials.getDecryptedPassword())

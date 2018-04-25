@@ -36,6 +36,9 @@ public class HubPasswords {
     @Value("${BD_HUB_PASSWORD:}")
     private String hubPasswordEnvVar;
 
+    @Value("${BD_HUB_TOKEN:}")
+    private String hubTokenEnvVar;
+
     @Value("${hub.proxy.password:}")
     private String hubProxyPasswordProperty;
 
@@ -48,6 +51,10 @@ public class HubPasswords {
             hubPassword = hubPasswordProperty;
         }
         return hubPassword;
+    }
+
+    public String getHubToken() {
+        return hubTokenEnvVar;
     }
 
     public String getHubProxyPassword() {
