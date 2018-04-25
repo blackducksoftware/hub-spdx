@@ -42,6 +42,7 @@ import com.blackducksoftware.integration.hub.spdx.hub.HubProjectVersion;
 
 @SpringBootApplication
 public class SpdxReportUtility {
+    public static final String programId = "hub-spdx";
 
     @Autowired
     Hub hub;

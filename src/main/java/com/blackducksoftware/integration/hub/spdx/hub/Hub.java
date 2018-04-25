@@ -34,13 +34,11 @@ import com.blackducksoftware.integration.hub.configuration.HubServerConfig;
 import com.blackducksoftware.integration.hub.configuration.HubServerConfigBuilder;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
-import com.blackducksoftware.integration.hub.service.PhoneHomeService;
 import com.blackducksoftware.integration.hub.service.ProjectService;
 import com.blackducksoftware.integration.hub.spdx.ProgramVersion;
-import com.blackducksoftware.integration.hub.spdx.SpdxHubBomReportBuilder;
+import com.blackducksoftware.integration.hub.spdx.SpdxReportUtility;
 import com.blackducksoftware.integration.hub.spdx.hub.license.SpdxIdAwareLicenseService;
 import com.blackducksoftware.integration.log.Slf4jIntLogger;
-import com.blackducksoftware.integration.phonehome.PhoneHomeRequestBodyBuilder;
 
 @Component
 public class Hub {
@@ -88,12 +86,8 @@ public class Hub {
 
     private void phoneHome() {
         logger.trace("Phoning home");
-        final PhoneHomeService phoneHomeService = hubSvcsFactory.createPhoneHomeService();
-        final PhoneHomeRequestBodyBuilder phoneHomeRequestBodyBuilder = phoneHomeService.createInitialPhoneHomeRequestBodyBuilder();
-        phoneHomeRequestBodyBuilder.setThirdPartyName("SPDX Report");
-        phoneHomeRequestBodyBuilder.setThirdPartyVersion(SpdxHubBomReportBuilder.SPDX_VERSION);
-        phoneHomeRequestBodyBuilder.setPluginVersion(programVersion.getProgramVersion());
-        phoneHomeService.phoneHome(phoneHomeRequestBodyBuilder);
+        hubSvcsFactory.createPhoneHomeService()
+                .phoneHome(SpdxReportUtility.programId, programVersion.getProgramVersion());
     }
 
     public ProjectService getProjectService() {
