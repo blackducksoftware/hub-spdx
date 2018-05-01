@@ -10,10 +10,6 @@ buildscript {
     }
 }
 
-plugins {
-    id 'groovy'
-}
-
 group = 'com.blackducksoftware.integration'
 version = '1.1.1-SNAPSHOT'
 
@@ -52,6 +48,5 @@ dependencies {
     compile 'org.apache.poi:poi-ooxml:3.17'
 
     testCompile 'junit:junit:4.12'
-    testCompile 'org.codehaus.groovy:groovy:2.3.7'
     testCompile 'org.mockito:mockito-core:2.13.0'
 }
