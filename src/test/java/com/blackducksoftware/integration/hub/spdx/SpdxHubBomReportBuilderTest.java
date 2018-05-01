@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -37,10 +36,6 @@ public class SpdxHubBomReportBuilderTest {
         if (!testDir.exists()) {
             testDir.mkdir();
         }
-    }
-
-    @AfterClass
-    public static void tearDownAfterClass() throws Exception {
     }
 
     @Test
