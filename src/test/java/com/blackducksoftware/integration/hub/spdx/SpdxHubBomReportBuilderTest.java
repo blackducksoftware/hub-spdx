@@ -108,7 +108,7 @@ public class SpdxHubBomReportBuilderTest {
         Mockito.when(projectVersionWrapper.getProjectView()).thenReturn(projectView);
         Mockito.when(projectVersionWrapper.getProjectVersionView()).thenReturn(projectVersionView);
 
-        reportBuilder.setProject(projectVersionWrapper, bomUrl);
+        reportBuilder.setProject(projectVersionWrapper, "my project report", "my version report", bomUrl);
         for (final VersionBomComponentView bomComp : bom) {
             final SpdxRelatedLicensedPackage pkg = reportBuilder.toSpdxRelatedLicensedPackage(bomComp);
             reportBuilder.addPackageToDocument(pkg);

@@ -76,7 +76,7 @@ public class HubBomReportGeneratorTest {
         // spdxLicense.generateLicenseInfo(bomContainer, hubComplexLicense)
         Mockito.when(spdxLicense.generateLicenseInfo(Mockito.any(SpdxDocumentContainer.class), Mockito.any(HubGenericComplexLicenseView.class))).thenReturn(apacheLicense);
         spdxHubBomReportBuilder.setSpdxLicense(spdxLicense);
-        spdxHubBomReportBuilder.setProject(projectVersionWrapper, "theBomUrl");
+        spdxHubBomReportBuilder.setProject(projectVersionWrapper, "myProject", "myVersion", "theBomUrl");
         hubBomReportGenerator.setSpdxHubBomReportBuilder(spdxHubBomReportBuilder);
 
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();

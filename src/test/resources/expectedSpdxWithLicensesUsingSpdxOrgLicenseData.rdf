@@ -1,15 +1,15 @@
 <rdf:RDF
     xmlns:spdx="http://spdx.org/rdf/terms#"
     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns="http://blackducksoftware.com/hub/my%20project%20report/my%20version%20report#"
     xmlns:doap="http://usefulinc.com/ns/doap#"
-    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-    xmlns="http://blackducksoftware.com#">
-  <spdx:SpdxDocument rdf:about="http://blackducksoftware.com#SPDXRef-DOCUMENT">
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+  <spdx:SpdxDocument rdf:about="http://blackducksoftware.com/hub/my%20project%20report/my%20version%20report#SPDXRef-DOCUMENT">
     <spdx:relationship>
       <spdx:Relationship>
         <spdx:relationshipType rdf:resource="http://spdx.org/rdf/terms#relationshipType_dynamicLink"/>
         <spdx:relatedSpdxElement>
-          <spdx:Package rdf:about="http://blackducksoftware.com#SPDXRef-2">
+          <spdx:Package rdf:about="http://blackducksoftware.com/hub/my%20project%20report/my%20version%20report#SPDXRef-2">
             <spdx:filesAnalyzed>false</spdx:filesAnalyzed>
             <spdx:versionInfo>1.2.3</spdx:versionInfo>
             <spdx:downloadLocation>
@@ -198,20 +198,20 @@ Unless required by applicable law or agreed to in writing, software
       <spdx:Relationship>
         <spdx:relationshipType rdf:resource="http://spdx.org/rdf/terms#relationshipType_describes"/>
         <spdx:relatedSpdxElement>
-          <spdx:Package rdf:about="http://blackducksoftware.com#SPDXRef-1">
+          <spdx:Package rdf:about="http://blackducksoftware.com/hub/my%20project%20report/my%20version%20report#SPDXRef-1">
+            <spdx:filesAnalyzed>false</spdx:filesAnalyzed>
+            <spdx:downloadLocation>http://hub.mydomain.com/stuff</spdx:downloadLocation>
+            <spdx:versionInfo>testProjectVersion</spdx:versionInfo>
             <spdx:copyrightText rdf:resource="http://spdx.org/rdf/terms#noassertion"/>
-            <spdx:name>testProject</spdx:name>
+            <spdx:supplier rdf:resource="http://spdx.org/rdf/terms#noassertion"/>
+            <doap:homepage>http://www.blackducksoftware.com</doap:homepage>
             <spdx:licenseDeclared>
               <spdx:none rdf:about="http://spdx.org/rdf/terms#none"/>
             </spdx:licenseDeclared>
-            <doap:homepage>http://www.blackducksoftware.com</doap:homepage>
-            <spdx:versionInfo>testProjectVersion</spdx:versionInfo>
-            <spdx:downloadLocation>http://hub.mydomain.com/stuff</spdx:downloadLocation>
-            <spdx:filesAnalyzed>false</spdx:filesAnalyzed>
-            <spdx:supplier rdf:resource="http://spdx.org/rdf/terms#noassertion"/>
-            <spdx:description>testProjectDescription</spdx:description>
-            <spdx:licenseConcluded rdf:resource="http://spdx.org/rdf/terms#noassertion"/>
+            <spdx:name>testProject</spdx:name>
             <spdx:originator rdf:resource="http://spdx.org/rdf/terms#noassertion"/>
+            <spdx:licenseConcluded rdf:resource="http://spdx.org/rdf/terms#noassertion"/>
+            <spdx:description>testProjectDescription</spdx:description>
             <spdx:licenseInfoFromFiles rdf:resource="http://spdx.org/rdf/terms#noassertion"/>
           </spdx:Package>
         </spdx:relatedSpdxElement>
@@ -286,7 +286,7 @@ For these and/or other purposes and motivations, and without any expectation of 
       <spdx:CreationInfo>
         <spdx:creator>Tool: Black Duck Hub SPDX Report Generator</spdx:creator>
         <spdx:licenseListVersion>3.0</spdx:licenseListVersion>
-        <spdx:created>2018-04-19T11:38:32Z</spdx:created>
+        <spdx:created>2018-05-03T02:48:23Z</spdx:created>
       </spdx:CreationInfo>
     </spdx:creationInfo>
   </spdx:SpdxDocument>

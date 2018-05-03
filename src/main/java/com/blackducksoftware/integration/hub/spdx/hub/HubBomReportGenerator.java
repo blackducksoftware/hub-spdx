@@ -47,64 +47,72 @@ import com.blackducksoftware.integration.log.Slf4jIntLogger;
 
 @Component
 public class HubBomReportGenerator {
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private Hub hub;
-    private SpdxHubBomReportBuilder spdxHubBomReportBuilder;
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	private Hub hub;
+	private SpdxHubBomReportBuilder spdxHubBomReportBuilder;
 
-    @Value("${single.thread:false}")
-    private boolean singleThread;
+	@Value("${single.thread:false}")
+	private boolean singleThread;
 
-    @Autowired
-    public void setHub(final Hub hub) {
-        this.hub = hub;
-    }
+	@Autowired
+	public void setHub(final Hub hub) {
+		this.hub = hub;
+	}
 
-    @Autowired
-    public void setSpdxHubBomReportBuilder(final SpdxHubBomReportBuilder spdxHubBomReportBuilder) {
-        this.spdxHubBomReportBuilder = spdxHubBomReportBuilder;
-    }
+	@Autowired
+	public void setSpdxHubBomReportBuilder(final SpdxHubBomReportBuilder spdxHubBomReportBuilder) {
+		this.spdxHubBomReportBuilder = spdxHubBomReportBuilder;
+	}
 
-    public void writeReport(final PrintStream ps, final String projectName, final String projectVersion) throws IntegrationException {
-        consumeHubProjectBom(projectName, projectVersion);
-        spdxHubBomReportBuilder.writeReport(ps);
-    }
+	public void writeReport(final PrintStream ps, final String projectName, final String projectVersion)
+			throws IntegrationException {
+		consumeHubProjectBom(projectName, projectVersion);
+		spdxHubBomReportBuilder.writeReport(ps);
+	}
 
-    private void consumeHubProjectBom(final String projectName, final String projectVersion) throws IntegrationException {
-        logger.info(String.format("Generating report for project %s:%s", projectName, projectVersion));
-        final ProjectVersionWrapper projectVersionWrapper = hub.getProjectService().getProjectVersion(projectName, projectVersion);
-        final String bomUrl = new MetaHandler(new Slf4jIntLogger(logger)).getFirstLinkSafely(projectVersionWrapper.getProjectVersionView(), ProjectVersionView.COMPONENTS_LINK);
-        spdxHubBomReportBuilder.setProject(projectVersionWrapper, bomUrl);
-        final List<VersionBomComponentView> bom = hub.getProjectService().getComponentsForProjectVersion(projectVersionWrapper.getProjectVersionView());
+	private void consumeHubProjectBom(final String projectName, final String projectVersion)
+			throws IntegrationException {
+		logger.info(String.format("Generating report for project %s:%s", projectName, projectVersion));
+		final ProjectVersionWrapper projectVersionWrapper = hub.getProjectService().getProjectVersion(projectName,
+				projectVersion);
+		final String bomUrl = new MetaHandler(new Slf4jIntLogger(logger))
+				.getFirstLinkSafely(projectVersionWrapper.getProjectVersionView(), ProjectVersionView.COMPONENTS_LINK);
+		spdxHubBomReportBuilder.setProject(projectVersionWrapper, projectName, projectVersion, bomUrl);
+		final List<VersionBomComponentView> bom = hub.getProjectService()
+				.getComponentsForProjectVersion(projectVersionWrapper.getProjectVersionView());
 
-        logger.info("Creating packages");
-        Stream<VersionBomComponentView> bomCompStream = null;
-        if (singleThread) {
-            logger.info("Conversion of BOM components to SpdxPackages: Single-threaded");
-            bomCompStream = bom.stream();
-        } else {
-            logger.info("Conversion of BOM components to SpdxPackages: Multi-threaded");
-            bomCompStream = bom.parallelStream();
-        }
-        final List<Optional<SpdxRelatedLicensedPackage>> pkgs = bomCompStream.map(bomComp -> toSpdx(bomComp)).collect(Collectors.toList());
-        logger.info("Creating packages: Done");
+		logger.info("Creating packages");
+		Stream<VersionBomComponentView> bomCompStream = null;
+		if (singleThread) {
+			logger.info("Conversion of BOM components to SpdxPackages: Single-threaded");
+			bomCompStream = bom.stream();
+		} else {
+			logger.info("Conversion of BOM components to SpdxPackages: Multi-threaded");
+			bomCompStream = bom.parallelStream();
+		}
+		final List<Optional<SpdxRelatedLicensedPackage>> pkgs = bomCompStream.map(bomComp -> toSpdx(bomComp))
+				.collect(Collectors.toList());
+		logger.info("Creating packages: Done");
 
-        logger.info("Adding packages to document");
-        for (final Optional<SpdxRelatedLicensedPackage> pkg : pkgs) {
-            final SpdxRelatedLicensedPackage actualPkg = pkg.orElseThrow(() -> new HubIntegrationException("Conversion to SPDX failed for one or more components"));
-            spdxHubBomReportBuilder.addPackageToDocument(actualPkg);
-        }
-        logger.info("Adding packages to document: Done");
+		logger.info("Adding packages to document");
+		for (final Optional<SpdxRelatedLicensedPackage> pkg : pkgs) {
+			final SpdxRelatedLicensedPackage actualPkg = pkg.orElseThrow(
+					() -> new HubIntegrationException("Conversion to SPDX failed for one or more components"));
+			spdxHubBomReportBuilder.addPackageToDocument(actualPkg);
+		}
+		logger.info("Adding packages to document: Done");
 
-    }
+	}
 
-    private Optional<SpdxRelatedLicensedPackage> toSpdx(final VersionBomComponentView bomComp) {
-        Optional<SpdxRelatedLicensedPackage> pkg = Optional.empty();
-        try {
-            pkg = Optional.of(spdxHubBomReportBuilder.toSpdxRelatedLicensedPackage(bomComp));
-        } catch (final IntegrationException e) {
-            final String msg = String.format("Error converting BOM component %s:%s to Spdx packages: %s", bomComp.componentName, bomComp.componentVersionName, e.getMessage());
-            logger.error(msg);
-        }
-        return pkg;
-    }
+	private Optional<SpdxRelatedLicensedPackage> toSpdx(final VersionBomComponentView bomComp) {
+		Optional<SpdxRelatedLicensedPackage> pkg = Optional.empty();
+		try {
+			pkg = Optional.of(spdxHubBomReportBuilder.toSpdxRelatedLicensedPackage(bomComp));
+		} catch (final IntegrationException e) {
+			final String msg = String.format("Error converting BOM component %s:%s to Spdx packages: %s",
+					bomComp.componentName, bomComp.componentVersionName, e.getMessage());
+			logger.error(msg);
+		}
+		return pkg;
+	}
 }
