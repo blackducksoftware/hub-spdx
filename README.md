@@ -12,7 +12,7 @@ hub-spdx is a utility that generates an SPDX report (RDF format) representing th
 [![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=com.blackducksoftware.integration%3Ahub-spdx&metric=alert_status)](https://sonarcloud.io/dashboard?id=com.blackducksoftware.integration%3Ahub-spdx)
 
 # Where can I get the latest release?
-You can download the latest binary and/or source from GitHub: https://github.com/blackducksoftware/hub-spdx. 
+You can download the latest binary and/or source from GitHub: https://github.com/blackducksoftware/hub-spdx/releases. 
 
 # Documentation
 All documentation for the hub-spdx utility can be found on our public [Black Duck Confluence](https://blackducksoftware.atlassian.net/wiki/spaces/INTDOCS/pages/199458819/Hub+SPDX+Plugin)
