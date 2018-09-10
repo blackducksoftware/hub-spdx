@@ -179,7 +179,7 @@ public class SpdxLicense {
                 componentLicense = existingSpdxLicense.get();
             } else {
                 logger.debug(String.format("Unable to find existing license in document: id: %s, %s; will create a custom license and add it to the document", licenseId, licenseView.name));
-                logger.debug(String.format("Adding new license (as ExtractedLicenseInfo): ID: %s, name: %s text: %s", licenseId, licenseView.name, String.format("%s...", truncate(licenseText, 200))));
+                logger.debug(String.format("Adding new license (as ExtractedLicenseInfo): ID: %s, name: %s text: %s", licenseId, licenseView.name, String.format("%s...", StringUtils.truncate(licenseText, 200))));
                 componentLicense = new ExtractedLicenseInfo(licenseId, licenseText);
                 this.put(licenseId, licenseView.name);
             }
@@ -209,7 +209,7 @@ public class SpdxLicense {
     private String generateLicenseId(final String licenseName, final String licenseText) {
         final String licenseNameText = String.format("%s::%s", licenseName, licenseText);
         final String generatedId = String.format("LicenseRef-%s", generateHash(licenseNameText));
-        logger.debug(String.format("License name: %s; text: %s...; ID: %s", licenseName, truncate(licenseText, 100), generatedId));
+        logger.debug(String.format("License name: %s; text: %s...; ID: %s", licenseName, StringUtils.truncate(licenseText, 100), generatedId));
         return generatedId;
     }
 
@@ -226,12 +226,5 @@ public class SpdxLicense {
             logger.warn(String.format("Error computing license text hash value: %s", e.getMessage()));
         }
         return hashString;
-    }
-
-    private String truncate(final String s, int maxLen) {
-        if (s.length() <= maxLen) {
-            maxLen = s.length();
-        }
-        return s.substring(0, maxLen);
     }
 }
