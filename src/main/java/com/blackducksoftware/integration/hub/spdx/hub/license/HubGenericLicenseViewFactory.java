@@ -27,8 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.blackducksoftware.integration.hub.api.generated.component.VersionBomLicenseView;
-import com.blackducksoftware.integration.hub.api.generated.view.ComplexLicenseView;
+import com.synopsys.integration.blackduck.api.generated.component.VersionBomLicenseView;
+import com.synopsys.integration.blackduck.api.generated.view.ComplexLicenseView;
 
 public class HubGenericLicenseViewFactory {
 

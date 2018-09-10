@@ -32,10 +32,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.exception.IntegrationException;
-import com.blackducksoftware.integration.hub.api.view.MetaHandler;
 import com.blackducksoftware.integration.hub.spdx.hub.Hub;
-import com.blackducksoftware.integration.log.Slf4jIntLogger;
+import com.synopsys.integration.blackduck.api.view.MetaHandler;
+import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.log.Slf4jIntLogger;
 
 @Component
 public class HubLicense {

@@ -15,19 +15,19 @@ import org.spdx.rdfparser.SpdxDocumentContainer;
 import org.spdx.rdfparser.license.AnyLicenseInfo;
 import org.spdx.rdfparser.license.ListedLicenses;
 
-import com.blackducksoftware.integration.exception.IntegrationException;
-import com.blackducksoftware.integration.hub.api.generated.component.ResourceLink;
-import com.blackducksoftware.integration.hub.api.generated.component.ResourceMetadata;
-import com.blackducksoftware.integration.hub.api.generated.component.VersionBomLicenseView;
-import com.blackducksoftware.integration.hub.api.generated.view.ProjectVersionView;
-import com.blackducksoftware.integration.hub.api.generated.view.ProjectView;
-import com.blackducksoftware.integration.hub.api.generated.view.VersionBomComponentView;
-import com.blackducksoftware.integration.hub.service.ProjectService;
-import com.blackducksoftware.integration.hub.service.model.ProjectVersionWrapper;
 import com.blackducksoftware.integration.hub.spdx.SpdxHubBomReportBuilder;
 import com.blackducksoftware.integration.hub.spdx.hub.license.HubGenericComplexLicenseView;
 import com.blackducksoftware.integration.hub.spdx.spdx.SpdxLicense;
 import com.blackducksoftware.integration.hub.spdx.spdx.SpdxPkg;
+import com.synopsys.integration.blackduck.api.core.ResourceLink;
+import com.synopsys.integration.blackduck.api.core.ResourceMetadata;
+import com.synopsys.integration.blackduck.api.generated.component.VersionBomLicenseView;
+import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
+import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
+import com.synopsys.integration.blackduck.api.generated.view.VersionBomComponentView;
+import com.synopsys.integration.blackduck.service.ProjectService;
+import com.synopsys.integration.blackduck.service.model.ProjectVersionWrapper;
+import com.synopsys.integration.exception.IntegrationException;
 
 public class HubBomReportGeneratorTest {
 

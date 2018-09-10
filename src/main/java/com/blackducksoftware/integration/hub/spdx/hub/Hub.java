@@ -23,22 +23,29 @@
  */
 package com.blackducksoftware.integration.hub.spdx.hub;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.concurrent.Executors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.exception.IntegrationException;
-import com.blackducksoftware.integration.hub.configuration.HubServerConfig;
-import com.blackducksoftware.integration.hub.configuration.HubServerConfigBuilder;
-import com.blackducksoftware.integration.hub.rest.RestConnection;
-import com.blackducksoftware.integration.hub.service.HubServicesFactory;
-import com.blackducksoftware.integration.hub.service.ProjectService;
 import com.blackducksoftware.integration.hub.spdx.ProgramVersion;
 import com.blackducksoftware.integration.hub.spdx.SpdxReportUtility;
 import com.blackducksoftware.integration.hub.spdx.hub.license.SpdxIdAwareLicenseService;
-import com.blackducksoftware.integration.log.Slf4jIntLogger;
+import com.synopsys.integration.blackduck.configuration.HubServerConfig;
+import com.synopsys.integration.blackduck.configuration.HubServerConfigBuilder;
+import com.synopsys.integration.blackduck.rest.BlackduckRestConnection;
+import com.synopsys.integration.blackduck.service.HubServicesFactory;
+import com.synopsys.integration.blackduck.service.ProjectService;
+import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.log.IntLogger;
+import com.synopsys.integration.log.Slf4jIntLogger;
+import com.synopsys.integration.phonehome.PhoneHomeCallable;
+import com.synopsys.integration.phonehome.PhoneHomeRequestBody;
 
 @Component
 public class Hub {
@@ -71,7 +78,7 @@ public class Hub {
     @Value("${hub.always.trust.cert}")
     private boolean hubAlwaysTrustCert;
 
-    HubServicesFactory hubSvcsFactory;
+    private HubServicesFactory hubSvcsFactory;
 
     public void connect() throws IntegrationException {
         final HubServerConfigBuilder hubServerConfigBuilder = new HubServerConfigBuilder();
@@ -80,16 +87,11 @@ public class Hub {
                 .configure(hubServerConfigBuilder, hubUrl, hubUsername, hubPasswords.getHubPassword(), hubPasswords.getHubToken(), hubProxyHost, hubProxyPort, hubProxyUsername, hubPasswords.getHubProxyPassword(), hubTimeoutSeconds,
                         hubAlwaysTrustCert)
                 .build();
-        final RestConnection restConnection = hubServerConfig.createRestConnection(new Slf4jIntLogger(logger));
+        final IntLogger intLogger = new Slf4jIntLogger(logger);
+        final BlackduckRestConnection restConnection = hubServerConfig.createRestConnection(intLogger);
         restConnection.connect();
-        hubSvcsFactory = new HubServicesFactory(restConnection);
-        phoneHome();
-    }
-
-    private void phoneHome() {
-        logger.trace("Phoning home");
-        hubSvcsFactory.createPhoneHomeService()
-                .phoneHome(SpdxReportUtility.programId, programVersion.getProgramVersion());
+        hubSvcsFactory = new HubServicesFactory(HubServicesFactory.createDefaultGson(), HubServicesFactory.createDefaultJsonParser(), restConnection, intLogger);
+        phoneHome(hubSvcsFactory);
     }
 
     public ProjectService getProjectService() {
@@ -102,5 +104,20 @@ public class Hub {
 
     public String getHubUrl() {
         return hubUrl;
+    }
+
+    private void phoneHome(final HubServicesFactory hubSvcsFactory) {
+        logger.trace("Phoning home");
+        final PhoneHomeRequestBody.Builder phoneHomeRequestBodyBuilder = new PhoneHomeRequestBody.Builder();
+        PhoneHomeCallable phoneHomeCallable = null;
+        try {
+            phoneHomeCallable = hubSvcsFactory.createBlackDuckPhoneHomeCallable(new URL(hubUrl), SpdxReportUtility.programId, programVersion.getProgramVersion(),
+                    phoneHomeRequestBodyBuilder);
+        } catch (final MalformedURLException e) {
+            logger.info(String.format("Unable to phone home: %s", e.getMessage()));
+            return;
+        }
+        hubSvcsFactory.createPhoneHomeService(Executors.newSingleThreadExecutor())
+                .phoneHome(phoneHomeCallable);
     }
 }

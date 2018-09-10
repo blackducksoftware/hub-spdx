@@ -26,7 +26,7 @@ package com.blackducksoftware.integration.hub.spdx.hub.license;
 import java.util.List;
 import java.util.Optional;
 
-import com.blackducksoftware.integration.hub.api.generated.enumeration.ComplexLicenseType;
+import com.synopsys.integration.blackduck.api.generated.enumeration.ComplexLicenseType;
 
 public class HubGenericComplexLicenseView {
 

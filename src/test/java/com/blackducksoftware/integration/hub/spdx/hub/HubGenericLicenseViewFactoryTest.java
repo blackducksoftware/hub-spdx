@@ -9,13 +9,13 @@ import java.util.Optional;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.blackducksoftware.integration.hub.api.generated.component.VersionBomLicenseView;
-import com.blackducksoftware.integration.hub.api.generated.enumeration.ComplexLicenseType;
-import com.blackducksoftware.integration.hub.api.generated.enumeration.LicenseCodeSharingType;
-import com.blackducksoftware.integration.hub.api.generated.enumeration.LicenseOwnershipType;
-import com.blackducksoftware.integration.hub.api.generated.view.ComplexLicenseView;
 import com.blackducksoftware.integration.hub.spdx.hub.license.HubGenericComplexLicenseView;
 import com.blackducksoftware.integration.hub.spdx.hub.license.HubGenericLicenseViewFactory;
+import com.synopsys.integration.blackduck.api.generated.component.VersionBomLicenseView;
+import com.synopsys.integration.blackduck.api.generated.enumeration.ComplexLicenseType;
+import com.synopsys.integration.blackduck.api.generated.enumeration.LicenseCodeSharingType;
+import com.synopsys.integration.blackduck.api.generated.enumeration.LicenseOwnershipType;
+import com.synopsys.integration.blackduck.api.generated.view.ComplexLicenseView;
 
 public class HubGenericLicenseViewFactoryTest {
 

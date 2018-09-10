@@ -15,18 +15,18 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.blackducksoftware.integration.exception.IntegrationException;
-import com.blackducksoftware.integration.hub.api.generated.component.VersionBomLicenseView;
-import com.blackducksoftware.integration.hub.api.generated.component.VersionBomOriginView;
-import com.blackducksoftware.integration.hub.api.generated.enumeration.MatchedFileUsagesType;
-import com.blackducksoftware.integration.hub.api.generated.view.ProjectVersionView;
-import com.blackducksoftware.integration.hub.api.generated.view.ProjectView;
-import com.blackducksoftware.integration.hub.api.generated.view.VersionBomComponentView;
-import com.blackducksoftware.integration.hub.service.model.ProjectVersionWrapper;
 import com.blackducksoftware.integration.hub.spdx.hub.license.HubLicense;
 import com.blackducksoftware.integration.hub.spdx.hub.license.SpdxIdAwareLicenseView;
 import com.blackducksoftware.integration.hub.spdx.spdx.SpdxLicense;
 import com.blackducksoftware.integration.hub.spdx.spdx.SpdxPkg;
+import com.synopsys.integration.blackduck.api.generated.component.VersionBomLicenseView;
+import com.synopsys.integration.blackduck.api.generated.component.VersionBomOriginView;
+import com.synopsys.integration.blackduck.api.generated.enumeration.MatchedFileUsagesType;
+import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
+import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
+import com.synopsys.integration.blackduck.api.generated.view.VersionBomComponentView;
+import com.synopsys.integration.blackduck.service.model.ProjectVersionWrapper;
+import com.synopsys.integration.exception.IntegrationException;
 
 public class SpdxHubBomReportBuilderTest {
 

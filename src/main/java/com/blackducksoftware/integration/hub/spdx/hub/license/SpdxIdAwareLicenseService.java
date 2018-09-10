@@ -26,9 +26,9 @@ package com.blackducksoftware.integration.hub.spdx.hub.license;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.blackducksoftware.integration.exception.IntegrationException;
-import com.blackducksoftware.integration.hub.service.HubService;
-import com.blackducksoftware.integration.hub.service.LicenseService;
+import com.synopsys.integration.blackduck.service.HubService;
+import com.synopsys.integration.blackduck.service.LicenseService;
+import com.synopsys.integration.exception.IntegrationException;
 
 public class SpdxIdAwareLicenseService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());

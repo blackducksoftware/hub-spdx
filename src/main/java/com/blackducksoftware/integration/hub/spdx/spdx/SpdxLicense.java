@@ -49,12 +49,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.exception.IntegrationException;
-import com.blackducksoftware.integration.hub.api.generated.enumeration.ComplexLicenseType;
-import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
 import com.blackducksoftware.integration.hub.spdx.hub.license.HubGenericComplexLicenseView;
 import com.blackducksoftware.integration.hub.spdx.hub.license.HubLicense;
 import com.blackducksoftware.integration.hub.spdx.hub.license.SpdxIdAwareLicenseView;
+import com.synopsys.integration.blackduck.api.generated.enumeration.ComplexLicenseType;
+import com.synopsys.integration.blackduck.exception.HubIntegrationException;
+import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class SpdxLicense {
