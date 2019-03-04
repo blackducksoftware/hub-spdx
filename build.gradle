@@ -6,7 +6,7 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.11.RELEASE")
-        classpath 'com.blackducksoftware.integration:common-gradle-plugin:0.0.+'
+        classpath 'com.blackducksoftware.integration:common-gradle-plugin:0.0.55'
     }
 }
 
