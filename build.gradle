@@ -6,7 +6,7 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.11.RELEASE")
-        classpath 'com.blackducksoftware.integration:common-gradle-plugin:0.0.55'
+        classpath 'com.blackducksoftware.integration:common-gradle-plugin:0.0.+'
     }
 }
 
@@ -32,21 +32,21 @@ repositories {
 }
 
 dependencies {
-    compile ('org.spdx:spdx-tools:2.1.11') {
+    implementation ('org.spdx:spdx-tools:2.1.11') {
         exclude group: 'org.slf4j', module: 'slf4j-log4j12'
     }
             
-    compile ('org.springframework.boot:spring-boot-starter') {
+    implementation ('org.springframework.boot:spring-boot-starter') {
         exclude group: 'ch.qos.logback', module: 'logback-classic'
     }
-    compile 'org.apache.httpcomponents:httpclient:4.5.5'
-    compile 'com.blackducksoftware.integration:hub-common:38.0.0'
+    implementation 'org.apache.httpcomponents:httpclient:4.5.5'
+    implementation 'com.blackducksoftware.integration:hub-common:38.0.0'
 
     // remediate vulns, all from spdx-tools
-    compile 'org.apache.thrift:libthrift:0.11.0'
-    compile 'org.apache.poi:poi:3.17'
-    compile 'org.apache.poi:poi-ooxml:3.17'
+    implementation 'org.apache.thrift:libthrift:0.11.0'
+    implementation 'org.apache.poi:poi:3.17'
+    implementation 'org.apache.poi:poi-ooxml:3.17'
 
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.mockito:mockito-core:2.13.0'
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.mockito:mockito-core:2.13.0'
 }
