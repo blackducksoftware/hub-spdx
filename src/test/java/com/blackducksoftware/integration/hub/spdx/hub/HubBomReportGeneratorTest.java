@@ -88,7 +88,7 @@ public class HubBomReportGeneratorTest {
         assertTrue(report.contains("<spdx:downloadLocation>testBomUrl</spdx:downloadLocation>"));
         assertTrue(report.contains("<spdx:versionInfo>testVersion</spdx:versionInfo>"));
         assertTrue(report.contains("<spdx:name>testProject:testVersion Bill Of Materials</spdx:name>"));
-        assertTrue(report.contains("<rdfs:seeAlso>http://creativecommons.org/publicdomain/zero/1.0/legalcode</rdfs:seeAlso>"));
+        assertTrue(report.contains("<rdfs:seeAlso>https://creativecommons.org/publicdomain/zero/1.0/legalcode</rdfs:seeAlso>"));
         assertTrue(report.contains("<spdx:licenseId>CC0-1.0</spdx:licenseId>"));
 
         assertTrue(report.contains("http://www.apache.org/licenses/LICENSE-2.0"));
