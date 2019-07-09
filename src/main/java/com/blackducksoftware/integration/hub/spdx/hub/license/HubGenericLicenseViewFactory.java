@@ -35,11 +35,11 @@ public class HubGenericLicenseViewFactory {
     }
 
     public static HubGenericComplexLicenseView create(final ComplexLicenseView sourceLicense) {
-        final List<HubGenericComplexLicenseView> targetChildren = new ArrayList<>(sourceLicense.licenses.size());
-        final HubGenericComplexLicenseView targetLicense = new HubGenericComplexLicenseView(Optional.ofNullable(sourceLicense.license), Optional.ofNullable(sourceLicense.licenseDisplay), Optional.ofNullable(sourceLicense.type),
+        final List<HubGenericComplexLicenseView> targetChildren = new ArrayList<>(sourceLicense.getLicenses().size());
+        final HubGenericComplexLicenseView targetLicense = new HubGenericComplexLicenseView(Optional.ofNullable(sourceLicense.getLicense()), Optional.ofNullable(sourceLicense.getLicenseDisplay()), Optional.ofNullable(sourceLicense.getType()),
                 Optional.of(targetChildren));
-        for (final ComplexLicenseView sourceChild : sourceLicense.licenses) {
-            final HubGenericComplexLicenseView targetChildLicense = new HubGenericComplexLicenseView(Optional.ofNullable(sourceChild.license), Optional.ofNullable(sourceChild.licenseDisplay), Optional.ofNullable(sourceChild.type),
+        for (final ComplexLicenseView sourceChild : sourceLicense.getLicenses()) {
+            final HubGenericComplexLicenseView targetChildLicense = new HubGenericComplexLicenseView(Optional.ofNullable(sourceChild.getLicense()), Optional.ofNullable(sourceChild.getLicenseDisplay()), Optional.ofNullable(sourceChild.getType()),
                     Optional.empty());
             targetChildren.add(targetChildLicense);
         }
@@ -47,13 +47,13 @@ public class HubGenericLicenseViewFactory {
     }
 
     public static HubGenericComplexLicenseView create(final VersionBomLicenseView sourceLicense) {
-        final List<HubGenericComplexLicenseView> targetChildren = new ArrayList<>(sourceLicense.licenses == null ? 0 : sourceLicense.licenses.size());
-        final HubGenericComplexLicenseView targetLicense = new HubGenericComplexLicenseView(Optional.ofNullable(sourceLicense.license), Optional.ofNullable(sourceLicense.licenseDisplay), Optional.ofNullable(sourceLicense.licenseType),
+        final List<HubGenericComplexLicenseView> targetChildren = new ArrayList<>(sourceLicense.getLicenses() == null ? 0 : sourceLicense.getLicenses().size());
+        final HubGenericComplexLicenseView targetLicense = new HubGenericComplexLicenseView(Optional.ofNullable(sourceLicense.getLicense()), Optional.ofNullable(sourceLicense.getLicenseDisplay()), Optional.ofNullable(sourceLicense.getLicenseType()),
                 Optional.of(targetChildren));
-        if (sourceLicense.licenses != null) {
-            for (final VersionBomLicenseView sourceChild : sourceLicense.licenses) {
-                final HubGenericComplexLicenseView targetChildLicense = new HubGenericComplexLicenseView(Optional.ofNullable(sourceChild.license), Optional.ofNullable(sourceChild.licenseDisplay),
-                        Optional.ofNullable(sourceChild.licenseType),
+        if (sourceLicense.getLicenses() != null) {
+            for (final VersionBomLicenseView sourceChild : sourceLicense.getLicenses()) {
+                final HubGenericComplexLicenseView targetChildLicense = new HubGenericComplexLicenseView(Optional.ofNullable(sourceChild.getLicense()), Optional.ofNullable(sourceChild.getLicenseDisplay()),
+                        Optional.ofNullable(sourceChild.getLicenseType()),
                         Optional.empty());
                 targetChildren.add(targetChildLicense);
             }

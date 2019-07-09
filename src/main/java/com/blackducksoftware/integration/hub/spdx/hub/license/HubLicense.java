@@ -24,7 +24,6 @@ package com.blackducksoftware.integration.hub.spdx.hub.license;
 
 import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,12 +31,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.spdx.hub.Hub;
-import com.synopsys.integration.blackduck.api.view.MetaHandler;
+import com.synopsys.integration.blackduck.api.generated.view.LicenseView;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.log.Slf4jIntLogger;
 
 @Component
 public class HubLicense {
+    private static final String LICENSE_LINK_NAME = "license";
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Value("${retry.count:5}")
@@ -46,18 +45,17 @@ public class HubLicense {
     @Autowired
     private Hub hub;
 
-    public SpdxIdAwareLicenseView getLicenseView(final Optional<String> licenseViewUrl) throws IntegrationException {
+    public LicenseView getLicenseView(final Optional<String> licenseViewUrl) throws IntegrationException {
         if (!licenseViewUrl.isPresent()) {
             return null;
         }
-        SpdxIdAwareLicenseView licenseView = getLicenseViewSingleLevel(licenseViewUrl.get());
-        // TODO the link WAS: MetaHandler.LICENSE_LINK, which seems to be gone now. May belong in LicenseView?
-        final String embeddedLicenseUrl = new MetaHandler(new Slf4jIntLogger(logger)).getFirstLinkSafely(licenseView, "license");
+        LicenseView licenseView = getLicenseViewSingleLevel(licenseViewUrl.get());
+        final Optional<String> embeddedLicenseUrl = licenseView.getFirstLink(LICENSE_LINK_NAME);
         logger.debug(String.format("Embedded license URL: %s", embeddedLicenseUrl));
-        if (!StringUtils.isBlank(embeddedLicenseUrl)) {
+        if (embeddedLicenseUrl.isPresent()) {
             logger.debug(String.format("Found embedded license URL: %s; fetching that licenseView", embeddedLicenseUrl));
             try {
-                licenseView = getLicenseViewSingleLevel(embeddedLicenseUrl);
+                licenseView = getLicenseViewSingleLevel(embeddedLicenseUrl.get());
             } catch (final IntegrationException e) {
                 logger.debug(String.format("Unable to get license for embedded license URL: %s", embeddedLicenseUrl));
             }
@@ -65,12 +63,12 @@ public class HubLicense {
         return licenseView;
     }
 
-    private SpdxIdAwareLicenseView getLicenseViewSingleLevel(final String licenseViewUrl) throws IntegrationException {
+    private LicenseView getLicenseViewSingleLevel(final String licenseViewUrl) throws IntegrationException {
         if (licenseViewUrl == null) {
             return null;
         }
         logger.trace(String.format("before hub.getLicenseDataService().getLicenseView(%s)", licenseViewUrl));
-        SpdxIdAwareLicenseView licenseView = null;
+        LicenseView licenseView = null;
         for (int i = 0; i < retryCount; i++) {
             try {
                 licenseView = hub.getLicenseService().getLicenseView(licenseViewUrl);
@@ -82,11 +80,11 @@ public class HubLicense {
         if (licenseView == null) {
             throw new IntegrationException(String.format("Exceeded retry count (%d) trying to get: %s", retryCount, licenseViewUrl));
         }
-        logger.debug(String.format("License SPDX ID from Hub: %s", licenseView.spdxId));
+        logger.debug(String.format("License SPDX ID from Hub: %s", licenseView.getSpdxId()));
         return licenseView;
     }
 
-    public String getLicenseText(final SpdxIdAwareLicenseView licenseView) throws IntegrationException {
+    public String getLicenseText(final LicenseView licenseView) throws IntegrationException {
         logger.trace("before hub.getLicenseDataService().getLicenseText(licenseView)");
         final String licenseText = hub.getLicenseService().getLicenseText(licenseView);
         logger.trace("after hub.getLicenseDataService().getLicenseText(licenseView)");
