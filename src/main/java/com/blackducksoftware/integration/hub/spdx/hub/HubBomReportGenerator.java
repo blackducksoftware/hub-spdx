@@ -38,8 +38,8 @@ import com.blackducksoftware.integration.hub.spdx.SpdxHubBomReportBuilder;
 import com.blackducksoftware.integration.hub.spdx.SpdxRelatedLicensedPackage;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.VersionBomComponentView;
-import com.synopsys.integration.blackduck.api.view.MetaHandler;
-import com.synopsys.integration.blackduck.exception.HubIntegrationException;
+import com.synopsys.integration.blackduck.exception.BlackDuckIntegrationException;
+import com.synopsys.integration.blackduck.service.ProjectService;
 import com.synopsys.integration.blackduck.service.model.ProjectVersionWrapper;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.Slf4jIntLogger;
@@ -72,13 +72,18 @@ public class HubBomReportGenerator {
     private void consumeHubProjectBom(final String projectName, final String projectVersion)
             throws IntegrationException {
         logger.info(String.format("Generating report for project %s:%s", projectName, projectVersion));
-        final ProjectVersionWrapper projectVersionWrapper = hub.getProjectService().getProjectVersion(projectName,
+        final ProjectService projectService = hub.getProjectService();
+        final Optional<ProjectVersionWrapper> projectVersionWrapper = projectService.getProjectVersion(projectName,
                 projectVersion);
-        final String bomUrl = new MetaHandler(new Slf4jIntLogger(logger))
-                .getFirstLinkSafely(projectVersionWrapper.getProjectVersionView(), ProjectVersionView.COMPONENTS_LINK);
-        spdxHubBomReportBuilder.setProject(projectVersionWrapper, projectName, projectVersion, bomUrl);
-        final List<VersionBomComponentView> bom = hub.getProjectService()
-                .getComponentsForProjectVersion(projectVersionWrapper.getProjectVersionView());
+        if (!projectVersionWrapper.isPresent()) {
+            throw new IntegrationException(String.format("Failed to retrieve project %s version %s", projectName, projectVersion));
+        }
+        final Optional<String> bomUrl = projectVersionWrapper.get().getProjectVersionView().getFirstLink(ProjectVersionView.COMPONENTS_LINK);
+        if (!bomUrl.isPresent()) {
+            throw new IntegrationException(String.format("Failed to retrieve components link for project %s version %s", projectName, projectVersion));
+        }
+        spdxHubBomReportBuilder.setProject(projectVersionWrapper.get(), projectName, projectVersion, bomUrl.get());
+        final List<VersionBomComponentView> bom = hub.getProjectBomService().getComponentsForProjectVersion(projectVersionWrapper.get().getProjectVersionView());
 
         logger.info("Creating packages");
         Stream<VersionBomComponentView> bomCompStream = null;
@@ -96,7 +101,7 @@ public class HubBomReportGenerator {
         logger.info("Adding packages to document");
         for (final Optional<SpdxRelatedLicensedPackage> pkg : pkgs) {
             final SpdxRelatedLicensedPackage actualPkg = pkg.orElseThrow(
-                    () -> new HubIntegrationException("Conversion to SPDX failed for one or more components"));
+                    () -> new BlackDuckIntegrationException("Conversion to SPDX failed for one or more components"));
             spdxHubBomReportBuilder.addPackageToDocument(actualPkg);
         }
         logger.info("Adding packages to document: Done");
@@ -109,7 +114,7 @@ public class HubBomReportGenerator {
             pkg = Optional.of(spdxHubBomReportBuilder.toSpdxRelatedLicensedPackage(bomComp));
         } catch (final IntegrationException e) {
             final String msg = String.format("Error converting BOM component %s:%s to Spdx packages: %s",
-                    bomComp.componentName, bomComp.componentVersionName, e.getMessage());
+                    bomComp.getComponentName(), bomComp.getComponentVersionName(), e.getMessage());
             logger.error(msg);
         }
         return pkg;

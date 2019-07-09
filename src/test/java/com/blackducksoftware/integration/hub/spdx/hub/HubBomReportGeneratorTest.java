@@ -7,6 +7,7 @@ import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -19,12 +20,11 @@ import com.blackducksoftware.integration.hub.spdx.SpdxHubBomReportBuilder;
 import com.blackducksoftware.integration.hub.spdx.hub.license.HubGenericComplexLicenseView;
 import com.blackducksoftware.integration.hub.spdx.spdx.SpdxLicense;
 import com.blackducksoftware.integration.hub.spdx.spdx.SpdxPkg;
-import com.synopsys.integration.blackduck.api.core.ResourceLink;
-import com.synopsys.integration.blackduck.api.core.ResourceMetadata;
 import com.synopsys.integration.blackduck.api.generated.component.VersionBomLicenseView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
 import com.synopsys.integration.blackduck.api.generated.view.VersionBomComponentView;
+import com.synopsys.integration.blackduck.service.ProjectBomService;
 import com.synopsys.integration.blackduck.service.ProjectService;
 import com.synopsys.integration.blackduck.service.model.ProjectVersionWrapper;
 import com.synopsys.integration.exception.IntegrationException;
@@ -37,34 +37,36 @@ public class HubBomReportGeneratorTest {
         final Hub hub = Mockito.mock(Hub.class);
         final ProjectVersionWrapper projectVersionWrapper = new ProjectVersionWrapper();
         final ProjectView projectView = new ProjectView();
-        projectView.name = "testProject";
+        projectView.setName("testProject");
         projectVersionWrapper.setProjectView(projectView);
-        final ProjectVersionView projectVersionView = new ProjectVersionView();
-        projectVersionView.versionName = "testVersion";
-        projectVersionView._meta = new ResourceMetadata();
-        projectVersionView._meta.links = new ArrayList<>();
-        final ResourceLink resourceLink = new ResourceLink();
-        resourceLink.rel = "components";
-        resourceLink.href = "testBomUrl";
-        projectVersionView._meta.links.add(resourceLink);
+        final ProjectVersionView projectVersionView = Mockito.mock(ProjectVersionView.class);
+        Mockito.when(projectVersionView.getVersionName()).thenReturn("testVersion");
+        Mockito.when(projectVersionView.getFirstLink("components")).thenReturn(Optional.of("testBomUrl"));
         projectVersionWrapper.setProjectVersionView(projectVersionView);
-        final ProjectService projectService = Mockito.mock(ProjectService.class);
-        Mockito.when(projectService.getProjectVersion(Mockito.anyString(), Mockito.anyString())).thenReturn(projectVersionWrapper);
+
+
         final List<VersionBomComponentView> bom = new ArrayList<>();
         final VersionBomComponentView versionBomComponentView = new VersionBomComponentView();
-        versionBomComponentView.component = "testComponent";
-        versionBomComponentView.componentName = "testComponentName";
-        versionBomComponentView.componentVersionName = "testComponentVersionName";
-        versionBomComponentView.licenses = new ArrayList<>();
+        versionBomComponentView.setComponent("testComponent");
+        versionBomComponentView.setComponentName("testComponentName");
+        versionBomComponentView.setComponentVersionName("testComponentVersionName");
+
         final VersionBomLicenseView versionBomLicenseView = new VersionBomLicenseView();
-        versionBomLicenseView.licenseDisplay = "testLicenseDisplay";
-        versionBomLicenseView.license = "testLicense";
-        versionBomComponentView.licenses.add(versionBomLicenseView);
-        versionBomComponentView.usages = new ArrayList<>();
+        versionBomLicenseView.setLicenseDisplay("testLicenseDisplay");
+        versionBomLicenseView.setLicense("testLicense");
+        final List<VersionBomLicenseView> licenses = new ArrayList<>();
+        licenses.add(versionBomLicenseView);
+        versionBomComponentView.setLicenses(licenses);
+        versionBomComponentView.setUsages(new ArrayList<>());
 
         bom.add(versionBomComponentView);
-        Mockito.when(projectService.getComponentsForProjectVersion(Mockito.any(ProjectVersionView.class))).thenReturn(bom);
+
+        final ProjectService projectService = Mockito.mock(ProjectService.class);
+        final ProjectBomService projectBomService = Mockito.mock(ProjectBomService.class);
+        Mockito.when(projectService.getProjectVersion(Mockito.anyString(), Mockito.anyString())).thenReturn(Optional.of(projectVersionWrapper));
+        Mockito.when(projectBomService.getComponentsForProjectVersion(Mockito.any(ProjectVersionView.class))).thenReturn(bom);
         Mockito.when(hub.getProjectService()).thenReturn(projectService);
+        Mockito.when(hub.getProjectBomService()).thenReturn(projectBomService);
 
         hubBomReportGenerator.setHub(hub);
         final SpdxHubBomReportBuilder spdxHubBomReportBuilder = new SpdxHubBomReportBuilder();

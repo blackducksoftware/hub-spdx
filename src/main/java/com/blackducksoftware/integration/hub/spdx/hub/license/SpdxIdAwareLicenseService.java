@@ -25,30 +25,32 @@ package com.blackducksoftware.integration.hub.spdx.hub.license;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.synopsys.integration.blackduck.service.HubService;
+import com.synopsys.integration.blackduck.api.generated.view.LicenseView;
+import com.synopsys.integration.blackduck.service.BlackDuckService;
 import com.synopsys.integration.blackduck.service.LicenseService;
 import com.synopsys.integration.exception.IntegrationException;
 
 public class SpdxIdAwareLicenseService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private final HubService hubService;
+    private final BlackDuckService hubService;
     private final LicenseService licenseService;
 
-    public SpdxIdAwareLicenseService(final HubService hubService, final LicenseService licenseService) {
+    public SpdxIdAwareLicenseService(final BlackDuckService hubService, final LicenseService licenseService) {
         this.hubService = hubService;
         this.licenseService = licenseService;
     }
 
-    public SpdxIdAwareLicenseView getLicenseView(final String licenseUrl) throws IntegrationException {
+    // TODO the need for this class is gone; eliminate it
+    public LicenseView getLicenseView(final String licenseUrl) throws IntegrationException {
         if (licenseUrl == null) {
             return null;
         }
-        return hubService.getResponse(licenseUrl, SpdxIdAwareLicenseView.class);
+        return hubService.getResponse(licenseUrl, LicenseView.class);
     }
 
-    public String getLicenseText(final SpdxIdAwareLicenseView licenseView) throws IntegrationException {
-        logger.debug(String.format("Fetching license text from Hub for license name: %s; ID: %s", licenseView.name, licenseView.spdxId));
+    public String getLicenseText(final LicenseView licenseView) throws IntegrationException {
+        logger.debug(String.format("Fetching license text from Hub for license name: %s; ID: %s", licenseView.getName(), licenseView.getSpdxId()));
         return licenseService.getLicenseText(licenseView);
     }
 }
