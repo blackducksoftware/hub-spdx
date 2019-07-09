@@ -120,7 +120,7 @@ public class SpdxLicense {
             return new SpdxNoneLicense();
         }
         if (hubComplexLicense.isLicenseNotFound() || hubComplexLicense.isUnknownLicense()) {
-            logger.warn(String.format("Converting Hub license '%s' to SpdxNoneLicense", hubComplexLicense.getDisplayName()));
+            logger.warn(String.format("Converting Hub license '%s' to SpdxNoneLicense", hubComplexLicense.getDisplayName().orElse("<unnamed>")));
             return new SpdxNoneLicense();
         }
         logger.debug(String.format("\tlicense (%s) display: %s", hubComplexLicense.getType().toString(), hubComplexLicense.getDisplayName()));
@@ -156,7 +156,7 @@ public class SpdxLicense {
 
     private AnyLicenseInfo createSimpleSpdxLicense(final SpdxDocumentContainer bomContainer, final HubGenericComplexLicenseView hubComplexLicense) throws IntegrationException {
         if (hubComplexLicense.isLicenseNotFound() || hubComplexLicense.isUnknownLicense()) {
-            logger.warn(String.format("Converting Hub license '%s' to SpdxNoneLicense", hubComplexLicense.getDisplayName()));
+            logger.warn(String.format("Converting Hub license '%s' to SpdxNoneLicense", hubComplexLicense.getDisplayName().orElse("<unnamed>")));
             return new SpdxNoneLicense();
         }
         final LicenseView licenseView = hubLicense.getLicenseView(hubComplexLicense.getUrl());
