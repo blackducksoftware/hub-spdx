@@ -1,3 +1,5 @@
+apply from: 'artifactory-properties.gradle'
+
 buildscript {
     repositories {
         mavenCentral()
@@ -16,6 +18,8 @@ version = '1.1.2-SNAPSHOT'
 apply plugin: 'com.blackducksoftware.integration.solution'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
 
 final def versionFile = new File("${projectDir}/src/main/resources/version.properties")
 versionFile.delete()
@@ -49,4 +53,19 @@ dependencies {
 
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:2.13.0'
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            def artifactName = "${buildDir}/libs/${project.name}-${version}.jar"
+            artifact (artifactName)
+        }
+    }
+}
+
+artifactory {
+    publish {
+        defaults { publications ('mavenJava') }
+    }
 }
