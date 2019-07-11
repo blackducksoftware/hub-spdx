@@ -19,8 +19,8 @@ public class TestUtils {
             return false;
         }
         for (int i = 0; i < lines1.size(); i++) {
-            final String line1 = lines1.get(i);
-            final String line2 = lines2.get(i);
+            final String line1 = lines1.get(i).trim();
+            final String line2 = lines2.get(i).trim();
             boolean skip = false;
             if (exceptLinesContainingThese != null) {
                 for (final String ignoreMe : exceptLinesContainingThese) {
