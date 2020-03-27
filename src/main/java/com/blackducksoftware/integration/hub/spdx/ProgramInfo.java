@@ -31,19 +31,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ProgramVersion {
-    private final Logger logger = LoggerFactory.getLogger(ProgramVersion.class);
-    private String programVersion;
+public class ProgramInfo {
+    private final Logger logger = LoggerFactory.getLogger(ProgramInfo.class);
+    private String version;
 
     @PostConstruct
     public void init() throws IOException {
         final ClassPathPropertiesFile versionProperties = new ClassPathPropertiesFile("version.properties");
-        programVersion = versionProperties.getProperty("program.version");
-        logger.debug(String.format("programVersion: %s", programVersion));
+        version = versionProperties.getProperty("program.version");
+        logger.debug(String.format("programVersion: %s", version));
     }
 
-    public String getProgramVersion() {
-        return programVersion;
+    public String getVersion() {
+        return version;
     }
 
 }

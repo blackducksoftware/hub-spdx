@@ -28,7 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.spdx.ProgramVersion;
+import com.blackducksoftware.integration.hub.spdx.ProgramInfo;
 import com.blackducksoftware.integration.hub.spdx.SpdxReportUtility;
 import com.blackducksoftware.integration.hub.spdx.hub.license.SpdxIdAwareLicenseService;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
@@ -50,7 +50,7 @@ public class Hub {
     private HubPasswords hubPasswords;
 
     @Autowired
-    private ProgramVersion programVersion;
+    private ProgramInfo programInfo;
 
     @Value("${hub.url}")
     private String hubUrl;
@@ -106,6 +106,6 @@ public class Hub {
     private void phoneHome(final BlackDuckServicesFactory hubSvcsFactory) {
         logger.trace("Phoning home");
         final BlackDuckPhoneHomeHelper phoneHomeHelper = BlackDuckPhoneHomeHelper.createAsynchronousPhoneHomeHelper(hubSvcsFactory, new NoThreadExecutorService());
-        phoneHomeHelper.handlePhoneHome(SpdxReportUtility.programId, programVersion.getProgramVersion());
+        phoneHomeHelper.handlePhoneHome(SpdxReportUtility.programId, programInfo.getVersion());
     }
 }

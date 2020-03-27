@@ -37,6 +37,7 @@ import org.spdx.rdfparser.model.SpdxPackage;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.spdx.SpdxRelatedLicensedPackage;
+import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class SpdxPkg {
@@ -45,7 +46,7 @@ public class SpdxPkg {
     public static final String SPDX_URI_NAMESPACE = "http://spdx.org/rdf/terms#";
     public static final String RDFS_URI_NAMESPACE = "http://www.w3.org/2000/01/rdf-schema#";
 
-    public void addPackageToDocument(final SpdxDocument containingDocument, final SpdxRelatedLicensedPackage pkg) {
+    public void addPackageToDocument(final SpdxDocument containingDocument, final SpdxRelatedLicensedPackage pkg) throws IntegrationException {
         try {
             addPackageToDocument(containingDocument, pkg.getPkg(), pkg.getRelType());
             if (pkg.getLicense() instanceof ExtractedLicenseInfo) {
@@ -53,11 +54,13 @@ public class SpdxPkg {
             }
             logger.debug(String.format("Added package: %s:%s", pkg.getPkg().getName(), pkg.getPkg().getVersionInfo()));
         } catch (final InvalidSPDXAnalysisException e) {
-            throw new RuntimeException(e);
+            throw new IntegrationException(
+                String.format("Error adding package %s:%s to document", pkg.getPkg().getName(), pkg.getPkg().getVersionInfo()),
+                e);
         }
     }
 
-    public SpdxPackage createSpdxPackage(final AnyLicenseInfo licenseDeclared, final String pkgName, final String pkgVersion, final String downloadLocation, final RelationshipType relType) {
+    public SpdxPackage createSpdxPackage(final AnyLicenseInfo licenseDeclared, final String pkgName, final String pkgVersion, final String downloadLocation) throws IntegrationException {
         try {
             final AnyLicenseInfo licenseConcluded = new SpdxNoAssertionLicense();
             final SpdxPackage pkg = new SpdxPackage(pkgName, licenseConcluded, new AnyLicenseInfo[] {} /* Licenses from files */, null /* Declared licenses */, licenseDeclared, downloadLocation, new SpdxFile[] {} /* Files */,
@@ -72,15 +75,15 @@ public class SpdxPkg {
             pkg.setFilesAnalyzed(false);
             return pkg;
         } catch (final InvalidSPDXAnalysisException e) {
-            throw new RuntimeException(e);
+            throw new IntegrationException(String.format("Error creating SPDX package: %s", e.getMessage()), e);
         }
     }
 
-    private void addPackageToDocument(final SpdxDocument document, final SpdxPackage pkg, final RelationshipType relType) {
+    private void addPackageToDocument(final SpdxDocument document, final SpdxPackage pkg, final RelationshipType relType) throws IntegrationException {
         try {
             document.addRelationship(new Relationship(pkg, relType, null));
         } catch (final InvalidSPDXAnalysisException e) {
-            throw new RuntimeException("Unable to add package to document", e);
+            throw new IntegrationException("Unable to add package to document", e);
         }
     }
 }

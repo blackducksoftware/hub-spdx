@@ -111,7 +111,7 @@ public class SpdxHubBomReportBuilder {
         }
     }
 
-    public void addPackageToDocument(final SpdxRelatedLicensedPackage pkg) {
+    public void addPackageToDocument(final SpdxRelatedLicensedPackage pkg) throws IntegrationException {
         spdxPkg.addPackageToDocument(bomDocument, pkg);
     }
 
@@ -135,7 +135,7 @@ public class SpdxHubBomReportBuilder {
         final RelationshipType relType = getRelationshipType(bomComp);
 
         final SpdxPackage pkg = spdxPkg.createSpdxPackage(compSpdxLicense, bomComp.getComponentName(),
-                bomComp.getComponentVersionName(), bomCompDownloadLocation, relType);
+                bomComp.getComponentVersionName(), bomCompDownloadLocation);
         return new SpdxRelatedLicensedPackage(relType, pkg, compSpdxLicense);
     }
 

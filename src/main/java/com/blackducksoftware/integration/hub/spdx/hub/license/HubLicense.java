@@ -50,6 +50,10 @@ public class HubLicense {
             return null;
         }
         LicenseView licenseView = getLicenseViewSingleLevel(licenseViewUrl.get());
+        if (licenseView == null) {
+            logger.debug(String.format("Unable to get license view for URL: %s", licenseViewUrl.get()));
+            return null;
+        }
         final Optional<String> embeddedLicenseUrl = licenseView.getFirstLink(LICENSE_LINK_NAME);
         logger.debug(String.format("Embedded license URL: %s", embeddedLicenseUrl));
         if (embeddedLicenseUrl.isPresent()) {

@@ -70,7 +70,7 @@ public class SpdxReportUtility {
             ps = new PrintStream(outputFile);
             spdxReportGenerator.writeReport(ps, hubProjectVersion.getName(), hubProjectVersion.getVersion());
             logger.info(String.format("Generated report file %s", outputFilename));
-        } catch (final Throwable e) {
+        } catch (final Exception e) {
             logger.error(e.getMessage());
             final String trace = ExceptionUtils.getStackTrace(e);
             logger.debug(String.format("Stack trace: %s", trace));

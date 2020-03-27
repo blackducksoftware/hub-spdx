@@ -28,13 +28,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class HubProjectVersion {
     @Value("${hub.project.version}")
-    private String hubProjectVersion;
+    private String hubProjectVersionName;
 
     @Value("${hub.project.name}")
     private String hubProjectName;
 
     public String getVersion() {
-        return hubProjectVersion;
+        return hubProjectVersionName;
     }
 
     public String getName() {
