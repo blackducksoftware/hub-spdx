@@ -33,6 +33,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProgramInfo {
     private final Logger logger = LoggerFactory.getLogger(ProgramInfo.class);
+    public static final String PROGRAM_ID = "hub-spdx";
     private String version;
 
     @PostConstruct

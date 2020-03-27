@@ -41,7 +41,6 @@ import com.blackducksoftware.integration.hub.spdx.hub.HubProjectVersion;
 
 @SpringBootApplication
 public class SpdxReportUtility {
-    public static final String programId = "hub-spdx";
 
     @Autowired
     Hub hub;
@@ -63,22 +62,18 @@ public class SpdxReportUtility {
 
     @PostConstruct
     private void writeReport() {
-        PrintStream ps = null;
         try {
             hub.connect();
             final File outputFile = new File(outputFilename);
-            ps = new PrintStream(outputFile);
-            spdxReportGenerator.writeReport(ps, hubProjectVersion.getName(), hubProjectVersion.getVersion());
+            try (PrintStream ps = new PrintStream(outputFile)) {
+                spdxReportGenerator.writeReport(ps, hubProjectVersion.getName(), hubProjectVersion.getVersion());
+            }
             logger.info(String.format("Generated report file %s", outputFilename));
         } catch (final Exception e) {
             logger.error(e.getMessage());
             final String trace = ExceptionUtils.getStackTrace(e);
             logger.debug(String.format("Stack trace: %s", trace));
             logger.info(getUsage());
-        } finally {
-            if (ps != null) {
-                ps.close();
-            }
         }
     }
 

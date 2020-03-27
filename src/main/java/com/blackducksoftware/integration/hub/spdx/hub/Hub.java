@@ -75,7 +75,7 @@ public class Hub {
 
     private BlackDuckServicesFactory hubSvcsFactory;
 
-    public void connect() throws IntegrationException {
+    public void connect() {
         final BlackDuckServerConfigBuilder hubServerConfigBuilder = new BlackDuckServerConfigBuilder();
         final HubConfig hubConfig = new HubConfig();
         final BlackDuckServerConfig hubServerConfig = hubConfig
@@ -106,6 +106,6 @@ public class Hub {
     private void phoneHome(final BlackDuckServicesFactory hubSvcsFactory) {
         logger.trace("Phoning home");
         final BlackDuckPhoneHomeHelper phoneHomeHelper = BlackDuckPhoneHomeHelper.createAsynchronousPhoneHomeHelper(hubSvcsFactory, new NoThreadExecutorService());
-        phoneHomeHelper.handlePhoneHome(SpdxReportUtility.programId, programInfo.getVersion());
+        phoneHomeHelper.handlePhoneHome(ProgramInfo.PROGRAM_ID, programInfo.getVersion());
     }
 }

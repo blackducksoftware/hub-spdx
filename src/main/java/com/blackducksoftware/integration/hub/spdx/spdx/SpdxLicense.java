@@ -85,7 +85,7 @@ public class SpdxLicense {
     /**
      * Finds an extracted license in the document with the provided license ID
      */
-    public Optional<? extends ExtractedLicenseInfo> findExtractedLicenseInfoById(final SpdxDocumentContainer container, final String licenseId) {
+    public Optional<ExtractedLicenseInfo> findExtractedLicenseInfoById(final SpdxDocumentContainer container, final String licenseId) {
         Objects.requireNonNull(licenseId);
         return Arrays.stream(container.getExtractedLicenseInfos()).filter(license -> licenseId.equals(license.getLicenseId())).findAny();
     }
@@ -172,7 +172,7 @@ public class SpdxLicense {
             final String licenseText = hubLicense.getLicenseText(licenseView);
             final String licenseId = generateLicenseId(licenseView.getName(), licenseText);
             logger.debug(String.format("License name: %s with license text from Hub hashed to ID: %s", licenseView.getName(), licenseId));
-            final Optional<? extends ExtractedLicenseInfo> existingSpdxLicense = this.findExtractedLicenseInfoById(spdxDocContainer, licenseId);
+            final Optional<ExtractedLicenseInfo> existingSpdxLicense = findExtractedLicenseInfoById(spdxDocContainer, licenseId);
             if (existingSpdxLicense.isPresent()) {
                 logger.debug(String.format("Re-using license id: %s, name: %s", licenseId, licenseView.getName()));
                 componentLicense = existingSpdxLicense.get();
