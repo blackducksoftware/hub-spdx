@@ -6,9 +6,4 @@
 /.project
 /build/
 /test/
-.idea/encodings.xml
-.idea/gradle.xml
-.idea/hub-spdx.iml
-.idea/misc.xml
-.idea/vcs.xml
-.idea/workspace.xml
+.idea/
