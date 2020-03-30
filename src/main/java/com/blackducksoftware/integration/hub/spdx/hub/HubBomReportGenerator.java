@@ -42,7 +42,6 @@ import com.synopsys.integration.blackduck.exception.BlackDuckIntegrationExceptio
 import com.synopsys.integration.blackduck.service.ProjectService;
 import com.synopsys.integration.blackduck.service.model.ProjectVersionWrapper;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.log.Slf4jIntLogger;
 
 @Component
 public class HubBomReportGenerator {
@@ -94,7 +93,7 @@ public class HubBomReportGenerator {
             logger.info("Conversion of BOM components to SpdxPackages: Multi-threaded");
             bomCompStream = bom.parallelStream();
         }
-        final List<Optional<SpdxRelatedLicensedPackage>> pkgs = bomCompStream.map(bomComp -> toSpdx(bomComp))
+        final List<Optional<SpdxRelatedLicensedPackage>> pkgs = bomCompStream.map(this::toSpdx)
                 .collect(Collectors.toList());
         logger.info("Creating packages: Done");
 

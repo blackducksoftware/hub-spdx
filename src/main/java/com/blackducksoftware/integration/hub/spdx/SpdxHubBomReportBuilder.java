@@ -169,7 +169,7 @@ public class SpdxHubBomReportBuilder {
             logger.warn(String.format("# Usages for component %s:%s is > 1: %d; only the first is used",
                     bomComp.getComponentName(), bomComp.getComponentVersionName(), usages.size()));
         }
-        if (usages.size() > 0) {
+        if (!usages.isEmpty()) {
             if (usages.get(0) == MatchedFileUsagesType.DYNAMICALLY_LINKED) {
                 relType = RelationshipType.DYNAMIC_LINK;
             } else if (usages.get(0) == MatchedFileUsagesType.STATICALLY_LINKED) {
