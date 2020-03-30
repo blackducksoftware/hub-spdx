@@ -47,7 +47,7 @@ public class HubConfig {
             hubServerConfigBuilder.setProxyPassword(hubProxyPassword);
         }
 
-        hubServerConfigBuilder.setTimeout(hubTimeoutSeconds);
+        hubServerConfigBuilder.setTimeoutInSeconds(hubTimeoutSeconds);
         hubServerConfigBuilder.setTrustCert(hubAlwaysTrustCert);
 
         return hubServerConfigBuilder;

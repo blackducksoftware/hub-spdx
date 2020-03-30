@@ -116,7 +116,7 @@ public class SpdxLicense {
     private AnyLicenseInfo createComboSpdxLicense(final SpdxDocumentContainer bomContainer, final HubGenericComplexLicenseView hubComplexLicense) throws IntegrationException {
         logger.trace("createComboSpdxLicense()");
         if (hubComplexLicense == null) {
-            logger.warn(String.format("Converting Hub license to SpdxNoneLicense, but Hub license is null"));
+            logger.warn("Converting Hub license to SpdxNoneLicense, but Hub license is null");
             return new SpdxNoneLicense();
         }
         if (hubComplexLicense.isLicenseNotFound() || hubComplexLicense.isUnknownLicense()) {

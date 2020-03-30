@@ -61,19 +61,13 @@ public class HubGenericComplexLicenseView {
         if (!displayName.isPresent()) {
             return false;
         }
-        if ("License Not Found".equals(displayName.get())) {
-            return true;
-        }
-        return false;
+        return "License Not Found".equals(displayName.get());
     }
 
     public boolean isUnknownLicense() {
         if (!displayName.isPresent()) {
             return false;
         }
-        if ("Unknown License".equals(displayName.get())) {
-            return true;
-        }
-        return false;
+        return "Unknown License".equals(displayName.get());
     }
 }
